@@ -31,7 +31,7 @@ public class OXOGame extends Frame
     new OXOGame(250, 300);
   }
 
-  public OXOGame(int width, int height) {
+  public OXOGame(int width, int height) { //constructor
     super("OXO Board");
     OXOModel model = new OXOModel(3, 3, 3);
     model.addPlayer(new OXOPlayer('X'));

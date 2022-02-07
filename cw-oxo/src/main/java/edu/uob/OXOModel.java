@@ -1,7 +1,9 @@
 package edu.uob;
 
+import java.util.ArrayList;
+
 class OXOModel {
-  private final OXOPlayer[][] cells;
+  private final ArrayList<ArrayList<OXOPlayer>> cells;
   private final OXOPlayer[] players;
   private int currentPlayerNumber;
   private OXOPlayer winner;
@@ -10,8 +12,15 @@ class OXOModel {
 
   public OXOModel(int numberOfRows, int numberOfColumns, int winThresh) {
     winThreshold = winThresh;
-    cells = new OXOPlayer[numberOfRows][numberOfColumns];
+    cells = new ArrayList<ArrayList<OXOPlayer>>();
+    for(int j=0; j<numberOfRows; j++){
+      cells.add(new ArrayList<OXOPlayer>(numberOfRows));
+      for(int i=0; i<numberOfColumns; i++){
+        cells.get(j).add(null);
+      }
+    }
     players = new OXOPlayer[2];
+
   }
 
   public int getNumberOfPlayers() {
@@ -48,19 +57,19 @@ class OXOModel {
   }
 
   public int getNumberOfRows() {
-    return cells.length;
+    return cells.size();
   }
 
   public int getNumberOfColumns() {
-    return cells[0].length;
+    return cells.get(0).size();
   }
 
   public OXOPlayer getCellOwner(int rowNumber, int colNumber) {
-    return cells[rowNumber][colNumber];
+    return cells.get(rowNumber).get(colNumber);
   }
 
   public void setCellOwner(int rowNumber, int colNumber, OXOPlayer player) {
-    cells[rowNumber][colNumber] = player;
+    cells.get(rowNumber).set(colNumber, player);
   }
 
   public void setWinThreshold(int winThresh) {
