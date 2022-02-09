@@ -14,7 +14,7 @@ class OXOModel {
     winThreshold = winThresh;
     cells = new ArrayList<ArrayList<OXOPlayer>>();
     for(int j=0; j<numberOfRows; j++){
-      cells.add(new ArrayList<OXOPlayer>(numberOfRows));
+      cells.add(new ArrayList<OXOPlayer>(numberOfColumns));
       for(int i=0; i<numberOfColumns; i++){
         cells.get(j).add(null);
       }
@@ -87,5 +87,31 @@ class OXOModel {
   public boolean isGameDrawn() {
     return gameDrawn;
   }
+
+  public void addColumn() {
+    for(int i=0; i<getNumberOfRows(); i++){
+      cells.get(i).add(null);
+    }
+//    System.out.println(cells);
+  }
+
+  public void addRow() {
+    cells.add(new ArrayList<OXOPlayer>(getNumberOfColumns()));
+    for(int i=0; i<getNumberOfColumns(); i++){
+      cells.get(getNumberOfRows()-1).add(null);
+    }
+  }
+
+  public void removeColumn() {
+    for(int i=0; i<getNumberOfRows(); i++){
+      cells.get(i).remove(getNumberOfColumns()-1);
+    }
+//    System.out.println(cells);
+  }
+
+  public void removeRow() {
+    cells.remove(getNumberOfRows()-1);
+  }
+
 
 }
