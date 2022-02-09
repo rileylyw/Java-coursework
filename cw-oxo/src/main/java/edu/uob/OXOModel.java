@@ -92,7 +92,6 @@ class OXOModel {
     for(int i=0; i<getNumberOfRows(); i++){
       cells.get(i).add(null);
     }
-//    System.out.println(cells);
   }
 
   public void addRow() {
@@ -106,12 +105,12 @@ class OXOModel {
     for(int i=0; i<getNumberOfRows(); i++){
       cells.get(i).remove(getNumberOfColumns()-1);
     }
-//    System.out.println(cells);
   }
 
   public void removeRow() {
     cells.remove(getNumberOfRows()-1);
   }
+
 
 
 }
