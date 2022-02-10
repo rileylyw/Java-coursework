@@ -35,7 +35,8 @@ final class ControllerTests {
     // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a1");
-
+    System.out.println(firstMovingPlayer);
+//    System.out.println(controller.gameModel.getCellOwner(0, 0));
     // A move has been made for A1 (i.e. the [0,0] cell on the board), let's see if that cell is
     // indeed owned by the player
     assertEquals(firstMovingPlayer, controller.gameModel.getCellOwner(0, 0));

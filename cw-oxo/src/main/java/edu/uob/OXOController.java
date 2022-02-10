@@ -2,31 +2,52 @@ package edu.uob;
 
 class OXOController {
   OXOModel gameModel;
-  OXOPlayer playerX = new OXOPlayer('X');
-  OXOPlayer playerO = new OXOPlayer('O');
+//  OXOPlayer playerX = new OXOPlayer('X');
+//  OXOPlayer playerO = new OXOPlayer('O');
   public OXOController(OXOModel model) {
     gameModel = model;
   }
 
   public void handleIncomingCommand(String command) throws OXOMoveException {
 //    assert within grid
+//    System.out.println(gameModel.getWinner());
+    if(gameModel.getWinner() != null){
+      return;
+    }
     int x = (int) command.charAt(0) - 'a';
     int y = Character.getNumericValue(command.charAt(1)) - 1;
     if(gameModel.getCurrentPlayerNumber() == 0 && gameModel.getCellOwner(x, y) == null){
-      gameModel.setCurrentPlayerNumber(1);
-      gameModel.setCellOwner(x, y, playerX);
-      if(checkWin(x, y, playerX)){
-        gameModel.setWinner(playerX);
-        System.out.println("finished X won");
+      gameModel.setCellOwner(x, y, gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()));
+      System.out.println("TEST:" + gameModel.getCellOwner(0, 0));
+
+      if(checkWin(x, y, gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()))){
+        gameModel.setWinner(gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()));
+//        System.out.println("finished X won");
+      }
+      else{
+        gameModel.setCurrentPlayerNumber(1);
       }
     }
     else if(gameModel.getCurrentPlayerNumber() == 1 && gameModel.getCellOwner(x, y) == null){
-      gameModel.setCurrentPlayerNumber(0);
-      gameModel.setCellOwner(x, y, playerO);
-      if(checkWin(x, y, playerO)){
-        gameModel.setWinner(playerO);
-        System.out.println("finished O won");
+      gameModel.setCellOwner(x, y, gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()));
+      if(checkWin(x, y, gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()))){
+        gameModel.setWinner(gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()));
+//        System.out.println("finished O won");
       }
+      else{
+        gameModel.setCurrentPlayerNumber(0);
+      }
+    }
+    int taken = 0;
+    for(int j=0; j<gameModel.getNumberOfRows(); j++){
+      for(int i=0; i<gameModel.getNumberOfColumns(); i++){
+        if(gameModel.getCellOwner(j, i) != null){
+          taken++;
+        }
+      }
+    }
+    if(taken == gameModel.getNumberOfRows()* gameModel.getNumberOfColumns()){
+      gameModel.setGameDrawn();
     }
 //    else return error: already occupied
   }
@@ -59,7 +80,7 @@ class OXOController {
     //check col
     playerWon = true;
     for(int i=0; i<gameModel.getNumberOfRows(); i++){
-      if(gameModel.getCellOwner(i, colNumber)==null || !(gameModel.getCellOwner(i, colNumber)!=player)){
+      if(gameModel.getCellOwner(i, colNumber)==null || !(gameModel.getCellOwner(i, colNumber)==player)){
         playerWon = false;
       }
     }
@@ -68,7 +89,7 @@ class OXOController {
     //check diagonal (right to left)
     playerWon = true;
     for(int i=0; i<gameModel.getNumberOfRows(); i++){
-      if(gameModel.getCellOwner(i, i)==null || !(gameModel.getCellOwner(i, i)!=player)){
+      if(gameModel.getCellOwner(i, i)==null || !(gameModel.getCellOwner(i, i)==player)){
         playerWon = false;
       }
     }
@@ -78,7 +99,7 @@ class OXOController {
     playerWon = true;
     for(int i=0; i<gameModel.getNumberOfRows(); i++){
       if(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)==null ||
-              gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)!=player){
+              !(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)==player)){
         playerWon = false;
       }
     }
