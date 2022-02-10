@@ -16,6 +16,7 @@ class OXOController {
       gameModel.setCurrentPlayerNumber(1);
       gameModel.setCellOwner(x, y, playerX);
       if(checkWin(x, y, playerX)){
+        gameModel.setWinner(playerX);
         System.out.println("finished X won");
       }
     }
@@ -23,6 +24,7 @@ class OXOController {
       gameModel.setCurrentPlayerNumber(0);
       gameModel.setCellOwner(x, y, playerO);
       if(checkWin(x, y, playerO)){
+        gameModel.setWinner(playerO);
         System.out.println("finished O won");
       }
     }
@@ -48,49 +50,39 @@ class OXOController {
     //check row
     boolean playerWon = true;
     for(int i=0; i<gameModel.getNumberOfColumns(); i++){
-      if(gameModel.getCellOwner(rowNumber, i)==null){
-        playerWon = false;
-      }
-      else if(gameModel.getCellOwner(rowNumber, i).getPlayingLetter()!=player.getPlayingLetter()){
+      if(gameModel.getCellOwner(rowNumber, i)==null || !(gameModel.getCellOwner(rowNumber, i)==player)){
         playerWon = false;
       }
     }
+    if(playerWon) return true;
 
     //check col
     playerWon = true;
     for(int i=0; i<gameModel.getNumberOfRows(); i++){
-      if(gameModel.getCellOwner(i, colNumber)==null){
-        playerWon = false;
-      }
-      else if(gameModel.getCellOwner(i, colNumber).getPlayingLetter()!=player.getPlayingLetter()){
+      if(gameModel.getCellOwner(i, colNumber)==null || !(gameModel.getCellOwner(i, colNumber)!=player)){
         playerWon = false;
       }
     }
+    if(playerWon) return true;
 
     //check diagonal (right to left)
     playerWon = true;
     for(int i=0; i<gameModel.getNumberOfRows(); i++){
-      if(gameModel.getCellOwner(i, i)==null){
-        playerWon = false;
-      }
-      else if(gameModel.getCellOwner(i, i).getPlayingLetter()!=player.getPlayingLetter()){
+      if(gameModel.getCellOwner(i, i)==null || !(gameModel.getCellOwner(i, i)!=player)){
         playerWon = false;
       }
     }
+    if(playerWon) return true;
+
     //check diagonal (left to right)
     playerWon = true;
     for(int i=0; i<gameModel.getNumberOfRows(); i++){
-      if(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)==null){
-        playerWon = false;
-      }
-      else if(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i).getPlayingLetter()!=player.getPlayingLetter()){
+      if(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)==null ||
+              gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)!=player){
         playerWon = false;
       }
     }
-
-    if(playerWon){
-      return true;
-    }
+    if(playerWon) return true;
     else{
       return false;
     }
