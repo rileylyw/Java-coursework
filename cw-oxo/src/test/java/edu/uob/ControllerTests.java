@@ -32,19 +32,14 @@ final class ControllerTests {
   // here's a basic test for the `controller.handleIncomingCommand` method
   @Test
   void testHandleIncomingCommand() throws OXOMoveException {
-    // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a1");
-    System.out.println(firstMovingPlayer);
-//    System.out.println(controller.gameModel.getCellOwner(0, 0));
-    // A move has been made for A1 (i.e. the [0,0] cell on the board), let's see if that cell is
-    // indeed owned by the player
     assertEquals(firstMovingPlayer, controller.gameModel.getCellOwner(0, 0));
   }
 
   // here's a complete game where we find out if someone won
   @Test
-  void testBasicWinWithA1A2A3() throws OXOMoveException {
+  void testRowWinA1A2A3() throws OXOMoveException {
     // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a1");
@@ -52,13 +47,72 @@ final class ControllerTests {
     controller.handleIncomingCommand("a2");
     controller.handleIncomingCommand("b2");
     controller.handleIncomingCommand("a3");
-
-    // OK, so A1, A2, A3 is a win and that last A3 move is made by the first player (players
-    // alternative between moves) let's make an assertion to see whether the first moving player is
-    // the winner here
     assertEquals(
         firstMovingPlayer,
         model.getWinner(),
         "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
+
+  @Test
+  void testColWinA1B1C1() throws OXOMoveException {
+    // take note of whose gonna made the first move
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("b2");
+    controller.handleIncomingCommand("c1");
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testDiagWinA1B2C3() throws OXOMoveException {
+    controller.handleIncomingCommand("a2"); //X
+    OXOPlayer secondMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("b2"); //O
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("c3");
+    System.out.println(model.isGameDrawn());
+    assertEquals(
+            secondMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(secondMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testDiagWinC1B2A3() throws OXOMoveException {
+    controller.handleIncomingCommand("a2"); //X
+    OXOPlayer secondMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("c1");
+    controller.handleIncomingCommand("c3");
+    controller.handleIncomingCommand("b2"); //O
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("a3");
+    System.out.println(model.isGameDrawn());
+    assertEquals(
+            secondMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(secondMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testDraw() throws OXOMoveException {
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("b2");
+    controller.handleIncomingCommand("b3");
+    controller.handleIncomingCommand("c2");
+    controller.handleIncomingCommand("c1");
+    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("c3");
+    System.out.println(model.isGameDrawn());
+    assertEquals(model.isGameDrawn(),true);
+  }
+
 }

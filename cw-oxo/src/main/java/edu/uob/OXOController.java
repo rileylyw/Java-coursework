@@ -2,8 +2,6 @@ package edu.uob;
 
 class OXOController {
   OXOModel gameModel;
-//  OXOPlayer playerX = new OXOPlayer('X');
-//  OXOPlayer playerO = new OXOPlayer('O');
   public OXOController(OXOModel model) {
     gameModel = model;
   }
