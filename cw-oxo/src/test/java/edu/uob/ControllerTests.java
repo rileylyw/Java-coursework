@@ -54,6 +54,29 @@ final class ControllerTests {
   }
 
   @Test
+  void testRowWinC4C5C6() throws OXOMoveException {
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.handleIncomingCommand("a1");
+    OXOPlayer secondMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("c4");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("c6");
+    controller.handleIncomingCommand("a5");
+    controller.handleIncomingCommand("c5");
+    assertEquals(
+            secondMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(secondMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
   void testColWinA1B1C1() throws OXOMoveException {
     // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
@@ -67,6 +90,29 @@ final class ControllerTests {
             model.getWinner(),
             "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
+
+  @Test
+  void testColWinD5E5F5() throws OXOMoveException {
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("d5");
+    controller.handleIncomingCommand("f7");
+    controller.handleIncomingCommand("f5");
+    controller.handleIncomingCommand("c1");
+    controller.handleIncomingCommand("e5");
+    controller.handleIncomingCommand("a1");
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
 
   @Test
   void testDiagWinA1B2C3() throws OXOMoveException {
