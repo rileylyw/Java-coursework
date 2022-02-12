@@ -113,6 +113,28 @@ final class ControllerTests {
             "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
 
+  @Test
+  void testColWinE7F7G7() throws OXOMoveException {
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("g7");
+    controller.handleIncomingCommand("f1");
+    controller.handleIncomingCommand("e7");
+    controller.handleIncomingCommand("c1");
+    controller.handleIncomingCommand("f7");
+    controller.handleIncomingCommand("a1");
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
 
   @Test
   void testDiagWinA1B2C3() throws OXOMoveException {
@@ -139,6 +161,31 @@ final class ControllerTests {
     controller.handleIncomingCommand("b2"); //O
     controller.handleIncomingCommand("b1");
     controller.handleIncomingCommand("a3");
+    System.out.println(model.isGameDrawn());
+    assertEquals(
+            secondMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(secondMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testDiagWinF4E5D6() throws OXOMoveException {
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.handleIncomingCommand("a2"); //X
+    OXOPlayer secondMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("f4");
+    controller.handleIncomingCommand("c3");
+    controller.handleIncomingCommand("d6"); //O
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("e5");
     System.out.println(model.isGameDrawn());
     assertEquals(
             secondMovingPlayer,

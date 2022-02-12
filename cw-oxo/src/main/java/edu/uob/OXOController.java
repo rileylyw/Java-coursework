@@ -65,33 +65,17 @@ class OXOController {
     else if(checkRowWin(rowNumber, colNumber, winThreshold, checkRange)){
       System.out.println("row win");
       return true;
-//    }
-
+    }
+    else if(checkDiagWinTB(rowNumber, colNumber, winThreshold, checkRange)){
+      System.out.println("diag win");
+      return true;
+    }
+    else if(checkDiagWinBT(rowNumber, colNumber, winThreshold, checkRange)){
+      System.out.println("diag win2");
+      return true;
     }
     return false;
   }
-
-//    //check diagonal (right to left)
-//    playerWon = true;
-//    for(int i=0; i<gameModel.getNumberOfRows(); i++){
-//      if(gameModel.getCellOwner(i, i)==null || !(gameModel.getCellOwner(i, i)==player)){
-//        playerWon = false;
-//      }
-//    }
-//    if(playerWon) return true;
-//
-//    //check diagonal (left to right)
-//    playerWon = true;
-//    for(int i=0; i<gameModel.getNumberOfRows(); i++){
-//      if(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)==null ||
-//              !(gameModel.getCellOwner(i, gameModel.getNumberOfRows()-1-i)==player)){
-//        playerWon = false;
-//      }
-//    }
-//    if(playerWon) return true;
-//    else{
-//      return false;
-//  }
 
   public boolean checkColWin(int rowNumber, int colNumber, int winThreshold, int checkRange){
     int position = rowNumber - winThreshold + 1;
@@ -125,6 +109,60 @@ class OXOController {
           if (gameModel.getCellOwner(rowNumber, position + i) ==
                   gameModel.getCellOwner(rowNumber, position + i + 1)) {
             thresholdCount++;
+          }
+        } else {
+          thresholdCount = 1;
+        }
+        if (thresholdCount == winThreshold) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean checkDiagWinTB(int rowNumber, int colNumber, int winThreshold, int checkRange){
+    int rowPosition = colNumber - winThreshold + 1;
+    int colPosition = rowNumber - winThreshold + 1;
+    int thresholdCount = 1;
+    for(int i=0; i<checkRange; i++){
+      if((colPosition+i+1) >= 0 && (colPosition+i+1) < gameModel.getNumberOfColumns() &&
+              (rowPosition+i+1) >= 0 && (rowPosition+i+1) < gameModel.getNumberOfRows() &&
+              (rowPosition+i) >= 0 && (rowPosition+i) < gameModel.getNumberOfRows() &&
+              (colPosition+i) >= 0 && (colPosition+i) < gameModel.getNumberOfColumns()) {
+        if (gameModel.getCellOwner(rowPosition + i, colPosition + i) != null) {
+          if (gameModel.getCellOwner(rowPosition + i, colPosition + i) ==
+                  gameModel.getCellOwner(rowPosition + i + 1, colPosition + i + 1)) {
+            thresholdCount++;
+          }
+        } else {
+          thresholdCount = 1;
+        }
+        if (thresholdCount == winThreshold) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean checkDiagWinBT(int rowNumber, int colNumber, int winThreshold, int checkRange){
+    int colPosition = colNumber - winThreshold + 1;
+    int rowPosition = rowNumber + winThreshold - 1;
+    int thresholdCount = 1;
+    for(int i=0; i<checkRange; i++){
+      System.out.println(i);
+      if((colPosition+i+1) >= 0 && (colPosition+i+1) < gameModel.getNumberOfColumns() &&
+              (rowPosition-i-1) >= 0 && (rowPosition-i-1) < gameModel.getNumberOfRows() &&
+              (rowPosition-i) >= 0 && (rowPosition-i) < gameModel.getNumberOfRows() &&
+              (colPosition+i) >= 0 && (colPosition+i) < gameModel.getNumberOfColumns()) {
+        if (gameModel.getCellOwner(rowPosition - i, colPosition + i) != null) {
+          System.out.println("rowposition "+rowPosition);
+          System.out.println("colposition "+colPosition);
+          if (gameModel.getCellOwner(rowPosition - i, colPosition + i) ==
+                  gameModel.getCellOwner(rowPosition - i - 1, colPosition + i + 1)) {
+            thresholdCount++;
+            System.out.println(thresholdCount);
           }
         } else {
           thresholdCount = 1;
