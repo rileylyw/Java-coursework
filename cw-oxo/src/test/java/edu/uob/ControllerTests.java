@@ -44,9 +44,9 @@ final class ControllerTests {
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a1");
     controller.handleIncomingCommand("b1");
-    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("A3");
     controller.handleIncomingCommand("b2");
-    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("A2");
     assertEquals(
         firstMovingPlayer,
         model.getWinner(),
@@ -66,10 +66,10 @@ final class ControllerTests {
     controller.handleIncomingCommand("a1");
     OXOPlayer secondMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("c4");
-    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("A2");
     controller.handleIncomingCommand("c6");
     controller.handleIncomingCommand("a5");
-    controller.handleIncomingCommand("c5");
+    controller.handleIncomingCommand("C5");
     assertEquals(
             secondMovingPlayer,
             model.getWinner(),
@@ -82,9 +82,24 @@ final class ControllerTests {
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a1");
     controller.handleIncomingCommand("a2");
-    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("B1");
     controller.handleIncomingCommand("b2");
     controller.handleIncomingCommand("c1");
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testColWinA3B3C3() throws OXOMoveException {
+    // take note of whose gonna made the first move
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("C3");
+    controller.handleIncomingCommand("b2");
+    controller.handleIncomingCommand("B3");
     assertEquals(
             firstMovingPlayer,
             model.getWinner(),

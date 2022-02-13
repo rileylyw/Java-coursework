@@ -12,7 +12,20 @@ class OXOController {
     if(gameModel.getWinner() != null){
       return;
     }
-    int x = (int) command.charAt(0) - 'a';
+    //checkRowColValid
+    if(command.length() != 2){
+      throw new OXOMoveException.InvalidIdentifierLengthException(command.length());
+    }
+    if(!Character.isLetter(command.charAt(0))){
+      throw new OXOMoveException.InvalidIdentifierCharacterException(
+              OXOMoveException.RowOrColumn.ROW, command.charAt(0));
+    }
+    if(!Character.isDigit(command.charAt(1))){
+      throw new OXOMoveException.InvalidIdentifierCharacterException(
+              OXOMoveException.RowOrColumn.COLUMN, command.charAt(1));
+    }
+
+    int x = (int) Character.toLowerCase(command.charAt(0)) - 'a';
     int y = Character.getNumericValue(command.charAt(1)) - 1;
     int numberOfPlayer = gameModel.getNumberOfPlayers();
     int currentPlayerNumber = gameModel.getCurrentPlayerNumber();
@@ -20,6 +33,10 @@ class OXOController {
     if(nextPlayerNumber == numberOfPlayer){
       nextPlayerNumber = 0; //reset
     }
+
+
+
+
 
     if(gameModel.getCellOwner(x, y) == null){
       gameModel.setCellOwner(x, y, gameModel.getPlayerByNumber(currentPlayerNumber));
@@ -79,10 +96,11 @@ class OXOController {
 
   public boolean checkColWin(int rowNumber, int colNumber, int winThreshold, int checkRange){
     int position = rowNumber - winThreshold + 1;
-    if((rowNumber - 1) < 0 || (rowNumber + 1) > gameModel.getNumberOfRows() || position < 0) return false;
+//    if((rowNumber - 1) < 0 || (rowNumber + 1) > gameModel.getNumberOfRows() || position < 0) return false;
     int thresholdCount = 1;
     for(int i=0; i<checkRange; i++){
-      if((position+i+1) >= 0 && (position+i+1) < gameModel.getNumberOfRows()) { //within arraylist range
+      if((position+i+1) >= 0 && (position+i+1) < gameModel.getNumberOfRows() &&
+              (position+i) >= 0 && (position+i) < gameModel.getNumberOfRows()) { //within arraylist range
         if (gameModel.getCellOwner(position + i, colNumber) != null) {
           if (gameModel.getCellOwner(position + i, colNumber) ==
                   gameModel.getCellOwner(position + i + 1, colNumber)) {
@@ -101,10 +119,11 @@ class OXOController {
 
   public boolean checkRowWin(int rowNumber, int colNumber, int winThreshold, int checkRange){
     int position = colNumber - winThreshold + 1;
-    if((colNumber - 1) < 0 || (colNumber + 1) > gameModel.getNumberOfColumns() || position < 0) return false;
+//    if((colNumber - 1) < 0 || (colNumber + 1) > gameModel.getNumberOfColumns() || position < 0) return false;
     int thresholdCount = 1;
     for(int i=0; i<checkRange; i++){
-      if((position+i+1) >= 0 && (position+i+1) < gameModel.getNumberOfColumns()) {
+      if((position+i+1) >= 0 && (position+i+1) < gameModel.getNumberOfColumns() &&
+              (position+i) >= 0 && (position+i) < gameModel.getNumberOfColumns()) {
         if (gameModel.getCellOwner(rowNumber, position + i) != null) {
           if (gameModel.getCellOwner(rowNumber, position + i) ==
                   gameModel.getCellOwner(rowNumber, position + i + 1)) {
@@ -151,18 +170,14 @@ class OXOController {
     int rowPosition = rowNumber + winThreshold - 1;
     int thresholdCount = 1;
     for(int i=0; i<checkRange; i++){
-      System.out.println(i);
       if((colPosition+i+1) >= 0 && (colPosition+i+1) < gameModel.getNumberOfColumns() &&
               (rowPosition-i-1) >= 0 && (rowPosition-i-1) < gameModel.getNumberOfRows() &&
               (rowPosition-i) >= 0 && (rowPosition-i) < gameModel.getNumberOfRows() &&
               (colPosition+i) >= 0 && (colPosition+i) < gameModel.getNumberOfColumns()) {
         if (gameModel.getCellOwner(rowPosition - i, colPosition + i) != null) {
-          System.out.println("rowposition "+rowPosition);
-          System.out.println("colposition "+colPosition);
           if (gameModel.getCellOwner(rowPosition - i, colPosition + i) ==
                   gameModel.getCellOwner(rowPosition - i - 1, colPosition + i + 1)) {
             thresholdCount++;
-            System.out.println(thresholdCount);
           }
         } else {
           thresholdCount = 1;
