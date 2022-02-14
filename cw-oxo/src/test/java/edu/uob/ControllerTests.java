@@ -209,7 +209,7 @@ final class ControllerTests {
   }
 
   @Test
-  void testDraw() throws OXOMoveException {
+  void testDraw1() throws OXOMoveException {
     controller.handleIncomingCommand("a1");
     controller.handleIncomingCommand("b1");
     controller.handleIncomingCommand("a2");
@@ -219,6 +219,41 @@ final class ControllerTests {
     controller.handleIncomingCommand("c1");
     controller.handleIncomingCommand("a3");
     controller.handleIncomingCommand("c3");
+    System.out.println(model.isGameDrawn());
+    assertEquals(model.isGameDrawn(),true);
+  }
+
+  @Test
+  void testDraw2() throws OXOMoveException {
+    controller.addColumn();
+    controller.addColumn();
+    controller.addRow();
+    controller.addRow();
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("a4");
+    controller.handleIncomingCommand("a5"); //X
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("b2");
+    controller.handleIncomingCommand("b3");
+    controller.handleIncomingCommand("b4");
+    controller.handleIncomingCommand("b5"); //O
+    controller.handleIncomingCommand("c2");
+    controller.handleIncomingCommand("c1");
+    controller.handleIncomingCommand("c4");
+    controller.handleIncomingCommand("c3");
+    controller.handleIncomingCommand("d3"); //X
+    controller.handleIncomingCommand("c5");
+    controller.handleIncomingCommand("d1");
+    controller.handleIncomingCommand("d2");
+    controller.handleIncomingCommand("d5");
+    controller.handleIncomingCommand("d4");
+    controller.handleIncomingCommand("e1");
+    controller.handleIncomingCommand("e2");
+    controller.handleIncomingCommand("e3");
+    controller.handleIncomingCommand("e4");
+    controller.handleIncomingCommand("e5");
     System.out.println(model.isGameDrawn());
     assertEquals(model.isGameDrawn(),true);
   }

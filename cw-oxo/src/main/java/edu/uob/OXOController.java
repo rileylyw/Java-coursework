@@ -7,8 +7,6 @@ class OXOController {
   }
 
   public void handleIncomingCommand(String command) throws OXOMoveException {
-//    assert within grid
-//    System.out.println(gameModel.getWinner());
     if(gameModel.getWinner() != null){
       return;
     }
@@ -58,7 +56,6 @@ class OXOController {
     if(gameModel.getCount() == gameModel.getNumberOfRows() * gameModel.getNumberOfColumns()){
       gameModel.setGameDrawn();
     }
-//    else return error: already occupied
   }
 
   public void addRow() {
@@ -111,14 +108,16 @@ class OXOController {
           if (gameModel.getCellOwner(position + i, colNumber) ==
                   gameModel.getCellOwner(position + i + 1, colNumber)) {
             thresholdCount++;
+            if (thresholdCount == winThreshold) {
+              return true;
+            }
           }
-        } else {
-          thresholdCount = 1; //reset
-        }
-        if (thresholdCount == winThreshold) {
-          return true;
+          else {
+            thresholdCount = 1; //reset
+          }
         }
       }
+
     }
     return false;
   }
@@ -134,12 +133,13 @@ class OXOController {
           if (gameModel.getCellOwner(rowNumber, position + i) ==
                   gameModel.getCellOwner(rowNumber, position + i + 1)) {
             thresholdCount++;
+            if (thresholdCount == winThreshold) {
+              return true;
+            }
           }
-        } else {
-          thresholdCount = 1;
-        }
-        if (thresholdCount == winThreshold) {
-          return true;
+          else {
+            thresholdCount = 1;
+          }
         }
       }
     }
@@ -147,8 +147,8 @@ class OXOController {
   }
 
   public boolean checkDiagWinTB(int rowNumber, int colNumber, int winThreshold, int checkRange){
-    int rowPosition = colNumber - winThreshold + 1;
-    int colPosition = rowNumber - winThreshold + 1;
+    int rowPosition = rowNumber - winThreshold + 1;
+    int colPosition = colNumber - winThreshold + 1;
     int thresholdCount = 1;
     for(int i=0; i<checkRange; i++){
       if((colPosition+i+1) >= 0 && (colPosition+i+1) < gameModel.getNumberOfColumns() &&
@@ -159,12 +159,13 @@ class OXOController {
           if (gameModel.getCellOwner(rowPosition + i, colPosition + i) ==
                   gameModel.getCellOwner(rowPosition + i + 1, colPosition + i + 1)) {
             thresholdCount++;
+            if (thresholdCount == winThreshold) {
+              return true;
+            }
           }
-        } else {
-          thresholdCount = 1;
-        }
-        if (thresholdCount == winThreshold) {
-          return true;
+          else {
+            thresholdCount = 1;
+          }
         }
       }
     }
@@ -184,12 +185,13 @@ class OXOController {
           if (gameModel.getCellOwner(rowPosition - i, colPosition + i) ==
                   gameModel.getCellOwner(rowPosition - i - 1, colPosition + i + 1)) {
             thresholdCount++;
+            if (thresholdCount == winThreshold) {
+              return true;
+            }
           }
-        } else {
-          thresholdCount = 1;
-        }
-        if (thresholdCount == winThreshold) {
-          return true;
+          else {
+            thresholdCount = 1;
+          }
         }
       }
     }
