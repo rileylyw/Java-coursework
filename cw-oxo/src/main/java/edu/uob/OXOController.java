@@ -34,11 +34,17 @@ class OXOController {
       nextPlayerNumber = 0; //reset
     }
 
+    if(x >= gameModel.getNumberOfRows()){
+      throw new OXOMoveException.OutsideCellRangeException(OXOMoveException.RowOrColumn.ROW, x);
+    }
+    if(y >= gameModel.getNumberOfColumns()){
+      throw new OXOMoveException.OutsideCellRangeException(OXOMoveException.RowOrColumn.COLUMN, y);
+    }
 
-
-
-
-    if(gameModel.getCellOwner(x, y) == null){
+    if(gameModel.getCellOwner(x, y) != null){
+      throw new OXOMoveException.CellAlreadyTakenException(x, y);
+    }
+    else {
       gameModel.setCellOwner(x, y, gameModel.getPlayerByNumber(currentPlayerNumber));
       if(checkWin(x, y)){
         gameModel.setWinner(gameModel.getPlayerByNumber(currentPlayerNumber));

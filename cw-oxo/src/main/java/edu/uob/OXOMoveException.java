@@ -38,7 +38,7 @@ public class OXOMoveException extends Exception {
     }
   }
 
-  public static class CellDoesNotExistException extends OXOMoveException {
+  public static class CellDoesNotExistException extends OXOMoveException { //???
     private static final long serialVersionUID = -3237469957618113527L;
 
     public CellDoesNotExistException(int row, int column) {
