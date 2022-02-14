@@ -1,9 +1,10 @@
 package edu.uob;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 
 // PLEASE READ:
 // The tests in this file will fail by default for a template skeleton, your job is to pass them
@@ -22,6 +23,14 @@ final class ControllerTests {
     return model;
   }
 
+//  private static OXOModel create3PlayersModel() {
+//    OXOModel model = new OXOModel(3, 3, 3);
+//    model.addPlayer(new OXOPlayer('X'));
+//    model.addPlayer(new OXOPlayer('O'));
+//    model.addPlayer(new OXOPlayer('Y'));
+//    return model;
+//  }
+//
   // we make a new board for every @Test (i.e. this method runs before every @Test test case)
   @BeforeEach
   void setup() {
@@ -256,6 +265,23 @@ final class ControllerTests {
     controller.handleIncomingCommand("e5");
     System.out.println(model.isGameDrawn());
     assertEquals(model.isGameDrawn(),true);
+  }
+
+  @Test
+  void testExceptions() throws OXOMoveException {
+    assertThrows(OXOMoveException.OutsideCellRangeException.class,
+            ()->controller.handleIncomingCommand("a5"));
+    assertThrows(OXOMoveException.OutsideCellRangeException.class,
+            ()->controller.handleIncomingCommand("D3"));
+    assertThrows(OXOMoveException.InvalidIdentifierLengthException.class,
+            ()->controller.handleIncomingCommand("D12"));
+    assertThrows(OXOMoveException.InvalidIdentifierCharacterException.class,
+            ()->controller.handleIncomingCommand("93"));
+    assertThrows(OXOMoveException.InvalidIdentifierCharacterException.class,
+            ()->controller.handleIncomingCommand("CC"));
+    controller.handleIncomingCommand("A1");
+    assertThrows(OXOMoveException.CellAlreadyTakenException.class,
+            ()->controller.handleIncomingCommand("a1"));
   }
 
 }

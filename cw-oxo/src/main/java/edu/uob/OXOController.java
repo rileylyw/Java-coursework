@@ -22,7 +22,6 @@ class OXOController {
       throw new OXOMoveException.InvalidIdentifierCharacterException(
               OXOMoveException.RowOrColumn.COLUMN, command.charAt(1));
     }
-
     int x = (int) Character.toLowerCase(command.charAt(0)) - 'a';
     int y = Character.getNumericValue(command.charAt(1)) - 1;
     int numberOfPlayer = gameModel.getNumberOfPlayers();
@@ -59,7 +58,9 @@ class OXOController {
   }
 
   public void addRow() {
-    gameModel.addRow();
+    if(gameModel.getNumberOfRows() < 9) {
+      gameModel.addRow();
+    }
   }
 
   public void removeRow() {
@@ -67,7 +68,9 @@ class OXOController {
   }
 
   public void addColumn() {
-    gameModel.addColumn();
+    if(gameModel.getNumberOfColumns() < 9) {
+      gameModel.addColumn();
+    }
   }
 
   public void removeColumn() {
@@ -198,6 +201,14 @@ class OXOController {
     return false;
   }
 
-  public void increaseWinThreshold() {}
-  public void decreaseWinThreshold() {}
+  public void increaseWinThreshold() {
+    if(gameModel.getWinner()==null) {
+      gameModel.setWinThreshold(gameModel.getWinThreshold() + 1);
+    }
+  }
+  public void decreaseWinThreshold() {
+    if (gameModel.getWinner() == null) {
+      gameModel.setWinThreshold(gameModel.getWinThreshold() - 1);
+    }
+  }
 }

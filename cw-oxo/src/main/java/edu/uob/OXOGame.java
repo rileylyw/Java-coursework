@@ -36,6 +36,8 @@ public class OXOGame extends Frame
     OXOModel model = new OXOModel(3, 3, 3);
     model.addPlayer(new OXOPlayer('X'));
     model.addPlayer(new OXOPlayer('O'));
+//    model.addPlayer(new OXOPlayer('Y'));//delete
+//    model.addPlayer(new OXOPlayer('Z'));//delete
     controller = new OXOController(model);
     inputBox = new TextField("");
     inputBox.addActionListener(this);
