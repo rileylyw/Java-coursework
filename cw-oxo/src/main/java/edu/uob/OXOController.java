@@ -6,6 +6,10 @@ class OXOController {
   OXOModel gameModel;
   public OXOController(OXOModel model) {
     gameModel = model;
+    if(gameModel.getNumberOfPlayers()==1){
+      gameModel.resetGameDrawn();
+      gameModel.setWinner(gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()));
+    }
   }
 
   public void handleIncomingCommand(String command) throws OXOMoveException {

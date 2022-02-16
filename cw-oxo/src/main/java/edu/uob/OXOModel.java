@@ -12,6 +12,9 @@ class OXOModel {
 
   public OXOModel(int numberOfRows, int numberOfColumns, int winThresh) {
     winThreshold = winThresh;
+    if(numberOfRows==0 && numberOfColumns==0){
+      gameDrawn = true;
+    }
     cells = new ArrayList<ArrayList<OXOPlayer>>();
     for(int j=0; j<numberOfRows; j++){
       cells.add(new ArrayList<OXOPlayer>(numberOfColumns));
@@ -82,6 +85,10 @@ class OXOModel {
 
   public void setGameDrawn() {
     gameDrawn = true;
+  }
+
+  public void resetGameDrawn() {
+    gameDrawn = false;
   }
 
   public boolean isGameDrawn() {

@@ -3,8 +3,6 @@ package edu.uob;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -12,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // The tests in this file will fail by default for a template skeleton, your job is to pass them
 // and maybe write some more, read up on how to write tests at
 // https://junit.org/junit5/docs/current/user-guide/#writing-tests
-final class ControllerTests extends Frame {
+final class ControllerTests {
   OXOModel model;
   OXOController controller;
 
@@ -54,6 +52,46 @@ final class ControllerTests extends Frame {
         firstMovingPlayer,
         model.getWinner(),
         "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void test3Players() throws OXOMoveException {
+    // take note of whose gonna made the first move
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("A3");
+    model.addPlayer(new OXOPlayer('Y'));
+    controller.handleIncomingCommand("b2");
+    controller.handleIncomingCommand("A2"); //Y
+    assertEquals(model.getCellOwner(0, 1).getPlayingLetter(), 'Y');
+//    assertEquals(
+//            firstMovingPlayer,
+//            model.getWinner(),
+//            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testC1B2A3_3Players() throws OXOMoveException {
+    controller.addColumn();
+    controller.addRow();
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("A2");
+    model.addPlayer(new OXOPlayer('Y'));
+    controller.handleIncomingCommand("D2");
+    controller.handleIncomingCommand("C1"); //Y
+    controller.handleIncomingCommand("d4"); //X
+    controller.handleIncomingCommand("A4"); //O
+    controller.handleIncomingCommand("B2"); //Y
+    controller.handleIncomingCommand("b4"); //X
+    controller.handleIncomingCommand("c4"); //O
+    controller.handleIncomingCommand("A3"); //Y
+    OXOPlayer thirdMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    assertEquals(
+            thirdMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(thirdMovingPlayer.getPlayingLetter()));
   }
 
   @Test
@@ -223,7 +261,7 @@ final class ControllerTests extends Frame {
     controller.handleIncomingCommand("a3");
     controller.handleIncomingCommand("c3");
     System.out.println(model.isGameDrawn());
-    assertEquals(model.isGameDrawn(),true);
+    assertTrue(model.isGameDrawn());
   }
 
   @Test
@@ -258,7 +296,7 @@ final class ControllerTests extends Frame {
     controller.handleIncomingCommand("e4");
     controller.handleIncomingCommand("e5");
     System.out.println(model.isGameDrawn());
-    assertEquals(model.isGameDrawn(),true);
+    assertTrue(model.isGameDrawn());
   }
 
   @Test
@@ -269,7 +307,7 @@ final class ControllerTests extends Frame {
     controller.handleIncomingCommand("b2");
     controller.decreaseWinThreshold();
     System.out.println(model.isGameDrawn());
-    assertEquals(model.isGameDrawn(),true);
+    assertTrue(model.isGameDrawn());
   }
 
   @Test
@@ -304,4 +342,79 @@ final class ControllerTests extends Frame {
             ()->controller.handleIncomingCommand("a1"));
   }
 
+//  private static OXOModel create0x0Model() {
+//    new OXOModel model = new OXOModel(0, 0, 3);
+//    model0x0.addPlayer(new OXOPlayer('X'));
+//    model0x0.addPlayer(new OXOPlayer('O'));
+//    return model0x0;
+//  }
+//
+//  // we make a new board for every @Test (i.e. this method runs before every @Test test case)
+//  @BeforeEach
+//  void setup0x0() {
+//    model = create0x0Model();
+//    controller = new OXOController(model);
+//  }
+//
+
+  @Test
+  void testEmptyBoard() {
+    OXOModel model2 = new OXOModel(0, 0, 3);
+    model2.addPlayer(new OXOPlayer('X'));
+    model2.addPlayer(new OXOPlayer('O'));
+    new OXOController(model2);
+    assertTrue(model2.isGameDrawn());
+  }
+
+  @Test
+  void testEmptyBoardOnePlayer() {
+    OXOModel model2 = new OXOModel(0, 0, 3);
+    model2.addPlayer(new OXOPlayer('X'));
+    OXOPlayer firstMovingPlayer = model2.getPlayerByNumber(model2.getCurrentPlayerNumber());
+    new OXOController(model2);
+    assertEquals(
+            firstMovingPlayer,
+            model2.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testEmptyBoardNoPlayer() {
+    OXOModel model2 = new OXOModel(0, 0, 3);
+//    model2.addPlayer(new OXOPlayer('X'));
+//    model2.addPlayer(new OXOPlayer('O'));
+//    OXOPlayer firstMovingPlayer = model2.getPlayerByNumber(model2.getCurrentPlayerNumber());
+    new OXOController(model2);
+    assertTrue(model2.isGameDrawn());
+//    assertEquals(
+//            firstMovingPlayer,
+//            model2.getWinner(),
+//            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testEmptyBoardAndThresholdNoPlayer() {
+    OXOModel model2 = new OXOModel(0, 0, 0);
+//    model2.addPlayer(new OXOPlayer('X'));
+//    model2.addPlayer(new OXOPlayer('O'));
+//    OXOPlayer firstMovingPlayer = model2.getPlayerByNumber(model2.getCurrentPlayerNumber());
+    new OXOController(model2);
+    assertTrue(model2.isGameDrawn());
+//    assertEquals(
+//            firstMovingPlayer,
+//            model2.getWinner(),
+//            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testEmptyBoardAndThresholdOnePlayer()  {
+    OXOModel model2 = new OXOModel(0, 0, 0);
+    model2.addPlayer(new OXOPlayer('X'));
+    OXOPlayer firstMovingPlayer = model2.getPlayerByNumber(model2.getCurrentPlayerNumber());
+    new OXOController(model2);
+    assertEquals(
+            firstMovingPlayer,
+            model2.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
 }
