@@ -17,7 +17,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class OXOGame extends Frame
-    implements WindowListener, ActionListener, MouseListener, KeyListener {
+        implements WindowListener, ActionListener, MouseListener, KeyListener {
   private static final long serialVersionUID = 4493180057657097249L;
   private static final Font FONT = new Font("SansSerif", Font.PLAIN, 14);
 
@@ -31,13 +31,11 @@ public class OXOGame extends Frame
     new OXOGame(250, 300);
   }
 
-  public OXOGame(int width, int height) { //constructor
+  public OXOGame(int width, int height) {
     super("OXO Board");
     OXOModel model = new OXOModel(3, 3, 3);
     model.addPlayer(new OXOPlayer('X'));
     model.addPlayer(new OXOPlayer('O'));
-//    model.addPlayer(new OXOPlayer('Y'));//delete
-//    model.addPlayer(new OXOPlayer('Z'));//delete
     controller = new OXOController(model);
     inputBox = new TextField("");
     inputBox.addActionListener(this);
@@ -99,6 +97,7 @@ public class OXOGame extends Frame
   public void keyTyped(KeyEvent event) {
     if (event.getKeyChar() == '=') controller.increaseWinThreshold();
     if (event.getKeyChar() == '-') controller.decreaseWinThreshold();
+    view.repaint();
   }
 
 

@@ -9,7 +9,6 @@ class OXOModel {
   private OXOPlayer winner;
   private boolean gameDrawn;
   private int winThreshold;
-  private int count = 0; //for checking draw
 
   public OXOModel(int numberOfRows, int numberOfColumns, int winThresh) {
     winThreshold = winThresh;
@@ -103,7 +102,7 @@ class OXOModel {
   }
 
   public void removeColumn() {
-    for(int i=0; i<getNumberOfRows(); i++){
+    for(int i=getNumberOfRows()-1; i>=0; i--){
       cells.get(i).remove(getNumberOfColumns()-1);
     }
   }
@@ -111,13 +110,4 @@ class OXOModel {
   public void removeRow() {
     cells.remove(getNumberOfRows()-1);
   }
-
-  public void increaseCount() {
-    count++;
-  }
-
-  public int getCount() {
-    return count;
-  }
-
 }

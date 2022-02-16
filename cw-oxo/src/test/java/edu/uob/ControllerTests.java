@@ -3,6 +3,8 @@ package edu.uob;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -10,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // The tests in this file will fail by default for a template skeleton, your job is to pass them
 // and maybe write some more, read up on how to write tests at
 // https://junit.org/junit5/docs/current/user-guide/#writing-tests
-final class ControllerTests {
+final class ControllerTests extends Frame {
   OXOModel model;
   OXOController controller;
 
@@ -23,14 +25,6 @@ final class ControllerTests {
     return model;
   }
 
-//  private static OXOModel create3PlayersModel() {
-//    OXOModel model = new OXOModel(3, 3, 3);
-//    model.addPlayer(new OXOPlayer('X'));
-//    model.addPlayer(new OXOPlayer('O'));
-//    model.addPlayer(new OXOPlayer('Y'));
-//    return model;
-//  }
-//
   // we make a new board for every @Test (i.e. this method runs before every @Test test case)
   @BeforeEach
   void setup() {
@@ -265,6 +259,32 @@ final class ControllerTests {
     controller.handleIncomingCommand("e5");
     System.out.println(model.isGameDrawn());
     assertEquals(model.isGameDrawn(),true);
+  }
+
+  @Test
+  void testDraw3() throws OXOMoveException {
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("b1");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("b2");
+    controller.decreaseWinThreshold();
+    System.out.println(model.isGameDrawn());
+    assertEquals(model.isGameDrawn(),true);
+  }
+
+  @Test
+  void testWinA1B1() throws OXOMoveException {
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("B1");
+    controller.handleIncomingCommand("b3");
+    controller.removeColumn();
+    controller.decreaseWinThreshold();
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
 
   @Test
