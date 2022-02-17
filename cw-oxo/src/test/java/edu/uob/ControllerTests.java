@@ -30,7 +30,6 @@ final class ControllerTests {
     controller = new OXOController(model);
   }
 
-  // here's a basic test for the `controller.handleIncomingCommand` method
   @Test
   void testHandleIncomingCommand() throws OXOMoveException {
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
@@ -38,7 +37,6 @@ final class ControllerTests {
     assertEquals(firstMovingPlayer, controller.gameModel.getCellOwner(0, 0));
   }
 
-  // here's a complete game where we find out if someone won
   @Test
   void testRowWinA1A2A3() throws OXOMoveException {
     // take note of whose gonna made the first move
@@ -55,6 +53,33 @@ final class ControllerTests {
   }
 
   @Test
+  void testWinA1() throws OXOMoveException {
+    // take note of whose gonna made the first move
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.decreaseWinThreshold(); //2
+    controller.decreaseWinThreshold(); //1
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testWinA2() throws OXOMoveException {
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a3");
+    controller.removeColumn();
+    controller.decreaseWinThreshold(); //2
+    controller.decreaseWinThreshold(); //1
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
   void test3Players() throws OXOMoveException {
     // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
@@ -65,20 +90,16 @@ final class ControllerTests {
     controller.handleIncomingCommand("b2");
     controller.handleIncomingCommand("A2"); //Y
     assertEquals(model.getCellOwner(0, 1).getPlayingLetter(), 'Y');
-//    assertEquals(
-//            firstMovingPlayer,
-//            model.getWinner(),
-//            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
 
   @Test
   void testC1B2A3_3Players() throws OXOMoveException {
-    controller.addColumn();
-    controller.addRow();
     controller.handleIncomingCommand("a1");
     controller.handleIncomingCommand("b1");
     controller.handleIncomingCommand("A2");
     model.addPlayer(new OXOPlayer('Y'));
+    controller.addColumn();
+    controller.addRow();
     controller.handleIncomingCommand("D2");
     controller.handleIncomingCommand("C1"); //Y
     controller.handleIncomingCommand("d4"); //X
@@ -88,6 +109,28 @@ final class ControllerTests {
     controller.handleIncomingCommand("c4"); //O
     controller.handleIncomingCommand("A3"); //Y
     OXOPlayer thirdMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    assertEquals(
+            thirdMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(thirdMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testB1B2_3Players() throws OXOMoveException {
+    model.addPlayer(new OXOPlayer('Y'));
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("b2");
+    OXOPlayer thirdMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("B1");
+    controller.addColumn();
+    controller.addColumn();
+    controller.addRow();
+    controller.addRow();
+    controller.handleIncomingCommand("D2");
+    controller.handleIncomingCommand("e5");
+    controller.handleIncomingCommand("a2"); //Y
+    controller.handleIncomingCommand("c4"); //X
+    controller.decreaseWinThreshold();
     assertEquals(
             thirdMovingPlayer,
             model.getWinner(),
@@ -119,7 +162,6 @@ final class ControllerTests {
 
   @Test
   void testColWinA1B1C1() throws OXOMoveException {
-    // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a1");
     controller.handleIncomingCommand("a2");
@@ -134,7 +176,6 @@ final class ControllerTests {
 
   @Test
   void testColWinA3B3C3() throws OXOMoveException {
-    // take note of whose gonna made the first move
     OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
     controller.handleIncomingCommand("a3");
     controller.handleIncomingCommand("a2");
@@ -201,7 +242,6 @@ final class ControllerTests {
     controller.handleIncomingCommand("b2"); //O
     controller.handleIncomingCommand("b1");
     controller.handleIncomingCommand("c3");
-    System.out.println(model.isGameDrawn());
     assertEquals(
             secondMovingPlayer,
             model.getWinner(),
@@ -217,7 +257,6 @@ final class ControllerTests {
     controller.handleIncomingCommand("b2"); //O
     controller.handleIncomingCommand("b1");
     controller.handleIncomingCommand("a3");
-    System.out.println(model.isGameDrawn());
     assertEquals(
             secondMovingPlayer,
             model.getWinner(),
@@ -242,7 +281,6 @@ final class ControllerTests {
     controller.handleIncomingCommand("d6"); //O
     controller.handleIncomingCommand("b1");
     controller.handleIncomingCommand("e5");
-    System.out.println(model.isGameDrawn());
     assertEquals(
             secondMovingPlayer,
             model.getWinner(),
@@ -260,7 +298,6 @@ final class ControllerTests {
     controller.handleIncomingCommand("c1");
     controller.handleIncomingCommand("a3");
     controller.handleIncomingCommand("c3");
-    System.out.println(model.isGameDrawn());
     assertTrue(model.isGameDrawn());
   }
 
@@ -295,7 +332,6 @@ final class ControllerTests {
     controller.handleIncomingCommand("e3");
     controller.handleIncomingCommand("e4");
     controller.handleIncomingCommand("e5");
-    System.out.println(model.isGameDrawn());
     assertTrue(model.isGameDrawn());
   }
 
@@ -306,7 +342,51 @@ final class ControllerTests {
     controller.handleIncomingCommand("a2");
     controller.handleIncomingCommand("b2");
     controller.decreaseWinThreshold();
-    System.out.println(model.isGameDrawn());
+    assertTrue(model.isGameDrawn());
+  }
+
+  @Test
+  void testDraw4() throws OXOMoveException {
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.increaseWinThreshold();
+    controller.increaseWinThreshold();
+    controller.increaseWinThreshold(); // threshold = 6
+    controller.handleIncomingCommand("a8");
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("b7");
+    controller.handleIncomingCommand("a2");
+    controller.handleIncomingCommand("c6");
+    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("d5");
+    controller.handleIncomingCommand("a4");
+    controller.handleIncomingCommand("e4");
+    controller.handleIncomingCommand("a5");
+    controller.decreaseWinThreshold();
+    assertTrue(model.isGameDrawn());
+  }
+
+  @Test
+  void testDraw5() throws OXOMoveException {
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a2");
+    controller.decreaseWinThreshold(); //2
+    controller.decreaseWinThreshold(); //1
+    assertTrue(model.isGameDrawn());
+  }
+
+  @Test
+  void testDraw6() throws OXOMoveException {
+    controller.decreaseWinThreshold(); //2
+    controller.decreaseWinThreshold(); //1
+    controller.decreaseWinThreshold(); //0
     assertTrue(model.isGameDrawn());
   }
 
@@ -318,6 +398,46 @@ final class ControllerTests {
     controller.handleIncomingCommand("B1");
     controller.handleIncomingCommand("b3");
     controller.removeColumn();
+    controller.decreaseWinThreshold();
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testWinA1B2() throws OXOMoveException {
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a1");
+    controller.handleIncomingCommand("a3");
+    controller.handleIncomingCommand("C1");
+    controller.handleIncomingCommand("C3");
+    controller.handleIncomingCommand("b2"); //X
+    controller.removeColumn();
+    controller.removeRow();
+    controller.decreaseWinThreshold();
+    assertEquals(
+            firstMovingPlayer,
+            model.getWinner(),
+            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
+  }
+
+  @Test
+  void testWinC3B4A5() throws OXOMoveException {
+    controller.addRow();
+    controller.addRow();
+    controller.addRow();
+    controller.addColumn();
+    controller.addColumn();
+    controller.addColumn();
+    controller.increaseWinThreshold();
+    OXOPlayer firstMovingPlayer = model.getPlayerByNumber(model.getCurrentPlayerNumber());
+    controller.handleIncomingCommand("a5");
+    controller.handleIncomingCommand("f1");
+    controller.handleIncomingCommand("c3");
+    controller.handleIncomingCommand("f2");
+    controller.handleIncomingCommand("b4");
+    controller.handleIncomingCommand("e2");
     controller.decreaseWinThreshold();
     assertEquals(
             firstMovingPlayer,
@@ -341,21 +461,6 @@ final class ControllerTests {
     assertThrows(OXOMoveException.CellAlreadyTakenException.class,
             ()->controller.handleIncomingCommand("a1"));
   }
-
-//  private static OXOModel create0x0Model() {
-//    new OXOModel model = new OXOModel(0, 0, 3);
-//    model0x0.addPlayer(new OXOPlayer('X'));
-//    model0x0.addPlayer(new OXOPlayer('O'));
-//    return model0x0;
-//  }
-//
-//  // we make a new board for every @Test (i.e. this method runs before every @Test test case)
-//  @BeforeEach
-//  void setup0x0() {
-//    model = create0x0Model();
-//    controller = new OXOController(model);
-//  }
-//
 
   @Test
   void testEmptyBoard() {
@@ -381,29 +486,15 @@ final class ControllerTests {
   @Test
   void testEmptyBoardNoPlayer() {
     OXOModel model2 = new OXOModel(0, 0, 3);
-//    model2.addPlayer(new OXOPlayer('X'));
-//    model2.addPlayer(new OXOPlayer('O'));
-//    OXOPlayer firstMovingPlayer = model2.getPlayerByNumber(model2.getCurrentPlayerNumber());
     new OXOController(model2);
     assertTrue(model2.isGameDrawn());
-//    assertEquals(
-//            firstMovingPlayer,
-//            model2.getWinner(),
-//            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
 
   @Test
   void testEmptyBoardAndThresholdNoPlayer() {
     OXOModel model2 = new OXOModel(0, 0, 0);
-//    model2.addPlayer(new OXOPlayer('X'));
-//    model2.addPlayer(new OXOPlayer('O'));
-//    OXOPlayer firstMovingPlayer = model2.getPlayerByNumber(model2.getCurrentPlayerNumber());
     new OXOController(model2);
     assertTrue(model2.isGameDrawn());
-//    assertEquals(
-//            firstMovingPlayer,
-//            model2.getWinner(),
-//            "Winner was expected to be %s but wasn't".formatted(firstMovingPlayer.getPlayingLetter()));
   }
 
   @Test

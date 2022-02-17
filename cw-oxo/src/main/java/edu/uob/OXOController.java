@@ -73,7 +73,7 @@ class OXOController {
     int winnerCount = 0;
     for(int j=0; j<gameModel.getNumberOfRows(); j++){
       for(int i=0; i<gameModel.getNumberOfColumns(); i++) {
-        if(checkWin(j, i)){
+        if(checkWin(j, i) && gameModel.getCellOwner(j, i)!=null){
           winnerCount++;
         }
         if(gameModel.getCellOwner(j, i) != null){
@@ -81,12 +81,12 @@ class OXOController {
         }
       }
     }
-    if(count == gameModel.getNumberOfRows() * gameModel.getNumberOfColumns() || winnerCount > 2){
-      System.out.println("winnercount "+ winnerCount);
+    if(count == gameModel.getNumberOfRows() * gameModel.getNumberOfColumns() ||
+            winnerCount > gameModel.getWinThreshold()){
       gameModel.setGameDrawn();
       return true;
     }
-    else if (winnerCount == 2){
+    else if (winnerCount == gameModel.getWinThreshold()){
       return false;
     }
     return true;
@@ -122,24 +122,22 @@ class OXOController {
     checkDraw();
   }
 
-
   private boolean checkWin(int rowNumber, int colNumber) {
     int winThreshold = gameModel.getWinThreshold(); //e.g. 3
+    if(winThreshold == 1){
+      return true;
+    }
     int checkRange = winThreshold * 2 - 2;
     if(checkColWin(rowNumber, colNumber, winThreshold, checkRange)){
-//      System.out.println("col win");
       return true;
     }
     else if(checkRowWin(rowNumber, colNumber, winThreshold, checkRange)){
-//      System.out.println("row win");
       return true;
     }
     else if(checkDiagWinTB(rowNumber, colNumber, winThreshold, checkRange)){
-//      System.out.println("diag win");
       return true;
     }
     else if(checkDiagWinBT(rowNumber, colNumber, winThreshold, checkRange)){
-//      System.out.println("diag win2");
       return true;
     }
     return false;
@@ -164,14 +162,12 @@ class OXOController {
           }
         }
       }
-
     }
     return false;
   }
 
   public boolean checkRowWin(int rowNumber, int colNumber, int winThreshold, int checkRange){
     int position = colNumber - winThreshold + 1;
-//    if((colNumber - 1) < 0 || (colNumber + 1) > gameModel.getNumberOfColumns() || position < 0) return false;
     int thresholdCount = 1;
     for(int i=0; i<checkRange; i++){
       if((position+i+1) >= 0 && (position+i+1) < gameModel.getNumberOfColumns() &&
@@ -248,7 +244,6 @@ class OXOController {
   public void increaseWinThreshold() {
     if(gameModel.getWinner() == null && !gameModel.isGameDrawn()) {
       gameModel.setWinThreshold(gameModel.getWinThreshold() + 1);
-      System.out.println(gameModel.getWinThreshold());
     }
   }
 
@@ -256,10 +251,19 @@ class OXOController {
     if (gameModel.getWinThreshold() > 0 && gameModel.getWinner() == null &&
             !gameModel.isGameDrawn()) {
       gameModel.setWinThreshold(gameModel.getWinThreshold() - 1);
-      System.out.println(gameModel.getWinThreshold());
     }
     if(!checkDraw()){
-      gameModel.setWinner(gameModel.getPlayerByNumber(gameModel.getCurrentPlayerNumber()));
+      for(int j=0; j<gameModel.getNumberOfRows(); j++){
+        for(int i=0; i<gameModel.getNumberOfColumns(); i++) {
+          if(checkWin(j, i)){
+            gameModel.setWinner(gameModel.getCellOwner(j, i));
+            return;
+          }
+        }
+      }
+      if(gameModel.getWinThreshold() == 0 & gameModel.getNumberOfPlayers() > 1){
+        gameModel.setGameDrawn();
+      }
     }
   }
 }

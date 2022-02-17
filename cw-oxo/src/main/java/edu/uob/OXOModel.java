@@ -31,12 +31,6 @@ class OXOModel {
 
   public void addPlayer(OXOPlayer player) {
     players.add(player);
-//    for (int i = 0; i < players.length; i++) {
-//      if (players[i] == null) {
-//        players[i] = player;
-//        return;
-//      }
-//    }
   }
 
   public OXOPlayer getPlayerByNumber(int number) {
@@ -64,7 +58,12 @@ class OXOModel {
   }
 
   public int getNumberOfColumns() {
-    return cells.get(0).size();
+    if(cells.get(0) == null){
+      return 0;
+    }
+    else {
+      return cells.get(0).size();
+    }
   }
 
   public OXOPlayer getCellOwner(int rowNumber, int colNumber) {
