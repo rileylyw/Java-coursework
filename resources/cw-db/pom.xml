@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cw-oxo</artifactId>
+    <artifactId>cw-db</artifactId>
     <groupId>edu.uob</groupId>
     <version>1.0-SNAPSHOT</version>
 
@@ -48,8 +48,6 @@
                         <arg>-Xlint:all</arg>
                         <arg>-Xlint:-processing</arg>
                     </compilerArgs>
-                    <source>17</source>
-                    <target>17</target>
                 </configuration>
             </plugin>
 
@@ -68,7 +66,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>edu.uob.OXOGame</mainClass>
+                    <mainClass>edu.uob.DBServer</mainClass>
                 </configuration>
             </plugin>
 
