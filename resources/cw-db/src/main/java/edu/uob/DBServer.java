@@ -14,8 +14,8 @@ public final class DBServer {
     public static void main(String[] args) throws IOException {
         DBTable table1 = new DBTable();
         table1.storeFileToTable("people", "people.tab");
-//        ReadInFile readInFile = new ReadInFile();
-//        readInFile.readInFile("people.tab");
+        WriteToFile writeToFile = new WriteToFile();
+        writeToFile.writeToFile(table1);
         new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
     }
 

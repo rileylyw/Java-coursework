@@ -8,8 +8,8 @@ import java.util.HashMap;
 
 public class DBTable {
     private String tableName;
-    private DBRow row;
-    private DBColumn column;
+    private DBRow rows;
+    private DBColumn columns;
 
     public DBTable(){
 
@@ -19,17 +19,32 @@ public class DBTable {
         ReadInFile readInFile = new ReadInFile();
         readInFile.readInFile(tableFileName);
         this.tableName = tableName;
-        column = new DBColumn(tableName, readInFile.getAttributeList());
-        row = new DBRow(readInFile.getAttributeValues());
+        columns = new DBColumn();
+        columns.setColumnNames(tableName, readInFile.getAttributeList());
+        rows = new DBRow();
+        rows.setAttributeValues(readInFile.getAttributeValues());
+        for(HashMap value: rows.getAttributeValues()) {
+            value.replace("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
+//            rows.updateAttributeValues("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
+        }
+        System.out.println(rows.getAttributeValues());
+    }
 
-//        columns = new ArrayList<>();
-//        columns.add(new DBColumn(tableName, readInFile.getAttributeList()));
-//        rows = new ArrayList<>();
-//        rows.add(new DBRow(readInFile.getAttributeValues()));
+//    public void updateTableToFile(String tableFileName) throws IOException{
+//        WriteToFile writeToFile = new WriteToFile();
+//        writeToFile.writeToFile(tableFileName);
+//    }
 
-//        System.out.println(rows.get(0).getAttributeValues().get(0).get(0));
-//        System.out.println(columns.get(0).getColumnNames());
-//        System.out.println(column.getTableName());
+    public ArrayList<HashMap<String, String>> getAttributeValues(){
+        return rows.getAttributeValues();
+    }
+
+    public ArrayList<String> getAttributeList(){
+        return columns.getColumnNames();
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
 
