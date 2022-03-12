@@ -1,8 +1,6 @@
 package edu.uob;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class WriteToFile {
@@ -24,7 +22,6 @@ public class WriteToFile {
                         bw.write(" ");
                     }
                     bw.write("\n");
-
                 }
                 bw.flush();
                 bw.close();

@@ -23,10 +23,10 @@ public class DBTable {
         columns.setColumnNames(tableName, readInFile.getAttributeList());
         rows = new DBRow();
         rows.setAttributeValues(readInFile.getAttributeValues());
-        for(HashMap value: rows.getAttributeValues()) {
-            value.replace("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
-//            rows.updateAttributeValues("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
-        }
+
+//        for(HashMap value: rows.getAttributeValues()) { //TODO: updates values
+//            value.replace("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
+//        }
         System.out.println(rows.getAttributeValues());
     }
 

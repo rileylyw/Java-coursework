@@ -20,11 +20,4 @@ public class DBRow {
         this.attributeValues = attributeValues;
     }
 
-//    public ArrayList<HashMap<String, String>> updateAttributeValues(String attributeName, String newAttributeValue){
-//        for(HashMap value: attributeValues){
-//            value.replace(attributeName, newAttributeValue);
-////            attributeValues.get(i).replace(attributeName, newAttributeValue);
-//        }
-//        return attributeValues;
-//    }
 }

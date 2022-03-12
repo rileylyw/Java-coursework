@@ -5,18 +5,32 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /** This class implements the DB server. */
 public final class DBServer {
 
     private static final char END_OF_TRANSMISSION = 4;
+    public static ArrayList<DB> databases = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
+        DBTable tableToAdd = createNewTable();
+        DB newDB = new DB();
+        newDB.setTables(tableToAdd);
+        databases.add(newDB);
+//        System.out.println(databases.get(0).getTables().get(0).getAttributeValues());
+
+        new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
+    }
+
+    public static DBTable createNewTable() throws IOException{
         DBTable table1 = new DBTable();
-        table1.storeFileToTable("people", "people.tab");
+        table1.storeFileToTable("people", "people");
+
         WriteToFile writeToFile = new WriteToFile();
         writeToFile.writeToFile(table1);
-        new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
+        return table1;
     }
 
     /**
@@ -48,6 +62,7 @@ public final class DBServer {
      */
     public String handleCommand(String command) {
         // TODO implement your server logic here
+
         return "[OK] Thanks for your message: " + command;
     }
 
@@ -98,6 +113,22 @@ public final class DBServer {
                 System.out.println("Received message: " + incomingCommand);
                 String result = handleCommand(incomingCommand);
                 writer.write(result);
+
+                /* printing out table on client's side */
+                writer.write("\n"); //TODO: print all tables
+                for (int i = 0; i < databases.get(0).getTables().get(0).getAttributeList().size(); i++) { //cols
+                    writer.write(databases.get(0).getTables().get(0).getAttributeList().get(i));
+                    writer.write(" ");
+                }
+                writer.write("\n");
+                for(HashMap value: databases.get(0).getTables().get(0).getAttributeValues()){ //rows
+                    for (int i = 0; i < databases.get(0).getTables().get(0).getAttributeList().size(); i++) {
+                        writer.write((String) value.get(databases.get(0).getTables().get(0).getAttributeList().get(i)));
+                        writer.write(" ");
+                    }
+                    writer.write("\n");
+                }
+
                 writer.write("\n" + END_OF_TRANSMISSION + "\n");
                 writer.flush();
             }

@@ -3,9 +3,13 @@ package edu.uob;
 import java.util.ArrayList;
 
 public class DB {
-    private ArrayList<DBTable> tables;
+    private ArrayList<DBTable> tables = new ArrayList<>();
 
-    public DB(DBTable table){
+    public DB(){
+//        tables.add(table);
+    }
+
+    public void setTables(DBTable table){
         tables.add(table);
     }
 

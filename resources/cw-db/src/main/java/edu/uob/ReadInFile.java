@@ -11,7 +11,7 @@ public class ReadInFile {
 
     public void readInFile(String fileName) throws IOException {
         File tableFile;
-        String path = "../" + fileName;
+        String path = "../" + fileName + ".tab";
         tableFile = new File(path);
         if (tableFile.exists()) {
             try {
