@@ -1,5 +1,6 @@
 package edu.uob;
 
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,8 +12,10 @@ public final class DBServer {
     private static final char END_OF_TRANSMISSION = 4;
 
     public static void main(String[] args) throws IOException {
-        ReadInFile readInFile = new ReadInFile("people.tab");
-        readInFile.readInFile();
+        DBTable table1 = new DBTable();
+        table1.storeFileToTable("people", "people.tab");
+//        ReadInFile readInFile = new ReadInFile();
+//        readInFile.readInFile("people.tab");
         new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
     }
 
@@ -28,8 +31,13 @@ public final class DBServer {
      *     databases. You may assume *exclusive* ownership of this directory for the lifetime of this
      *     server instance.
      */
-    public DBServer(File databaseDirectory) {
+    public DBServer(File databaseDirectory) { //para is for testing
         // TODO implement your server logic here
+//        String dir = databaseDirectory.getPath();
+//        System.out.println(dir);
+//        if(dir.endsWith(".")){
+//            //
+//        }
     }
 
     /**
