@@ -12,13 +12,19 @@ import java.util.HashMap;
 public final class DBServer {
 
     private static final char END_OF_TRANSMISSION = 4;
-    public static ArrayList<DB> databases = new ArrayList<>();
+    private static DB database;
+//    public static ArrayList<DB> databases = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
+//        DB database = new DB("DB1");
+        database = new DB("DB1");
         DBTable tableToAdd = createNewTable();
-        DB newDB = new DB();
-        newDB.setTables(tableToAdd);
-        databases.add(newDB);
+        database.addTable(tableToAdd);
+        System.out.println(database.getTable(tableToAdd.getTableName()).getAttributeValues());
+//        database.getTable()
+//        DB newDB = new DB();
+//        newDB.setTables(tableToAdd);
+//        databases.add(newDB);
 //        System.out.println(databases.get(0).getTables().get(0).getAttributeValues());
 
         new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
@@ -47,6 +53,7 @@ public final class DBServer {
      */
     public DBServer(File databaseDirectory) { //para is for testing
         // TODO implement your server logic here
+//        handleCommand("SELECT *      FROM (table) ");
 //        String dir = databaseDirectory.getPath();
 //        System.out.println(dir);
 //        if(dir.endsWith(".")){
@@ -62,7 +69,12 @@ public final class DBServer {
      */
     public String handleCommand(String command) {
         // TODO implement your server logic here
+//        Parser parser = new Parser();
+//        parser.setTokens();
 
+        Tokenizer tokenizer = new Tokenizer();
+        ArrayList<String> currentCommand = tokenizer.splitCommand(command);
+        System.out.println(currentCommand);
         return "[OK] Thanks for your message: " + command;
     }
 
@@ -116,14 +128,14 @@ public final class DBServer {
 
                 /* printing out table on client's side */
                 writer.write("\n"); //TODO: print all tables
-                for (int i = 0; i < databases.get(0).getTables().get(0).getAttributeList().size(); i++) { //cols
-                    writer.write(databases.get(0).getTables().get(0).getAttributeList().get(i));
+                for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) { //cols
+                    writer.write(database.getTable("people").getAttributeList().get(i));
                     writer.write(" ");
                 }
                 writer.write("\n");
-                for(HashMap value: databases.get(0).getTables().get(0).getAttributeValues()){ //rows
-                    for (int i = 0; i < databases.get(0).getTables().get(0).getAttributeList().size(); i++) {
-                        writer.write((String) value.get(databases.get(0).getTables().get(0).getAttributeList().get(i)));
+                for(HashMap value: database.getTable("people").getAttributeValues()){ //rows
+                    for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) {
+                        writer.write((String) value.get(database.getTable("people").getAttributeList().get(i)));
                         writer.write(" ");
                     }
                     writer.write("\n");

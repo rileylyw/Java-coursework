@@ -1,7 +1,5 @@
 package edu.uob;
 
-import edu.uob.ReadInFile;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
