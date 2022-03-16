@@ -49,6 +49,14 @@ final class DBTests {
         Assertions.assertArrayEquals(expectedOutputs, methodOutputs.toArray());
     }
 
+    @Test
+    void testTokenizer2(){ //empty command
+        Tokenizer tokenizer = new Tokenizer();
+        ArrayList<String> methodOutputs = tokenizer.splitCommand("         ");
+        String[] expectedOutputs = {};
+        Assertions.assertArrayEquals(expectedOutputs, methodOutputs.toArray());
+    }
+
     // Add more unit tests or integration tests here.
     // Unit tests would test individual methods or classes whereas integration tests are geared
     // towards a specific usecase (i.e. creating a table and inserting rows and asserting whether the

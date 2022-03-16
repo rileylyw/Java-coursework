@@ -17,10 +17,12 @@ public final class DBServer {
 
     public static void main(String[] args) throws IOException {
 //        DB database = new DB("DB1");
-        database = new DB("DB1");
+        database = new DB("db1");
         DBTable tableToAdd = createNewTable();
         database.addTable(tableToAdd);
-        System.out.println(database.getTable(tableToAdd.getTableName()).getAttributeValues());
+//        System.out.println("TABLE:"+database.getTable("people").getTableName());
+
+//        System.out.println(database.getTable(tableToAdd.getTableName()).getAttributeValues());
 //        database.getTable()
 //        DB newDB = new DB();
 //        newDB.setTables(tableToAdd);
@@ -53,7 +55,13 @@ public final class DBServer {
      */
     public DBServer(File databaseDirectory) { //para is for testing
         // TODO implement your server logic here
-//        handleCommand("SELECT *      FROM (table) ");
+        handleCommand("USE DB1;");
+//        handleCommand("SELECT *   FROM     people;");
+//        handleCommand("SELECT *      FROM (table) ;   ;   ");
+//        handleCommand("CREATE TABLE marks (name, mark, pass);");
+//        handleCommand("name=='just testing'");
+
+
 //        String dir = databaseDirectory.getPath();
 //        System.out.println(dir);
 //        if(dir.endsWith(".")){
@@ -69,12 +77,15 @@ public final class DBServer {
      */
     public String handleCommand(String command) {
         // TODO implement your server logic here
-//        Parser parser = new Parser();
-//        parser.setTokens();
+        Parser parser = new Parser(command);
+        parser.parse();
 
-        Tokenizer tokenizer = new Tokenizer();
-        ArrayList<String> currentCommand = tokenizer.splitCommand(command);
-        System.out.println(currentCommand);
+        /*TODO
+        if command.query(dbserver s)
+        manipulate data
+        return [error]
+        */
+
         return "[OK] Thanks for your message: " + command;
     }
 
