@@ -68,9 +68,10 @@ public final class DBServer {
     public String handleCommand(String command) {
         // TODO implement your server logic here
         Parser parser = new Parser(command);
-        if(!parser.parse()){
-            return "[ERROR]";
-        };
+
+//        if(!parser.parse()){
+//            return "[ERROR]";
+//        };
 //        if(parser.parseUse()){
 //            return "OK";
 //        }

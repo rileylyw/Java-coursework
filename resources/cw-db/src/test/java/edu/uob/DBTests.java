@@ -8,7 +8,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 // PLEASE READ:
 // The tests in this file will fail by default for a template skeleton, your job is to pass them
@@ -58,10 +58,40 @@ final class DBTests {
     }
 
     @Test
-    void testParseCreateTable(){
-        Parser p = new Parser("Create table x (a,b);");
-        assertTrue(p.parse());
+    void testParseUse(){
+        Parser p = new Parser("Use db1;");
+        assertEquals("OK", p.parse());
     }
+
+    @Test
+    void testParseCreateTable1(){
+        Parser p = new Parser("Create table x (a,b);");
+        assertEquals("OK", p.parse());
+    }
+
+    @Test
+    void testParseCreateTable2(){
+        Parser p = new Parser("Create table x ();");
+        assertEquals("Missing attribute names", p.parse());
+    }
+
+    @Test
+    void testParseCreateTable3(){
+        Parser p = new Parser("Create table ! ();");
+        assertEquals("Invalid table name", p.parse());
+    }
+//
+//    @Test
+//    void testParseCreateDB1(){
+//        Parser p = new Parser("Create database db1 ;");
+//        assertTrue(p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateDB2(){
+//        Parser p = new Parser("Create database db1");
+//        assertFalse(p.parse());
+//    }
 
     // Add more unit tests or integration tests here.
     // Unit tests would test individual methods or classes whereas integration tests are geared

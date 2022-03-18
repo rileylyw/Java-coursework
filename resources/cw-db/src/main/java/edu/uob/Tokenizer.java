@@ -9,7 +9,7 @@ public class Tokenizer {
         //tokens = TODO: return array list of tokens
     }
 
-    public String nextCommand(int index){ //instructions
+    public String nextCommand(int index) { //instructions
         return tokens.get(index);
     }
 

@@ -20,7 +20,7 @@ public class Parser extends DBCommands {
         System.out.println(tokens);
     }
 
-    public boolean parse(){
+    public String parse(){
         String nextCommand = tokenizer.nextCommand(index);
         switch(nextCommand){
             case "select":
@@ -29,48 +29,37 @@ public class Parser extends DBCommands {
                 break;
             case "use": //TODO: CommandType
                 System.out.println("use");
-                if(parseUse()){
-                    return true;
-                }
+                parseUse();
+                index++;
                 break;
             case "create":
                 System.out.println("create");
-                if(parseCreate()){
-                    return true;
-                }
-                break;
-            //case "?":
-
+                return parseCreate();
+//                break;
         }
-//        System.out.println(tokenizer.nextCommand(index));
-        if(!Objects.equals(tokenizer.nextCommand(index), ";")){
-            //TODO: throw error
-            System.out.println("no ;");
+        if(index >= tokens.size() || (!Objects.equals(tokenizer.nextCommand(index), ";"))){
+            return "Missing ;";
         }
-        return false;
+        return "OK";
     }
 
-    public boolean parseUse(){ //USE DBName;
-//        DBCommands use = new UseCmd();
+    public String parseUse(){ //USE DBName;
         index++;
         if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){ //dbname
             String path = "../" + tokenizer.nextCommand(index);
             File databaseDirectory = new File(path);
             if(databaseDirectory.exists()){
                 currentDirectory = databaseDirectory;
-                return true;
-//                DBCommands use = new UseCmd();
-//                System.out.println("current "+currentDirectory.getPath());
-//                System.out.println("EXIST");
+                return "Current directory: "+tokenizer.nextCommand(index);
             }
             else{
-                //TODO: throw error
-                System.out.println("folder doesn't exist, please create");
+                return "folder doesn't exist, please create";
             }
-            index++; // ;
+        }
+        else{
+            return "Invalid database name";
         }
         //TODO: add query, DBcommands s
-        return false;
     }
 
     public File getCurrentDirectory() {
@@ -99,37 +88,37 @@ public class Parser extends DBCommands {
         return false;
     }
 
-    public boolean parseCreate(){
+    public String parseCreate(){
         index++;
         if (Objects.equals(tokenizer.nextCommand(index), "table")) {
-            if(parseCreateTable()){
-                return true;
-            }
+            return parseCreateTable();
         }
         else if(Objects.equals(tokenizer.nextCommand(index), "database")) {
-            if(parseCreateDatabase()){
-                return true;
-            };
+            return parseCreateDatabase();
         }
-        return false;
+        else{
+            return "Invalid command";
+        }
     }
 
-    public boolean parseCreateDatabase() { //CREATE
-        index++; //create database dbname/ create table tablename (attributelist);
+    public String parseCreateDatabase() { //CREATE
+        index++; //create database dbname;
         if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
             index++;
-            return true;
         }
-        else { //TODO: throw error
-            System.out.println("Invalid query");
-            return false;
+        else {
+            return "Invalid query";
         }
+        return "OK";
     }
 
-    public boolean parseCreateTable() { //CREATE
+    public String parseCreateTable() { //CREATE
         index++; //create table tablename (attributelist);
         if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
             index++;
+        }
+        else{
+            return "Invalid table name";
         }
         if(Objects.equals(tokenizer.nextCommand(index), "(")){
             ArrayList<String> attributeNames = new ArrayList<>();
@@ -143,20 +132,19 @@ public class Parser extends DBCommands {
                     }
                 }
                 else{
-                    System.out.println("invalid name");
+                    return "Invalid attribute name(s)";
                 }
             }
-            //TODO: attributeNames add
+            if(attributeNames.isEmpty()){
+                return "Missing attribute names";
+            }
             index++;
-            return true;
         }
         else{
+            return "OK";
             //TODO: create table name
         }
-//        else { //TODO: throw error
-//            System.out.println("Invalid query");
-//        }
-        return false;
+        return "OK";
     }
 
 
