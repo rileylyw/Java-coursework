@@ -53,8 +53,8 @@ final class DBTests{
     void testServer() throws IOException {
         server.handleCommand("create database test ;");
         server.handleCommand("use test;");
-        server.handleCommand("Create table testtable (Name, Age, Email);");
-//        server.handleCommand("");
+//        server.handleCommand("Create table test1 (Name, Age, Email);");
+        server.handleCommand("drop x;");
 //        assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
     }
 

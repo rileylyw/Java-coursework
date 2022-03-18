@@ -63,17 +63,4 @@ public class WriteToFile {
         bw.flush();
         bw.close();
     }
-
-
-    public String formatString(ArrayList<String> stringToFormat){
-        String formatString;
-        StringBuilder stringBuilder = new StringBuilder();
-        //turning list to String and putting a tab between each token
-        for (String s : stringToFormat) {
-            stringBuilder.append(s);
-            stringBuilder.append("\t");
-        }
-        formatString = stringBuilder.toString();
-        return formatString;
-    }
 }

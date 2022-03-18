@@ -16,7 +16,7 @@ public class Tokenizer {
     public ArrayList<String> splitCommand(String command){ //TODO:change private
         ArrayList<String> tokens = new ArrayList<>();
         command = command.toLowerCase();
-        StringTokenizer st = new StringTokenizer(command, "\t\n\r\f ();=<>!*,", true);
+        StringTokenizer st = new StringTokenizer(command, "\t\n\r\f ();=<>*,", true);
         while(st.hasMoreElements()){
             tokens.add(st.nextToken());
         }

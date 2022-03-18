@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+
+
 public class Parser {
     private Tokenizer tokenizer = new Tokenizer();
     public ArrayList<String> tokens;
@@ -25,6 +27,9 @@ public class Parser {
 
     public String parse() throws IOException {
         String nextCommand = tokenizer.nextCommand(index);
+        if(index+1 >= tokens.size() || !Objects.equals(tokens.get(tokens.size()-1), ";")){
+            return "[ERROR] Invalid query | Missing ;";
+        }
         switch(nextCommand){
             case "select":
                 System.out.println("select");
@@ -40,31 +45,49 @@ public class Parser {
                 System.out.println("drop");
                 return parseDrop();
         }
-        if(index >= tokens.size() || (!Objects.equals(tokenizer.nextCommand(index), ";"))){
-            return "Missing ;";
-        }
-        return "OK";
+//        if(index >= tokens.size() || (!Objects.equals(tokenizer.nextCommand(index), ";"))){
+//            return "Missing ;";
+//        }
+        return "[OK]";
     }
 
     public String parseDrop(){ //drop <structure> <structureName>
         index++;
-        if(Objects.equals(tokenizer.nextCommand(index), "table")) {
-            if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
-                //TODO: drop table;
+        if(Objects.equals(tokenizer.nextCommand(index), "table")){
+            index++;
+//            if(index+1 >= tokens.size()){
+//                return "Missing ;";
+//            }
+            tableFile = tokenizer.nextCommand(index)+".tab";
+            File file = new File(currentDirectory, tableFile);
+
+            if(file.exists()){
+                file.delete();
+                return "[ERROR] Table deleted";
             }
             else{
-                return "Table doesn't exist";
+                return "[ERROR] Table doesn't exist";
             }
         }
         else if(Objects.equals(tokenizer.nextCommand(index), "database")){
-            if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
-                //TODO:drop DB;
+            index++;
+            File file = new File("../"+tokenizer.nextCommand(index));
+            if(file.exists() && file.isDirectory()){
+                String[] files = file.list();
+                for(String s: files){
+                    File currentFile = new File(file.getPath(),s);
+                    currentFile.delete();
+                }
+                file.delete();
+                return "Database deleted";
             }
             else{
-                return "Database doesn't exist";
+                return "[ERROR] Database does not exist";
             }
         }
-        return "Invalid query";
+        else {
+            return "[ERROR] Invalid query";
+        }
     }
 
     public String parseUse(){ //USE DBName;
@@ -103,7 +126,6 @@ public class Parser {
             if(Objects.equals(tokenizer.nextCommand(index), "from")){
                 index++;
                 tableName = tokenizer.nextCommand(index);
-//                System.out.println(tableName);
                 index++; // ;
             }
             else{
@@ -147,7 +169,7 @@ public class Parser {
         else {
             return "Invalid / missing database name";
         }
-        return "OK";
+        return "[OK]";
     }
 
     public String parseCreateTable() throws IOException { //CREATE
@@ -182,13 +204,9 @@ public class Parser {
                 return "Missing attribute names";
             }
             else{
-                System.out.println(attributeList);
                 table = new DBTable(tableName, attributeList);
                 WriteToFile writeToFile = new WriteToFile();
                 writeToFile.writeAttribListToFile(DBName, tableName, table);
-                System.out.println("col "+table.getAttributeList());
-                //TODO: add col names
-
             }
             index++;
             if(index >= tokens.size() ||!Objects.equals(tokenizer.nextCommand(index), ";")){
@@ -196,15 +214,12 @@ public class Parser {
             }
         }
         /* create table interp*/
-        System.out.println("current dir "+currentDirectory);
-        File file = new File(currentDirectory, tableFile);
+//        System.out.println("current dir "+currentDirectory);
+//        File file = new File(currentDirectory, tableFile);
         if(currentDirectory == null){
             return "No database, please create";
         }
-        if (!file.exists()){
-            file.createNewFile();
-        }
-        return "OK";
+        return "[OK]";
     }
 
 
