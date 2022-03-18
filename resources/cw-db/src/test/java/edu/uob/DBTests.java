@@ -42,13 +42,21 @@ final class DBTests{
         assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
     }
 
+//    @Test
+//    void testServer() throws IOException {
+//        server.handleCommand("USE db1;");
+//        server.handleCommand("Create table x;");
+////        assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
+//    }
+
     @Test
     void testServer() throws IOException {
-        server.handleCommand("USE db1;");
-//        server.handleCommand("Create table x;");
+        server.handleCommand("create database test ;");
+        server.handleCommand("use test;");
+        server.handleCommand("Create table testtable (Name, Age, Email);");
+//        server.handleCommand("");
 //        assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
     }
-
 
     @Test
     void testTokenizer1(){

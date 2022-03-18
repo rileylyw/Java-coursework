@@ -6,11 +6,12 @@ import java.util.HashMap;
 
 public class DBTable {
     private String tableName;
-    private DBRow rows;
-    private DBColumn columns;
+    private DBRow rows = new DBRow();
+    private DBColumn columns = new DBColumn();
 
-    public DBTable(){
-
+    public DBTable(String tableName, ArrayList<String> attributeList){
+        this.tableName = tableName;
+        columns.setColumnNames(attributeList);
     }
 
     public void storeFileToTable(String tableName, String tableFileName) throws IOException {
@@ -18,7 +19,7 @@ public class DBTable {
         readInFile.readInFile(tableFileName);
         this.tableName = tableName;
         columns = new DBColumn();
-        columns.setColumnNames(tableName, readInFile.getAttributeList());
+//        columns.setColumnNames(tableName, readInFile.getAttributeList());
         rows = new DBRow();
         rows.setAttributeValues(readInFile.getAttributeValues());
 

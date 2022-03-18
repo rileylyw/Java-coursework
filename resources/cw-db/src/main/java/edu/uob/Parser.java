@@ -10,9 +10,11 @@ public class Parser {
     public ArrayList<String> tokens;
     private int index;
     private static File currentDirectory;
-    private String DBName;
+    private static String DBName;
     private String tableName;
+    private String tableFile;
     private ArrayList<String> attributeList;
+    private DBTable table;
 
     public Parser(String command){
         index = 0;
@@ -72,6 +74,7 @@ public class Parser {
             File databaseDirectory = new File(path);
             if(databaseDirectory.exists()){
                 currentDirectory = databaseDirectory;
+                this.DBName = tokenizer.nextCommand(index);
                 System.out.println("HERE "+ currentDirectory);
                 if(index+1 >= tokens.size() || (!Objects.equals(tokenizer.nextCommand(index+1), ";"))){
                     return "Missing ;";
@@ -150,7 +153,8 @@ public class Parser {
     public String parseCreateTable() throws IOException { //CREATE
         index++; //create table tablename (attributelist);
         if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
-            this.tableName = tokenizer.nextCommand(index) + ".tab";
+            this.tableFile = tokenizer.nextCommand(index) + ".tab";
+            this.tableName = tokenizer.nextCommand(index);
             index++;
         }
         else{
@@ -160,11 +164,11 @@ public class Parser {
             return "Missing ;";
         }
         else if(Objects.equals(tokenizer.nextCommand(index), "(")){
-            ArrayList<String> attributeNames = new ArrayList<>();
+            attributeList = new ArrayList<>();
             index++;
             while(!(Objects.equals(tokenizer.nextCommand(index), ")"))){
                 if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
-                    attributeNames.add(tokenizer.nextCommand(index));
+                    attributeList.add(tokenizer.nextCommand(index));
                     index++;
                     if(Objects.equals(tokenizer.nextCommand(index), ",")){
                         index++;
@@ -174,8 +178,17 @@ public class Parser {
                     return "Invalid attribute name(s)";
                 }
             }
-            if(attributeNames.isEmpty()){
+            if(attributeList.isEmpty()){
                 return "Missing attribute names";
+            }
+            else{
+                System.out.println(attributeList);
+                table = new DBTable(tableName, attributeList);
+                WriteToFile writeToFile = new WriteToFile();
+                writeToFile.writeAttribListToFile(DBName, tableName, table);
+                System.out.println("col "+table.getAttributeList());
+                //TODO: add col names
+
             }
             index++;
             if(index >= tokens.size() ||!Objects.equals(tokenizer.nextCommand(index), ";")){
@@ -184,7 +197,7 @@ public class Parser {
         }
         /* create table interp*/
         System.out.println("current dir "+currentDirectory);
-        File file = new File(currentDirectory, tableName);
+        File file = new File(currentDirectory, tableFile);
         if(currentDirectory == null){
             return "No database, please create";
         }

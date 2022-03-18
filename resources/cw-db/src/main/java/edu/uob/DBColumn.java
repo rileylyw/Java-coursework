@@ -15,7 +15,7 @@ public class DBColumn {
         return columnNames;
     }
 
-    public void setColumnNames(String tableName, ArrayList<String> columnNames) {
+    public void setColumnNames(ArrayList<String> columnNames) {
         this.columnNames = columnNames;
     }
 }

@@ -22,14 +22,14 @@ public final class DBServer {
         new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
     }
 
-    public static DBTable createNewTable() throws IOException{
-        DBTable table1 = new DBTable();
-        table1.storeFileToTable("people", "people");
-
-        WriteToFile writeToFile = new WriteToFile();
-        writeToFile.writeToFile(table1);
-        return table1;
-    }
+//    public static DBTable createNewTable() throws IOException{
+//        DBTable table1 = new DBTable("TBC");
+//        table1.storeFileToTable("people", "people");
+//
+//        WriteToFile writeToFile = new WriteToFile();
+//        writeToFile.writeToFile(table1);
+//        return table1;
+//    }
 
     /**
      * KEEP this signature (i.e. {@code edu.uob.DBServer(File)}) otherwise we won't be able to mark
@@ -62,8 +62,8 @@ public final class DBServer {
     public String handleCommand(String command) throws IOException {
         // TODO implement your server logic here
         Parser parser = new Parser(command);
-        parser.parse();
-        this.currentDirectory = parser.getCurrentDirectory();
+        return parser.parse();
+//        this.currentDirectory = parser.getCurrentDirectory();
 //        if(!parser.parse()){
 //            return "[ERROR]";
 //        };
@@ -79,7 +79,7 @@ public final class DBServer {
         return [error]
         */
 
-        return "[OK] Thanks for your message: " + command;
+//        return "[OK] Thanks for your message: " + command;
     }
 
     public static DB getDatabase() {
