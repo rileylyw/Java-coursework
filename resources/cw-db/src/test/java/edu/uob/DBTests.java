@@ -57,6 +57,12 @@ final class DBTests {
         Assertions.assertArrayEquals(expectedOutputs, methodOutputs.toArray());
     }
 
+    @Test
+    void testParseCreateTable(){
+        Parser p = new Parser("Create table x (a,b);");
+        assertTrue(p.parse());
+    }
+
     // Add more unit tests or integration tests here.
     // Unit tests would test individual methods or classes whereas integration tests are geared
     // towards a specific usecase (i.e. creating a table and inserting rows and asserting whether the

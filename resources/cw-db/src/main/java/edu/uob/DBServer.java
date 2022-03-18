@@ -12,23 +12,12 @@ import java.util.HashMap;
 public final class DBServer {
 
     private static final char END_OF_TRANSMISSION = 4;
-    private static DB database;
-//    public static ArrayList<DB> databases = new ArrayList<>();
+    public static DB database;
 
     public static void main(String[] args) throws IOException {
-//        DB database = new DB("DB1");
-        database = new DB("db1");
-        DBTable tableToAdd = createNewTable();
-        database.addTable(tableToAdd);
-//        System.out.println("TABLE:"+database.getTable("people").getTableName());
-
-//        System.out.println(database.getTable(tableToAdd.getTableName()).getAttributeValues());
-//        database.getTable()
-//        DB newDB = new DB();
-//        newDB.setTables(tableToAdd);
-//        databases.add(newDB);
-//        System.out.println(databases.get(0).getTables().get(0).getAttributeValues());
-
+//        database = new DB("db1");
+//        DBTable tableToAdd = createNewTable();
+//        database.addTable(tableToAdd);
         new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
     }
 
@@ -55,7 +44,8 @@ public final class DBServer {
      */
     public DBServer(File databaseDirectory) { //para is for testing
         // TODO implement your server logic here
-        handleCommand("USE DB1;");
+//        if
+//        handleCommand("USE DB1;");
 //        handleCommand("SELECT *   FROM     people;");
 //        handleCommand("SELECT *      FROM (table) ;   ;   ");
 //        handleCommand("CREATE TABLE marks (name, mark, pass);");
@@ -78,8 +68,15 @@ public final class DBServer {
     public String handleCommand(String command) {
         // TODO implement your server logic here
         Parser parser = new Parser(command);
-        parser.parse();
+        if(!parser.parse()){
+            return "[ERROR]";
+        };
+//        if(parser.parseUse()){
+//            return "OK";
+//        }
 
+//        DBCommands dbCommands = new DBCommands();
+//        if(dbCommands.query(DBServer s))
         /*TODO
         if command.query(dbserver s)
         manipulate data
@@ -87,6 +84,10 @@ public final class DBServer {
         */
 
         return "[OK] Thanks for your message: " + command;
+    }
+
+    public static DB getDatabase() {
+        return database;
     }
 
     //  === Methods below are there to facilitate server related operations. ===

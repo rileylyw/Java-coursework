@@ -1,11 +1,15 @@
 package edu.uob;
 
-//public class UseCmd extends Parser {
-//
-//    public UseCmd(DBServer s) {
-//
-//    }
-//}
+public class UseCmd extends DBCommands  {
+
+    public UseCmd() {
+    }
+
+    @Override
+    public String query(DBServer s) {
+        return "super.query(s)";
+    }
+}
 
 
 
