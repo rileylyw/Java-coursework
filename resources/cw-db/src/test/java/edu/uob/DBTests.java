@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // The tests in this file will fail by default for a template skeleton, your job is to pass them
 // and maybe write some more, read up on how to write tests at
 // https://junit.org/junit5/docs/current/user-guide/#writing-tests
-final class DBTests {
+final class DBTests{
 
     private DBServer server;
 
@@ -37,9 +38,17 @@ final class DBTests {
     // Here's a basic test for spawning a new server and sending an invalid command,
     // the spec dictates that the server respond with something that starts with `[ERROR]`
     @Test
-    void testInvalidCommandIsAnError() {
+    void testInvalidCommandIsAnError() throws IOException {
         assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
     }
+
+    @Test
+    void testServer() throws IOException {
+        server.handleCommand("USE db1;");
+//        server.handleCommand("Create table x;");
+//        assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
+    }
+
 
     @Test
     void testTokenizer1(){
@@ -58,40 +67,54 @@ final class DBTests {
     }
 
     @Test
-    void testParseUse(){
+    void testParseUse1() throws IOException{
         Parser p = new Parser("Use db1;");
+        assertEquals("Current directory: db1", p.parse());
+    }
+
+    @Test
+    void testParseCreateTable1() throws IOException{
+        Parser p = new Parser("CREATE TABLE marks (name, mark, pass);");
         assertEquals("OK", p.parse());
     }
 
     @Test
-    void testParseCreateTable1(){
-        Parser p = new Parser("Create table x (a,b);");
-        assertEquals("OK", p.parse());
-    }
-
-    @Test
-    void testParseCreateTable2(){
+    void testParseCreateTable2() throws IOException{
         Parser p = new Parser("Create table x ();");
         assertEquals("Missing attribute names", p.parse());
     }
 
     @Test
-    void testParseCreateTable3(){
+    void testParseCreateTable3() throws IOException{
         Parser p = new Parser("Create table ! ();");
         assertEquals("Invalid table name", p.parse());
     }
-//
-//    @Test
-//    void testParseCreateDB1(){
-//        Parser p = new Parser("Create database db1 ;");
-//        assertTrue(p.parse());
-//    }
-//
-//    @Test
-//    void testParseCreateDB2(){
-//        Parser p = new Parser("Create database db1");
-//        assertFalse(p.parse());
-//    }
+
+    @Test
+    void testParseCreateTable4() throws IOException{
+        Parser p = new Parser("Create table x ;");
+        assertEquals("OK", p.parse());
+    }
+
+    @Test
+    void testParseCreateDB1() throws IOException{
+        Parser p = new Parser("Create database db1 ;");
+        assertEquals("OK", p.parse());
+    }
+
+    @Test
+    void testParseCreateDB2() throws IOException{
+        Parser p = new Parser("Create database db1");
+        assertEquals("Missing ;", p.parse());
+    }
+
+    @Test
+    void testParseCreateDB3() throws IOException{
+        Parser p = new Parser("Create database !;");
+        assertEquals("Invalid / missing database name", p.parse());
+    }
+
+
 
     // Add more unit tests or integration tests here.
     // Unit tests would test individual methods or classes whereas integration tests are geared

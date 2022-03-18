@@ -22,8 +22,8 @@ public final class DBClient {
 
   private static void connectTo(String host, int port, BufferedReader input) throws IOException {
     try (var socket = new Socket(host, port);
-        var socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        var socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+         var socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         var socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
       while (!Thread.interrupted()) {
         handleNextCommand(input, socketReader, socketWriter);
       }
@@ -31,8 +31,8 @@ public final class DBClient {
   }
 
   private static void handleNextCommand(
-      BufferedReader commandLine, BufferedReader socketReader, BufferedWriter socketWriter)
-      throws IOException {
+          BufferedReader commandLine, BufferedReader socketReader, BufferedWriter socketWriter)
+          throws IOException {
     System.out.print("SQL:> ");
     String command = commandLine.readLine();
     socketWriter.write(command + "\n");

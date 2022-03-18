@@ -12,6 +12,7 @@ import java.util.HashMap;
 public final class DBServer {
 
     private static final char END_OF_TRANSMISSION = 4;
+    private File currentDirectory;
     public static DB database;
 
     public static void main(String[] args) throws IOException {
@@ -44,14 +45,7 @@ public final class DBServer {
      */
     public DBServer(File databaseDirectory) { //para is for testing
         // TODO implement your server logic here
-//        if
-//        handleCommand("USE DB1;");
-//        handleCommand("SELECT *   FROM     people;");
-//        handleCommand("SELECT *      FROM (table) ;   ;   ");
-//        handleCommand("CREATE TABLE marks (name, mark, pass);");
-//        handleCommand("name=='just testing'");
-
-
+//        handleCommand("USE db1;");
 //        String dir = databaseDirectory.getPath();
 //        System.out.println(dir);
 //        if(dir.endsWith(".")){
@@ -65,10 +59,11 @@ public final class DBServer {
      *
      * <p>This method handles all incoming DB commands and carry out the corresponding actions.
      */
-    public String handleCommand(String command) {
+    public String handleCommand(String command) throws IOException {
         // TODO implement your server logic here
         Parser parser = new Parser(command);
-
+        parser.parse();
+        this.currentDirectory = parser.getCurrentDirectory();
 //        if(!parser.parse()){
 //            return "[ERROR]";
 //        };
@@ -139,20 +134,20 @@ public final class DBServer {
                 String result = handleCommand(incomingCommand);
                 writer.write(result);
 
-                /* printing out table on client's side */
-                writer.write("\n"); //TODO: print all tables
-                for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) { //cols
-                    writer.write(database.getTable("people").getAttributeList().get(i));
-                    writer.write(" ");
-                }
-                writer.write("\n");
-                for(HashMap value: database.getTable("people").getAttributeValues()){ //rows
-                    for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) {
-                        writer.write((String) value.get(database.getTable("people").getAttributeList().get(i)));
-                        writer.write(" ");
-                    }
-                    writer.write("\n");
-                }
+//                /* printing out table on client's side */
+//                writer.write("\n"); //TODO: print all tables
+//                for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) { //cols
+//                    writer.write(database.getTable("people").getAttributeList().get(i));
+//                    writer.write(" ");
+//                }
+//                writer.write("\n");
+//                for(HashMap value: database.getTable("people").getAttributeValues()){ //rows
+//                    for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) {
+//                        writer.write((String) value.get(database.getTable("people").getAttributeList().get(i)));
+//                        writer.write(" ");
+//                    }
+//                    writer.write("\n");
+//                }
 
                 writer.write("\n" + END_OF_TRANSMISSION + "\n");
                 writer.flush();

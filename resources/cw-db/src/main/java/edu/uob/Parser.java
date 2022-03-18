@@ -1,15 +1,16 @@
 package edu.uob;
 
 import java.io.File;
-import java.lang.reflect.Array;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Parser extends DBCommands {
+public class Parser {
     private Tokenizer tokenizer = new Tokenizer();
     public ArrayList<String> tokens;
     private int index;
-    private File currentDirectory;
+    private static File currentDirectory;
+    private String DBName;
     private String tableName;
     private ArrayList<String> attributeList;
 
@@ -20,27 +21,48 @@ public class Parser extends DBCommands {
         System.out.println(tokens);
     }
 
-    public String parse(){
+    public String parse() throws IOException {
         String nextCommand = tokenizer.nextCommand(index);
         switch(nextCommand){
             case "select":
                 System.out.println("select");
                 parseSelect();
                 break;
-            case "use": //TODO: CommandType
+            case "use":
                 System.out.println("use");
-                parseUse();
-                index++;
-                break;
+                return parseUse();
             case "create":
                 System.out.println("create");
                 return parseCreate();
-//                break;
+            case "drop":
+                System.out.println("drop");
+                return parseDrop();
         }
         if(index >= tokens.size() || (!Objects.equals(tokenizer.nextCommand(index), ";"))){
             return "Missing ;";
         }
         return "OK";
+    }
+
+    public String parseDrop(){ //drop <structure> <structureName>
+        index++;
+        if(Objects.equals(tokenizer.nextCommand(index), "table")) {
+            if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
+                //TODO: drop table;
+            }
+            else{
+                return "Table doesn't exist";
+            }
+        }
+        else if(Objects.equals(tokenizer.nextCommand(index), "database")){
+            if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
+                //TODO:drop DB;
+            }
+            else{
+                return "Database doesn't exist";
+            }
+        }
+        return "Invalid query";
     }
 
     public String parseUse(){ //USE DBName;
@@ -50,10 +72,14 @@ public class Parser extends DBCommands {
             File databaseDirectory = new File(path);
             if(databaseDirectory.exists()){
                 currentDirectory = databaseDirectory;
+                System.out.println("HERE "+ currentDirectory);
+                if(index+1 >= tokens.size() || (!Objects.equals(tokenizer.nextCommand(index+1), ";"))){
+                    return "Missing ;";
+                }
                 return "Current directory: "+tokenizer.nextCommand(index);
             }
             else{
-                return "folder doesn't exist, please create";
+                return "Database doesn't exist, please create";
             }
         }
         else{
@@ -83,12 +109,11 @@ public class Parser extends DBCommands {
         }
         else{ //TODO: throw error
             System.out.println("Invalid query");
-//            throw new Exception("Wrong grammar");
         }
         return false;
     }
 
-    public String parseCreate(){
+    public String parseCreate() throws IOException {
         index++;
         if (Objects.equals(tokenizer.nextCommand(index), "table")) {
             return parseCreateTable();
@@ -102,25 +127,39 @@ public class Parser extends DBCommands {
     }
 
     public String parseCreateDatabase() { //CREATE
-        index++; //create database dbname;
+        index++; //dbname;
         if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
+            this.DBName = tokenizer.nextCommand(index);
             index++;
+            if(index >= tokens.size() ||!Objects.equals(tokenizer.nextCommand(index), ";")){
+                return "Missing ;";
+            }
+            String path = "../" + DBName;
+            File databaseDirectory = new File(path);
+            if(databaseDirectory.exists()) {
+                return "Database already exists";
+            }
+            databaseDirectory.mkdir(); //create directory
         }
         else {
-            return "Invalid query";
+            return "Invalid / missing database name";
         }
         return "OK";
     }
 
-    public String parseCreateTable() { //CREATE
+    public String parseCreateTable() throws IOException { //CREATE
         index++; //create table tablename (attributelist);
         if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
+            this.tableName = tokenizer.nextCommand(index) + ".tab";
             index++;
         }
         else{
             return "Invalid table name";
         }
-        if(Objects.equals(tokenizer.nextCommand(index), "(")){
+        if(index >= tokens.size()){
+            return "Missing ;";
+        }
+        else if(Objects.equals(tokenizer.nextCommand(index), "(")){
             ArrayList<String> attributeNames = new ArrayList<>();
             index++;
             while(!(Objects.equals(tokenizer.nextCommand(index), ")"))){
@@ -139,10 +178,18 @@ public class Parser extends DBCommands {
                 return "Missing attribute names";
             }
             index++;
+            if(index >= tokens.size() ||!Objects.equals(tokenizer.nextCommand(index), ";")){
+                return "Missing ;";
+            }
         }
-        else{
-            return "OK";
-            //TODO: create table name
+        /* create table interp*/
+        System.out.println("current dir "+currentDirectory);
+        File file = new File(currentDirectory, tableName);
+        if(currentDirectory == null){
+            return "No database, please create";
+        }
+        if (!file.exists()){
+            file.createNewFile();
         }
         return "OK";
     }
