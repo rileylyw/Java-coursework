@@ -90,8 +90,14 @@ final class DBTests{
     @Test
     void testServer6() throws IOException {
         server.handleCommand("use db1    ;");
+//        server.handleCommand("insert into x values(123.123,'testing',TRUE, NULL)");
+        assertEquals("[OK] Database deleted", server.handleCommand("insert into x values();"));
+    }
+
+    @Test
+    void testServer7() throws IOException {
+        server.handleCommand("use db1    ;");
         server.handleCommand("ALTER TABLE x add test;");
-        server.handleCommand("ALTER TABLE x drop test;");
 //        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
     }
 

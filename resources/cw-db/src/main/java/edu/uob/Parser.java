@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
-
+import java.util.regex.Pattern;
 
 
 public class Parser {
@@ -16,6 +16,7 @@ public class Parser {
     private String tableName;
     private String tableFile;
     private ArrayList<String> attributeList;
+    private ArrayList<String> attributeValues;
     private DBTable table;
     private WriteToFile writeToFile = new WriteToFile();
 
@@ -49,9 +50,85 @@ public class Parser {
             case "alter": //alter table
                 System.out.println("alter");
                 return parseAlterTable();
+            case "insert": //insert into
+                System.out.println("insert");
+                return parseInsertInto();
         }
         return "[OK]";
     }
+
+    public String parseInsertInto(){
+        index++;
+        if(!Objects.equals(tokenizer.nextCommand(index), "into")){
+            return "[ERROR] Invalid query: try INSERT INTO";
+        }
+        index++;
+        tableFile = tokenizer.nextCommand(index)+".tab";
+        File file = new File(currentDirectory, tableFile);
+        if(!file.exists()){
+            return "[ERROR] Table does not exist";
+        }
+        index++;
+        if(!Objects.equals(tokenizer.nextCommand(index), "values")){
+            return "[ERROR] Invalid query: try INSERT INTO <Table Name> VALUES (<Value List>);";
+        }
+        index++;
+
+        if(Objects.equals(tokenizer.nextCommand(index), "(")) {
+            attributeValues = new ArrayList<>();
+            index++;
+            while (!(Objects.equals(tokenizer.nextCommand(index), ")"))) {
+                if(tokenizer.nextCommand(index).charAt(0)=='\''){
+                    String stringLiteral = stringLiteral(tokens, index);
+                    attributeValues.add(stringLiteral);
+                    index++;
+                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
+                        index++;
+                    }
+                }
+                else if(tokenizer.nextCommand(index).matches("^[+-]?\\d+[.]?{1}\\d+")){
+                    attributeValues.add(tokenizer.nextCommand(index));
+                    index++;
+                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
+                        index++;
+                    }
+                }
+                else if(Objects.equals(tokenizer.nextCommand(index), "true")||
+                        Objects.equals(tokenizer.nextCommand(index), "false")||
+                        Objects.equals(tokenizer.nextCommand(index), "null")){
+                    attributeValues.add(tokenizer.nextCommand(index));
+                    index++;
+                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
+                        index++;
+                    }
+                }
+                else{
+                    return "[ERROR] Invalid attribute name(s) | Invalid query";
+                }
+            }
+            if (attributeValues.isEmpty()) {
+                return "[ERROR] Missing attribute values";
+            }
+        }
+        return "[OK]";
+    }
+
+    //TODO: tbc
+    public String stringLiteral(ArrayList<String> tokens, int index) {
+        String stringLiteral = tokens.get(index);
+        while(stringLiteral.charAt(stringLiteral.length()-1)!='\''){
+            index++;
+            stringLiteral = stringLiteral.concat(" ").concat(tokens.get(index));
+        }
+        this.index = index;
+        stringLiteral = stringLiteral.substring(1, stringLiteral.length()-1);
+        return stringLiteral;
+    }
+
+//    public boolean isValue(ArrayList<String> tokens, int index){
+//        if()
+//    }
+
 
     public String parseAlterTable() throws IOException {
         index++;
@@ -81,7 +158,7 @@ public class Parser {
             }
         }
         else if(Objects.equals(tokenizer.nextCommand(index), "drop")){
-            index++;
+            index++; //TODO: cannot drop id
             String attributeName = tokenizer.nextCommand(index);
             table.dropColumn(attributeName);
             writeToFile.writeAttribListToFile(DBName, tableName, table);
@@ -156,7 +233,6 @@ public class Parser {
         else{
             return "Invalid database name";
         }
-        //TODO: add query, DBcommands s
     }
 
     public File getCurrentDirectory() {
@@ -171,13 +247,13 @@ public class Parser {
             if(Objects.equals(tokenizer.nextCommand(index), "from")){
                 index++;
                 tableName = tokenizer.nextCommand(index);
-                index++; // ;
+//                index++; // ;
             }
             else{
                 System.out.println("Invalid query");
             }
         }
-        else{ //TODO: throw error
+        else{
             System.out.println("Invalid query");
         }
         return false;
@@ -249,9 +325,6 @@ public class Parser {
             }
             index++;
         }
-        /* create table interp*/
-//        System.out.println("current dir "+currentDirectory);
-//        File file = new File(currentDirectory, tableFile);
         if(currentDirectory == null){
             return "[ERROR] No database, please create";
         }
