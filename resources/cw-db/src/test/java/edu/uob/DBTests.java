@@ -50,13 +50,43 @@ final class DBTests{
 //    }
 
     @Test
-    void testServer() throws IOException {
-        server.handleCommand("create database test ;");
+    void testServer1() throws IOException {
+        server.handleCommand("create  database test ;");
         server.handleCommand("use test;");
-//        server.handleCommand("Create table test1 (Name, Age, Email);");
-        server.handleCommand("drop x;");
-//        assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
+        server.handleCommand("Create table test1 (Name, Age, Email);");
+        assertEquals("[ERROR] Invalid query", server.handleCommand("drop x;"));
     }
+
+    @Test
+    void testServer2() throws IOException {
+        server.handleCommand("create  database test1 ;");
+        server.handleCommand("use test1;");
+        server.handleCommand("Create table test1 (Name, Age, Email);");
+        server.handleCommand("DROP DATABASE test1;");
+        assertEquals("[ERROR] No database, please create", server.handleCommand("create table x;"));
+    }
+
+    @Test
+    void testServer3() throws IOException {
+        assertEquals("[ERROR] Invalid query | Missing ;", server.handleCommand("create database x "));
+    }
+
+    @Test
+    void testServer4() throws IOException {
+        server.handleCommand("create  database test1 ;");
+        server.handleCommand("use test1;");
+        server.handleCommand("Create table test1;");
+        server.handleCommand("DROP table test1;");
+        assertEquals("[OK]", server.handleCommand("Create table test2;"));
+    }
+
+    @Test
+    void testServer5() throws IOException {
+        server.handleCommand("create  database test1 ;");
+        server.handleCommand("use test1;");
+        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
+    }
+
 
     @Test
     void testTokenizer1(){

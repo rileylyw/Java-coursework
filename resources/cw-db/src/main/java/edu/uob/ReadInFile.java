@@ -9,10 +9,7 @@ public class ReadInFile {
     private ArrayList<String> attributeList = new ArrayList<>(); //column
     private ArrayList<HashMap<String, String>> attributeValues = new ArrayList<HashMap<String, String>>(); //row
 
-    public void readInFile(String fileName) throws IOException {
-        File tableFile;
-        String path = "../" + fileName + ".tab";
-        tableFile = new File(path);
+    public ReadInFile(File tableFile) throws IOException {
         if (tableFile.exists()) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(tableFile));
@@ -35,6 +32,10 @@ public class ReadInFile {
             }
         }
     }
+
+
+
+
 
     public ArrayList<String> getAttributeList() { //column names
         return attributeList;

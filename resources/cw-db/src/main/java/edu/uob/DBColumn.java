@@ -17,6 +17,8 @@ public class DBColumn {
 
     public void setColumnNames(ArrayList<String> columnNames) {
         this.columnNames = columnNames;
-        this.columnNames.add(0, "id");
+        if(!columnNames.get(0).equalsIgnoreCase("id")) {
+            this.columnNames.add(0, "id");
+        }
     }
 }

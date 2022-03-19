@@ -11,28 +11,36 @@ public class DBTable {
 
     public DBTable(String tableName, ArrayList<String> attributeList){
         this.tableName = tableName;
-        columns.setColumnNames(attributeList);
+        setColumns(attributeList);
+//        columns.setColumnNames(attributeList);
     }
 
-    public void storeFileToTable(String tableName, String tableFileName) throws IOException {
-        ReadInFile readInFile = new ReadInFile();
-        readInFile.readInFile(tableFileName);
-        this.tableName = tableName;
-        columns = new DBColumn();
-//        columns.setColumnNames(tableName, readInFile.getAttributeList());
-        rows = new DBRow();
-        rows.setAttributeValues(readInFile.getAttributeValues());
-
-//        for(HashMap value: rows.getAttributeValues()) { //TODO: updates values
-//            value.replace("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
-//        }
-        System.out.println(rows.getAttributeValues());
-    }
+//    public void storeFileToTable(String tableName, String tableFileName) throws IOException {
+////        ReadInFile readInFile = new ReadInFile();
+////        readInFile.readInFile(tableFileName);
+//        this.tableName = tableName;
+//        columns = new DBColumn();
+////        columns.setColumnNames(tableName, readInFile.getAttributeList());
+//        rows = new DBRow();
+////        rows.setAttributeValues(readInFile.getAttributeValues());
+//
+////        for(HashMap value: rows.getAttributeValues()) { //TODO: updates values
+////            value.replace("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
+////        }
+//        System.out.println(rows.getAttributeValues());
+//    }
 
 //    public void updateTableToFile(String tableFileName) throws IOException{
 //        WriteToFile writeToFile = new WriteToFile();
 //        writeToFile.writeToFile(tableFileName);
 //    }
+
+
+    public void setColumns(ArrayList<String> attributeList) {
+        columns.setColumnNames(attributeList);
+    }
+
+
 
     public ArrayList<HashMap<String, String>> getAttributeValues(){
         return rows.getAttributeValues();
