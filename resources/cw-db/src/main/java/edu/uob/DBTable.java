@@ -5,16 +5,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DBTable {
-    private String tableName;
+//    private String tableName;
     private DBRow rows = new DBRow();
     private DBColumn columns = new DBColumn();
 
-    public DBTable(String tableName, ArrayList<String> attributeList){
-        this.tableName = tableName;
-        setColumns(attributeList);
-//        columns.setColumnNames(attributeList);
+    public DBTable(ArrayList<String> attributeList,
+                   ArrayList<HashMap<String, String>> attributeValues){
+//        this.tableName = tableName;
+        columns.setAttributeList(attributeList);
+        rows.setAttributeValues(attributeValues);
     }
 
+    public void addColumn(String columnToAdd){
+        columns.addColumn(columnToAdd);
+    }
+
+    public void dropColumn(String columnToDrop){
+        columns.dropColumn(columnToDrop);
+    }
 //    public void storeFileToTable(String tableName, String tableFileName) throws IOException {
 ////        ReadInFile readInFile = new ReadInFile();
 ////        readInFile.readInFile(tableFileName);
@@ -35,24 +43,15 @@ public class DBTable {
 //        writeToFile.writeToFile(tableFileName);
 //    }
 
-
-    public void setColumns(ArrayList<String> attributeList) {
-        columns.setColumnNames(attributeList);
-    }
-
-
-
     public ArrayList<HashMap<String, String>> getAttributeValues(){
         return rows.getAttributeValues();
     }
 
     public ArrayList<String> getAttributeList(){
-        return columns.getColumnNames();
+        return columns.getAttributeList();
     }
 
-    public String getTableName() {
-        return tableName;
-    }
+
 
 
 }

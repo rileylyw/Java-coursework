@@ -16,12 +16,12 @@ public class DBRow {
     }
 
     public void setAttributeValues(ArrayList<HashMap<String, String>> attributeValues) {
-        for(HashMap map: attributeValues){
-            if(!map.containsKey("id")){
-
-            }
-        }
         this.attributeValues = attributeValues;
+//        for(HashMap map: attributeValues){
+//            if(map.get("d")){ //TODO: give ID if no have
+//
+//            }
+//        }
     }
 
 }

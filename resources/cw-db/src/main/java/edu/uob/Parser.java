@@ -17,6 +17,8 @@ public class Parser {
     private String tableFile;
     private ArrayList<String> attributeList;
     private DBTable table;
+    private WriteToFile writeToFile = new WriteToFile();
+
 
     public Parser(String command){
         index = 0;
@@ -64,9 +66,29 @@ public class Parser {
             return "[ERROR] Table "+tableFile+" does not exist";
         }
         ReadInFile readInFile = new ReadInFile(file);
-        DBTable table = new DBTable(tableName, readInFile.getAttributeList());
-        System.out.println("GERE "+table.getAttributeList());
-        //TODO: read in file and edit, store to rows and cols
+        this.table = new DBTable(readInFile.getAttributeList(),
+                readInFile.getAttributeValues());
+        index++;
+        if(Objects.equals(tokenizer.nextCommand(index), "add")){
+            index++;
+            String attributeName = tokenizer.nextCommand(index);
+            if(attributeName.matches("[A-Za-z0-9]+")) {
+                table.addColumn(attributeName);
+                writeToFile.writeAttribListToFile(DBName, tableName, table);
+            }
+            else{
+                return "[ERROR] Invalid column name";
+            }
+        }
+        else if(Objects.equals(tokenizer.nextCommand(index), "drop")){
+            index++;
+            String attributeName = tokenizer.nextCommand(index);
+            table.dropColumn(attributeName);
+            writeToFile.writeAttribListToFile(DBName, tableName, table);
+        }
+        else{
+            return "[ERROR] Invalid query";
+        }
         return "[OK]";
     }
 
@@ -222,8 +244,7 @@ public class Parser {
             if (attributeList.isEmpty()) {
                 return "[ERROR] Missing attribute names";
             } else {
-                table = new DBTable(tableName, attributeList);
-                WriteToFile writeToFile = new WriteToFile();
+                table = new DBTable(attributeList, null);
                 writeToFile.writeAttribListToFile(DBName, tableName, table);
             }
             index++;

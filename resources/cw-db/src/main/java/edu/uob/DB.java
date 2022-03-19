@@ -21,9 +21,9 @@ public class DB {
         return tables;
     }
 
-    public void addTable(DBTable tableToAdd){
-        tables.put(tableToAdd.getTableName(), tableToAdd);
-    }
+//    public void addTable(DBTable tableToAdd){
+//        tables.put(tableToAdd.getTableName(), tableToAdd);
+//    }
 
     public String getDBName() {
         return DBName;

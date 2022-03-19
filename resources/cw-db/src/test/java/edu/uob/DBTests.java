@@ -87,6 +87,14 @@ final class DBTests{
         assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
     }
 
+    @Test
+    void testServer6() throws IOException {
+        server.handleCommand("use db1    ;");
+        server.handleCommand("ALTER TABLE x add test;");
+        server.handleCommand("ALTER TABLE x drop test;");
+//        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
+    }
+
 
     @Test
     void testTokenizer1(){
