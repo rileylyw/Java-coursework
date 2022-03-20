@@ -90,8 +90,9 @@ final class DBTests{
     @Test
     void testServer6() throws IOException {
         server.handleCommand("use db1    ;");
+//        server.handleCommand("insert into x values('EFSdc sd vfsd', 123.123, 'gi');");
 //        server.handleCommand("insert into x values(123.123,'testing',TRUE, NULL)");
-        assertEquals("[OK] Database deleted", server.handleCommand("insert into x values();"));
+        assertEquals("[OK] Database deleted", server.handleCommand("insert into x values('EFSdc sd vfsd', 123.123, 'gi');"));
     }
 
     @Test

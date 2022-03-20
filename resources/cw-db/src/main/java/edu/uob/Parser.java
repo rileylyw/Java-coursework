@@ -78,7 +78,7 @@ public class Parser {
             attributeValues = new ArrayList<>();
             index++;
             while (!(Objects.equals(tokenizer.nextCommand(index), ")"))) {
-                if(tokenizer.nextCommand(index).charAt(0)=='\''){
+                if(tokenizer.nextCommand(index).charAt(0)=='\''){ //check if is value
                     String stringLiteral = stringLiteral(tokens, index);
                     attributeValues.add(stringLiteral);
                     index++;
@@ -102,7 +102,7 @@ public class Parser {
                         index++;
                     }
                 }
-                else{
+                else {
                     return "[ERROR] Invalid attribute name(s) | Invalid query";
                 }
             }
@@ -113,7 +113,8 @@ public class Parser {
         return "[OK]";
     }
 
-    //TODO: tbc
+
+
     public String stringLiteral(ArrayList<String> tokens, int index) {
         String stringLiteral = tokens.get(index);
         while(stringLiteral.charAt(stringLiteral.length()-1)!='\''){
@@ -124,11 +125,6 @@ public class Parser {
         stringLiteral = stringLiteral.substring(1, stringLiteral.length()-1);
         return stringLiteral;
     }
-
-//    public boolean isValue(ArrayList<String> tokens, int index){
-//        if()
-//    }
-
 
     public String parseAlterTable() throws IOException {
         index++;
