@@ -1,7 +1,6 @@
 package edu.uob;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class DBRow {
@@ -9,8 +8,6 @@ public class DBRow {
     private ArrayList<HashMap<String, String>> attributeValues; //list of hashmap
 
     public DBRow(){
-//        this.id = id;
-//        this.attributeValues = attributeValues;
     }
 
     public ArrayList<HashMap<String, String>> getAttributeValues() {
@@ -18,13 +15,10 @@ public class DBRow {
     }
 
     public void setAttributeValues(ArrayList<HashMap<String, String>> attributeValues) {
-        this.attributeValues = attributeValues;
-        this.id = attributeValues.size();
-//        for(HashMap map: attributeValues){
-//            if(map.get("d")){ //TODO: give ID if no have
-//
-//            }
-//        }
+        if(attributeValues!=null) {
+            this.attributeValues = attributeValues;
+            this.id = attributeValues.size();
+        }
     }
 
     public String setId() {

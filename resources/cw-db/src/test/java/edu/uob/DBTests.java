@@ -90,9 +90,9 @@ final class DBTests{
     @Test
     void testServer6() throws IOException {
         server.handleCommand("use db1    ;");
-//        server.handleCommand("alter table x add Sex;");
+        server.handleCommand("alter table x add Sex;");
 //        server.handleCommand("insert into x values('Tom', 55.55, 'TOM@gmail.com','M');");
-        assertEquals("[OK]", server.handleCommand("alter table x drop Sex;"));
+        assertEquals("[OK]", server.handleCommand("alter table x drop Email;"));
     }
 
     @Test

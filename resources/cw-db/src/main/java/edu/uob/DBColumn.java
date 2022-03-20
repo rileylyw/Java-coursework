@@ -17,17 +17,22 @@ public class DBColumn {
     }
 
     public void setAttributeList(ArrayList<String> columnNames) {
-        this.attributeList = columnNames;
-        if(!columnNames.get(0).equalsIgnoreCase("id")) {
-            this.attributeList.add(0, "id");
+        attributeList = new ArrayList<>();
+        if(!columnNames.get(0).equals("id")) {
+            this.attributeList.add("id");
         }
+        this.attributeList.addAll(columnNames);
     }
 
     public void addColumn(String columnToAdd){
         attributeList.add(columnToAdd);
     }
 
-    public void dropColumn(String columnToDrop){
+    public boolean dropColumn(String columnToDrop){
+        if(columnToDrop.equalsIgnoreCase("id")||!attributeList.contains(columnToDrop)) {
+            return false;
+        }
         attributeList.removeIf(col -> Objects.equals(col, columnToDrop));
+        return true;
     }
 }

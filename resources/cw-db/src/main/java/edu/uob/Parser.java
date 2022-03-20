@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 
 public class Parser {
@@ -33,26 +32,31 @@ public class Parser {
         if(index+1 >= tokens.size() || !Objects.equals(tokens.get(tokens.size()-1), ";")){
             return "[ERROR] Invalid query | Missing ;";
         }
-        switch(nextCommand){
-            case "select":
+        switch (nextCommand) {
+            case "select" -> {
                 System.out.println("select");
                 parseSelect();
-                break;
-            case "use":
+            }
+            case "use" -> {
                 System.out.println("use");
                 return parseUse();
-            case "create":
+            }
+            case "create" -> {
                 System.out.println("create");
                 return parseCreate();
-            case "drop":
+            }
+            case "drop" -> {
                 System.out.println("drop");
                 return parseDrop();
-            case "alter": //alter table
+            }
+            case "alter" -> { //alter table
                 System.out.println("alter");
                 return parseAlterTable();
-            case "insert": //insert into
+            }
+            case "insert" -> { //insert into
                 System.out.println("insert");
                 return parseInsertInto();
+            }
         }
         return "[OK]";
     }
@@ -161,10 +165,15 @@ public class Parser {
             }
         }
         else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "drop")){
-            index++; //TODO: cannot drop id
+            index++;
             String attributeName = tokenizer.nextCommand(index);
-            table.dropColumn(attributeName);
-            writeToFile.writeAttribListToFile(DBName, tableName, table);
+            if(table.dropColumn(attributeName)){
+                writeToFile.writeAttribListToFile(DBName, tableName, table);
+                return attributeName+" dropped";
+            }
+            else{
+                return "id column cannot be dropped | column does not exist";
+            }
         }
         else{
             return "[ERROR] Invalid query";
