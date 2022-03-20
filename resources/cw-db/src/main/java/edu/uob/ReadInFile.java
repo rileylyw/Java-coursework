@@ -34,10 +34,6 @@ public class ReadInFile {
         }
     }
 
-
-
-
-
     public ArrayList<String> getAttributeList() { //column names
         return attributeList;
     }

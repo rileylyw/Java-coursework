@@ -29,7 +29,7 @@ public class Parser {
     }
 
     public String parse() throws IOException {
-        String nextCommand = tokenizer.nextCommand(index);
+        String nextCommand = tokenizer.nextCommand(index).toLowerCase();
         if(index+1 >= tokens.size() || !Objects.equals(tokens.get(tokens.size()-1), ";")){
             return "[ERROR] Invalid query | Missing ;";
         }
@@ -57,19 +57,20 @@ public class Parser {
         return "[OK]";
     }
 
-    public String parseInsertInto(){
+    public String parseInsertInto() throws IOException {
         index++;
-        if(!Objects.equals(tokenizer.nextCommand(index), "into")){
+        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "into")){
             return "[ERROR] Invalid query: try INSERT INTO";
         }
         index++;
         tableFile = tokenizer.nextCommand(index)+".tab";
+        tableName = tokenizer.nextCommand(index);
         File file = new File(currentDirectory, tableFile);
         if(!file.exists()){
             return "[ERROR] Table does not exist";
         }
         index++;
-        if(!Objects.equals(tokenizer.nextCommand(index), "values")){
+        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "values")){
             return "[ERROR] Invalid query: try INSERT INTO <Table Name> VALUES (<Value List>);";
         }
         index++;
@@ -93,10 +94,10 @@ public class Parser {
                         index++;
                     }
                 }
-                else if(Objects.equals(tokenizer.nextCommand(index), "true")||
-                        Objects.equals(tokenizer.nextCommand(index), "false")||
-                        Objects.equals(tokenizer.nextCommand(index), "null")){
-                    attributeValues.add(tokenizer.nextCommand(index));
+                else if(Objects.equals(tokenizer.nextCommand(index), "TRUE")||
+                        Objects.equals(tokenizer.nextCommand(index), "FALSE")||
+                        Objects.equals(tokenizer.nextCommand(index), "NULL")){
+                    attributeValues.add(tokenizer.nextCommand(index).toUpperCase());
                     index++;
                     if(Objects.equals(tokenizer.nextCommand(index), ",")){
                         index++;
@@ -109,6 +110,12 @@ public class Parser {
             if (attributeValues.isEmpty()) {
                 return "[ERROR] Missing attribute values";
             }
+            //TODO: add to respective col, attributevalues
+            ReadInFile readInFile = new ReadInFile(file);
+            table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
+            table.addAttributeValues(attributeValues,readInFile.getAttributeList());
+            writeToFile.writeAttribListToFile(DBName,tableName,table);
+            System.out.println(table.getAttributeValues());
         }
         return "[OK]";
     }
@@ -128,7 +135,7 @@ public class Parser {
 
     public String parseAlterTable() throws IOException {
         index++;
-        if(!Objects.equals(tokenizer.nextCommand(index), "table")){
+        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")){
             return "[ERROR] Invalid query: try ALTER TABLE";
         }
         index++;
@@ -142,7 +149,7 @@ public class Parser {
         this.table = new DBTable(readInFile.getAttributeList(),
                 readInFile.getAttributeValues());
         index++;
-        if(Objects.equals(tokenizer.nextCommand(index), "add")){
+        if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "add")){
             index++;
             String attributeName = tokenizer.nextCommand(index);
             if(attributeName.matches("[A-Za-z0-9]+")) {
@@ -153,7 +160,7 @@ public class Parser {
                 return "[ERROR] Invalid column name";
             }
         }
-        else if(Objects.equals(tokenizer.nextCommand(index), "drop")){
+        else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "drop")){
             index++; //TODO: cannot drop id
             String attributeName = tokenizer.nextCommand(index);
             table.dropColumn(attributeName);
@@ -167,11 +174,11 @@ public class Parser {
 
     public String parseDrop(){
         index++;
-        if(Objects.equals(tokenizer.nextCommand(index), "table")){
+        if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")){
             index++;
             return parseDropTable();
         }
-        else if(Objects.equals(tokenizer.nextCommand(index), "database")){
+        else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "database")){
             index++;
             return parseDropDatabase();
         }
@@ -240,7 +247,7 @@ public class Parser {
         index++; //e.g. select * from marks;
         if(isWildAttribList(index)){
             index++;
-            if(Objects.equals(tokenizer.nextCommand(index), "from")){
+            if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "from")){
                 index++;
                 tableName = tokenizer.nextCommand(index);
 //                index++; // ;
@@ -257,10 +264,10 @@ public class Parser {
 
     public String parseCreate() throws IOException {
         index++;
-        if (Objects.equals(tokenizer.nextCommand(index), "table")) {
+        if (Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")) {
             return parseCreateTable();
         }
-        else if(Objects.equals(tokenizer.nextCommand(index), "database")) {
+        else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "database")) {
             return parseCreateDatabase();
         }
         else{

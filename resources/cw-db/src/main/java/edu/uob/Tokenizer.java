@@ -22,18 +22,18 @@ public class Tokenizer {
             tokens.add(st.nextToken());
         }
         tokens.removeAll(Arrays.asList(null, " "));
-        for(int i=0; i< tokens.size();){ // string literal remain case sensitive
-            if(tokens.get(i).charAt(0)=='\''){
-                while(tokens.get(i).charAt(tokens.get(i).length()-1)!='\''){
-                    i++;
-                }
-            }
-            else {
-                tokens.set(i, tokens.get(i).toLowerCase());
-            }
-            i++;
-        }
-        System.out.println("Tokens "+tokens);
+//        for(int i=0; i< tokens.size();){ // string literal remain case sensitive
+//            if(tokens.get(i).charAt(0)=='\''){
+//                while(tokens.get(i).charAt(tokens.get(i).length()-1)!='\''){
+//                    i++;
+//                }
+//            }
+//            else {
+//                tokens.set(i, tokens.get(i).toLowerCase());
+//            }
+//            i++;
+//        }
+//        System.out.println("Tokens "+tokens);
         return tokens;
     }
 

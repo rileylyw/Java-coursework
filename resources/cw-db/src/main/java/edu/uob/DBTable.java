@@ -14,6 +14,7 @@ public class DBTable {
 //        this.tableName = tableName;
         columns.setAttributeList(attributeList);
         rows.setAttributeValues(attributeValues);
+//        System.out.println("ID "+rows.getId());
     }
 
     public void addColumn(String columnToAdd){
@@ -23,25 +24,6 @@ public class DBTable {
     public void dropColumn(String columnToDrop){
         columns.dropColumn(columnToDrop);
     }
-//    public void storeFileToTable(String tableName, String tableFileName) throws IOException {
-////        ReadInFile readInFile = new ReadInFile();
-////        readInFile.readInFile(tableFileName);
-//        this.tableName = tableName;
-//        columns = new DBColumn();
-////        columns.setColumnNames(tableName, readInFile.getAttributeList());
-//        rows = new DBRow();
-////        rows.setAttributeValues(readInFile.getAttributeValues());
-//
-////        for(HashMap value: rows.getAttributeValues()) { //TODO: updates values
-////            value.replace("Age", String.valueOf(Math.round(Math.random() * (50 - 1 + 1) + 1)));
-////        }
-//        System.out.println(rows.getAttributeValues());
-//    }
-
-//    public void updateTableToFile(String tableFileName) throws IOException{
-//        WriteToFile writeToFile = new WriteToFile();
-//        writeToFile.writeToFile(tableFileName);
-//    }
 
     public ArrayList<HashMap<String, String>> getAttributeValues(){
         return rows.getAttributeValues();
@@ -51,6 +33,10 @@ public class DBTable {
         return columns.getAttributeList();
     }
 
+    public void addAttributeValues(ArrayList<String> attributeValuesToAdd,
+                                   ArrayList<String> attributeList){
+        rows.addAttributeValues(attributeValuesToAdd, attributeList);
+    }
 
 
 
