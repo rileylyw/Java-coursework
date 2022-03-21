@@ -83,7 +83,21 @@ public class Parser {
             attributeValues = new ArrayList<>();
             index++;
             while (!(Objects.equals(tokenizer.nextCommand(index), ")"))) {
-                if(tokenizer.nextCommand(index).charAt(0)=='\''){ //check if is value
+                if(Objects.equals(tokenizer.nextCommand(index), "'")){
+                    index++;
+                    String stringLiteral = "";
+                    while(!Objects.equals(tokenizer.nextCommand(index), "'")&&
+                    index< tokens.size()-1){
+                        stringLiteral = stringLiteral.concat(tokenizer.nextCommand(index));
+                        index++;
+                    }
+                    index++;
+                    attributeValues.add(stringLiteral);
+                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
+                        index++;
+                    }
+                }
+                else if(tokenizer.nextCommand(index).charAt(0)=='\''){ //check if is value
                     String stringLiteral = stringLiteral(tokens, index);
                     attributeValues.add(stringLiteral);
                     index++;
@@ -114,12 +128,14 @@ public class Parser {
             if (attributeValues.isEmpty()) {
                 return "[ERROR] Missing attribute values";
             }
+            System.out.println("HERE "+attributeValues);
+
             //TODO: add to respective col, attributevalues
             ReadInFile readInFile = new ReadInFile(file);
             table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
             table.addAttributeValues(attributeValues,readInFile.getAttributeList());
             writeToFile.writeAttribListToFile(DBName,tableName,table);
-            System.out.println(table.getAttributeValues());
+//            System.out.println(table.getAttributeValues());
         }
         return "[OK]";
     }
@@ -128,11 +144,14 @@ public class Parser {
 
     public String stringLiteral(ArrayList<String> tokens, int index) {
         String stringLiteral = tokens.get(index);
-        while(stringLiteral.charAt(stringLiteral.length()-1)!='\''){
+        while(stringLiteral.charAt(stringLiteral.length()-1)!='\''
+                && index<tokens.size()-1){
             index++;
-            stringLiteral = stringLiteral.concat(" ").concat(tokens.get(index));
+            stringLiteral = stringLiteral.concat(tokens.get(index));
+//            stringLiteral = stringLiteral.concat(" ").concat(tokens.get(index));
         }
         this.index = index;
+        System.out.println(stringLiteral);
         stringLiteral = stringLiteral.substring(1, stringLiteral.length()-1);
         return stringLiteral;
     }
