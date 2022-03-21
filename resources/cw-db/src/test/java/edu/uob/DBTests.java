@@ -100,6 +100,20 @@ final class DBTests{
 
     @Test
     void testServer7() throws IOException {
+        server.handleCommand("CREATE DATABASE markbook;");
+        server.handleCommand("USE markbook;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
+//        server.handleCommand("alter table x add Sex;");
+//        server.handleCommand("insert into x values('Tom', 55.55, 'TOM@gmail.com','M');");
+//        assertEquals("[OK]", server.handleCommand("alter table x drop Email;"));
+    }
+
+    @Test
+    void testServer8() throws IOException {
         server.handleCommand("use db1    ;");
         server.handleCommand("ALTER TABLE x add test;");
 //        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));

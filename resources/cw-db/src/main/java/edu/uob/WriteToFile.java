@@ -5,35 +5,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class WriteToFile {
-//    public void writeToFile(DBTable table) throws IOException{
-//        String path = "../" + table.getTableName() + ".tab";
-//        File tableFile = new File(path);
-//        if(tableFile.exists()) {
-//            try {
-//                BufferedWriter bw = new BufferedWriter(new FileWriter(tableFile));
-//                for (int i = 0; i < table.getAttributeList().size(); i++) { //cols
-//                    bw.write(table.getAttributeList().get(i));
-//                    bw.write(" ");
-//                }
-//                bw.write("\n");
-//                for(HashMap value: table.getAttributeValues()){ //rows
-//                    for (int i = 0; i < table.getAttributeList().size(); i++) {
-//                        bw.write((String) value.get(table.getAttributeList().get(i)));
-//                        bw.write(" ");
-//                    }
-//                    bw.write("\n");
-//                }
-//                bw.flush();
-//                bw.close();
-//            }
-//            catch (IOException e){
-//                e.printStackTrace();
-//            }
-//        }
-//        else{
-//            System.out.println("file doesn't exist");
-//        }
-//    }
+
+    public String displayTableToClient(DBTable table, ArrayList<String> attributeList){
+        StringBuilder str = new StringBuilder();
+        for (String col: attributeList) { //column list
+            str.append(col);
+            str.append("\t");
+        }
+        str.append("\n");
+        ArrayList<HashMap<String, String>> rows = table.getAttributeValues();
+            for (HashMap map : rows) {
+                for(String col: attributeList) {
+                    if (map.containsKey(col)){
+                        str.append(map.get(col));
+                        str.append("\t");
+                    }
+                }
+                str.append("\n");
+            }
+        String s = str.toString();
+        return s;
+    }
 
     public void writeAttribListToFile(String DBName, String tableName, DBTable table)
             throws IOException {

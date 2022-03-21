@@ -35,7 +35,7 @@ public class Parser {
         switch (nextCommand) {
             case "select" -> {
                 System.out.println("select");
-                parseSelect();
+                return parseSelect();
             }
             case "use" -> {
                 System.out.println("use");
@@ -59,6 +59,50 @@ public class Parser {
             }
         }
         return "[OK]";
+    }
+
+
+    //select <wildattributelist> from table (where condition)
+    public String parseSelect() throws IOException { //SELECT
+        index++; //e.g. select * from marks;
+        if(Objects.equals(tokenizer.nextCommand(index), "*")){
+            index++;
+        }
+        else{
+            attributeList = new ArrayList<>();
+            while (!(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "from"))) {
+                if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
+                    attributeList.add(tokenizer.nextCommand(index));
+                    index++;
+                    if (Objects.equals(tokenizer.nextCommand(index), ",")) {
+                        index++;
+                    }
+                } else {
+                    return "[ERROR] Invalid attribute name(s)";
+                }
+            }
+        }
+        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "from")){
+            return "[ERROR]";
+        }
+        index++;
+        tableFile = tokenizer.nextCommand(index)+".tab";
+        tableName = tokenizer.nextCommand(index);
+        File file = new File(currentDirectory, tableFile);
+        System.out.println("file "+file);
+        ReadInFile readInFile = new ReadInFile(file);
+        if(!file.exists()){
+            return "[ERROR] Table does not exist";
+        }
+        if(attributeList==null){
+            attributeList = readInFile.getAttributeList();
+        }
+        table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
+        System.out.println("TEST "+attributeList);
+        String str = writeToFile.displayTableToClient(table, attributeList);
+        //TODO where conditions
+//        return "[OK]";
+        return "[OK]\n"+str;
     }
 
     public String parseInsertInto() throws IOException {
@@ -125,12 +169,10 @@ public class Parser {
                     return "[ERROR] Invalid attribute name(s) | Invalid query";
                 }
             }
-            if (attributeValues.isEmpty()) {
+            if (attributeValues.isEmpty()) { //TODO: if more col than existed, error
                 return "[ERROR] Missing attribute values";
             }
-            System.out.println("HERE "+attributeValues);
-
-            //TODO: add to respective col, attributevalues
+//            System.out.println("HERE "+attributeValues);
             ReadInFile readInFile = new ReadInFile(file);
             table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
             table.addAttributeValues(attributeValues,readInFile.getAttributeList());
@@ -270,26 +312,6 @@ public class Parser {
         return currentDirectory;
     }
 
-    //select <wildattributelist> from table (where condition)
-    public boolean parseSelect(){ //SELECT
-        index++; //e.g. select * from marks;
-        if(isWildAttribList(index)){
-            index++;
-            if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "from")){
-                index++;
-                tableName = tokenizer.nextCommand(index);
-//                index++; // ;
-            }
-            else{
-                System.out.println("Invalid query");
-            }
-        }
-        else{
-            System.out.println("Invalid query");
-        }
-        return false;
-    }
-
     public String parseCreate() throws IOException {
         index++;
         if (Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")) {
@@ -372,13 +394,6 @@ public class Parser {
 
 
 
-    public boolean isWildAttribList(int index){
-        System.out.println(tokenizer.nextCommand(index));
-        if(Objects.equals(tokenizer.nextCommand(index), "*")){
-            return true;
-        }
-        //else if() //TODO: wildattributelist: attributename|attributename,attributelist
-        return false;
-    }
+
 
 }
