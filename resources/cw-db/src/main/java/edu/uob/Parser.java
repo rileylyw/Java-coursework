@@ -103,17 +103,32 @@ public class Parser {
 //        System.out.println(tokens);
         index++;
         System.out.println("token "+tokens.get(index));
+        DBTable filteredTable;
         if(Objects.equals(tokens.get(index), "(")) { //multiple conditions
-            DBTable filteredTable = this.multipleConditions(tokens, index, table);
-            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
-            return "[OK]\n"+str;
+            filteredTable = multipleConditions(tokens, index, table);
+//            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+//            return "[OK]\n"+str;
         }
         else{ //single condition
             index--;
-            DBTable filteredTable = conditions(tokens, index, table);
-            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
-            return "[OK]\n"+str;
+            filteredTable = conditions(tokens, index, table);
+//            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+//            return "[OK]\n"+str;
         }
+        ArrayList<HashMap<String, String>> rows = table.getAttributeValues();//original
+        ArrayList<HashMap<String, String>> filteredRecords = filteredTable.getAttributeValues();
+        HashSet<HashMap<String, String>> hs = new HashSet<>(filteredRecords);
+
+        for(HashMap map: rows){
+            if(hs.contains(map)){
+                for(String key : nameValuePair.keySet()){
+                    map.replace(key, nameValuePair.get(key));
+                }
+            }
+        }
+        System.out.printf("table values\n");
+        System.out.println(table.getAttributeValues());
+
 
 //        System.out.println("filtered records:");
 //        System.out.println(filteredTable.getAttributeValues());
@@ -121,6 +136,7 @@ public class Parser {
 
 //        String str = writeToFile.displayTableToClient(filteredTable, attributeList);
 //        return "[OK]\n"+str;
+        return "[OK]";
     }
 
     //select <wildattributelist> from table (where condition)
