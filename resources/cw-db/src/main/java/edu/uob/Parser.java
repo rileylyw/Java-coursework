@@ -114,7 +114,7 @@ public class Parser {
     }
 
     public DBTable conditions(ArrayList<String> tokens, int index, DBTable currentTable) {
-        Stack filteredTables = new Stack(10);
+//        Stack filteredTables = new Stack(10);
         DBTable filteredtable = null;
         attributeValues = new ArrayList<>();
         index++;
@@ -122,16 +122,16 @@ public class Parser {
         String attributeName = tokens.get(index);
         if(attributeName.matches("[A-Za-z0-9]+")) { //attribName, op, value
             index++;
-            switch(tokens.get(index)){
-                case "=":
+            switch(tokens.get(index).toLowerCase()){
+                case "=" -> {
                     index++;
-                    if(Objects.equals(tokens.get(index), "=")){
+                    if (Objects.equals(tokens.get(index), "=")) {
                         index++;
                         isValue(tokens, index, attributeValues); //TODO: if not
                         ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
                         ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
-                        for(HashMap map: rows){
-                            if(map.containsKey(attributeName)){
+                        for (HashMap map : rows) {
+                            if (map.containsKey(attributeName)) {
                                 if (attributeValues.contains(map.get(attributeName))) {
                                     filteredRecords.add(map);
                                 }
@@ -139,15 +139,16 @@ public class Parser {
                         }
                         filteredtable = new DBTable(attributeList, filteredRecords);
                     }
-                case "!":
+                }
+                case "!" -> {
                     index++;
-                    if(Objects.equals(tokens.get(index), "=")){
+                    if (Objects.equals(tokens.get(index), "=")) {
                         index++;
                         isValue(tokens, index, attributeValues); //TODO: if not
                         ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
                         ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
-                        for(HashMap map: rows){
-                            if(map.containsKey(attributeName)){
+                        for (HashMap map : rows) {
+                            if (map.containsKey(attributeName)) {
                                 if (!attributeValues.contains(map.get(attributeName))) {
                                     filteredRecords.add(map);
                                 }
@@ -155,20 +156,89 @@ public class Parser {
                         }
                         filteredtable = new DBTable(attributeList, filteredRecords);
                     }
-                case ">":
+                }
+                case ">" -> {
+                    index++;
+                    if (Objects.equals(tokens.get(index), "=")) {
+                        index++;
+                        isValue(tokens, index, attributeValues); //TODO: if not
+                        int value = Integer.valueOf(attributeValues.get(0));
+                        ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                        ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                        for (HashMap map : rows) {
+                            if (map.containsKey(attributeName)) {
+                                if (Integer.valueOf((String) map.get(attributeName)) >= value) {
+                                    filteredRecords.add(map);
+                                }
+                            }
+                        }
+                        filteredtable = new DBTable(attributeList, filteredRecords);
+                    }
+                    else{
+                        isValue(tokens, index, attributeValues); //TODO: if not
+                        int value = Integer.valueOf(attributeValues.get(0));
+                        ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                        ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                        for (HashMap map : rows) {
+                            if (map.containsKey(attributeName)) {
+                                if (Integer.valueOf((String) map.get(attributeName)) > value) {
+                                    filteredRecords.add(map);
+                                }
+                            }
+                        }
+                        filteredtable = new DBTable(attributeList, filteredRecords);
+                    }
+                }
+                case "<" -> {
+                    index++;
+                    if (Objects.equals(tokens.get(index), "=")) {
+                        index++;
+                        isValue(tokens, index, attributeValues); //TODO: if not
+                        int value = Integer.valueOf(attributeValues.get(0));
+                        ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                        ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                        for (HashMap map : rows) {
+                            if (map.containsKey(attributeName)) {
+                                if (Integer.valueOf((String) map.get(attributeName)) <= value) {
+                                    filteredRecords.add(map);
+                                }
+                            }
+                        }
+                        filteredtable = new DBTable(attributeList, filteredRecords);
+                    }
+                    else{
+                        isValue(tokens, index, attributeValues); //TODO: if not
+                        int value = Integer.valueOf(attributeValues.get(0));
+                        ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                        ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                        for (HashMap map : rows) {
+                            if (map.containsKey(attributeName)) {
+                                if (Integer.valueOf((String) map.get(attributeName)) < value) {
+                                    filteredRecords.add(map);
+                                }
+                            }
+                        }
+                        filteredtable = new DBTable(attributeList, filteredRecords);
+                    }
+                }
+                case "like" -> {
                     index++;
                     isValue(tokens, index, attributeValues); //TODO: if not
-                    int value = Integer.valueOf(attributeValues.get(0));
                     ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
                     ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
-                    for(HashMap map: rows){
-                        if(map.containsKey(attributeName)){
-                            if(Integer.valueOf((String)map.get(attributeName))>value){
+                    for (HashMap map : rows) {
+                        if (map.containsKey(attributeName)) {
+                            String str = (String) map.get(attributeName);
+                            String value = attributeValues.get(0);
+                            if (str.contains(value)) {
                                 filteredRecords.add(map);
                             }
                         }
                     }
                     filteredtable = new DBTable(attributeList, filteredRecords);
+                }
+
+
             }
         }
         this.index = index;
