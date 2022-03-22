@@ -124,37 +124,42 @@ public class Parser {
         Stack operator = new Stack(10);
         DBTable filteredtable = null;
 
-//        System.out.println("HERE "+tokens.get(index));
         for(int i=0; i< tokens.size(); i++){
             if(Objects.equals(tokens.get(i), "(") && !Objects.equals(tokens.get(i+1), "(")){
-                filteredtable = conditions(tokens, i, currentTable);
-            }
-            if(Objects.equals(tokens.get(i), ")") && !Objects.equals(tokens.get(i+1), ")")){
-//                System.out.println("pushing to stack");
+//                System.out.println("fetch and push");
 //                System.out.println(tokens.get(i + 1));
+                filteredtable = conditions(tokens, i, currentTable);
+//                System.out.println(filteredtable.getAttributeValues());
                 filteredTables.push(filteredtable);
-//                System.out.println("HERE "+filteredTables.peek().getAttributeValues());
             }
+//            if(Objects.equals(tokens.get(i), ")")){
+////            if(Objects.equals(tokens.get(i), ")") && !Objects.equals(tokens.get(i+1), ")")){
+//                filteredTables.push(filteredtable);
+//            }
             if(Objects.equals(tokens.get(i).toLowerCase(), "and") ||
                     Objects.equals(tokens.get(i).toLowerCase(), "or")) {
                 operator.pushOp(tokens.get(i).toLowerCase());
             }
-            if(Objects.equals(tokens.get(i), ")") && (Objects.equals(tokens.get(i+1), ")") ||
+            if(Objects.equals(tokens.get(i), ")")&& (Objects.equals(tokens.get(i+1), ")") ||
                     Objects.equals(tokens.get(i+1), ";"))) {
                 //TODO nested conditions
+//                System.out.println("pop and pop");
+//                System.out.println(tokens.get(i + 1));
                 String op = operator.popOp();
                 DBTable temp = filteredTables.pop();
                 DBTable temp2 = filteredTables.pop();
+//                System.out.println("temp records");
+//                System.out.println(temp.getAttributeValues());
+//                System.out.println("temp 2 records");
+//                System.out.println(temp2.getAttributeValues());
                 ArrayList<HashMap<String, String>> rows1 = temp.getAttributeValues();
                 ArrayList<HashMap<String, String>> rows2 = temp2.getAttributeValues();
-                ArrayList<HashMap<String, String>> filteredRecords = null;//= new ArrayList<>();
-
-                HashSet<HashMap<String, String>> hs1 = new HashSet<>(rows1);
+                ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+//                HashSet<HashMap<String, String>> hs1 = new HashSet<>(rows1);
                 HashSet<HashMap<String, String>> hs2 = new HashSet<>(rows2);
 
                 if(op.toLowerCase().equals("and")) {
-                    filteredRecords = new ArrayList<>();
-                    for (HashMap map : rows1) { //AND
+                    for (HashMap map : rows1) {
                         if (hs2.contains(map)) {
                             filteredRecords.add(map);
                         }
@@ -163,18 +168,21 @@ public class Parser {
                 else if(op.toLowerCase().equals("or")){
                     rows1.addAll(rows2);
                     HashSet<HashMap<String, String>> toClear = new HashSet<>(rows1);
-                    filteredRecords = new ArrayList<>(toClear);
+                    for(HashMap map: currentTable.getAttributeValues()){
+                        if(toClear.contains(map)){
+                            filteredRecords.add(map);
+                        }
+                    }
                 }
-
-                filteredtable = new DBTable(attributeList, filteredRecords);
+                if(Objects.equals(tokens.get(i+1), ";")) {
+                    filteredtable = new DBTable(attributeList, filteredRecords);
+                }
+                else{
+                    filteredtable = new DBTable(attributeList, filteredRecords);
+                    filteredTables.push(filteredtable);
+                }
             }
         }
-//        System.out.println(filteredtable.getAttributeValues());
-//        DBTable temp = filteredTables.pop();
-//        DBTable temp2 = filteredTables.pop();
-//        System.out.println("temp "+temp.getAttributeValues());
-//        System.out.println("temp 2"+temp2.getAttributeValues());
-
         return filteredtable;
     }
 
