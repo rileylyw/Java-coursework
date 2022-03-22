@@ -56,10 +56,72 @@ public class Parser {
                 System.out.println("insert");
                 return parseInsertInto();
             }
+            case "update" -> { //insert into
+                System.out.println("update");
+                return parseUpdate();
+            }
         }
         return "[OK]";
     }
 
+    public String parseUpdate() throws IOException {
+        index++;
+        tableFile = tokens.get(index)+".tab";
+        tableName = tokens.get(index);
+        File file = new File(currentDirectory, tableFile);
+        ReadInFile readInFile = new ReadInFile(file);
+        if(!file.exists()){
+            return "[ERROR] Table does not exist";
+        }
+        if(attributeList==null){
+            attributeList = readInFile.getAttributeList();
+        }
+        table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
+        index++;
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "set")){
+            return "[ERROR] Invalid query";
+        }
+        index++;
+        HashMap<String, String> nameValuePair = new HashMap<>();
+        while (!(Objects.equals(tokens.get(index).toLowerCase(), "where"))) {
+            String attributeName = tokens.get(index);
+            attributeValues = new ArrayList<>();
+            if (attributeName.matches("[A-Za-z0-9]+")) { //attribute value
+                index++;
+                if(!Objects.equals(tokens.get(index), "=")){
+                    return "[ERROR]";
+                }
+                index++;
+                isValue(tokens,index,attributeValues);
+                nameValuePair.put(attributeName, attributeValues.get(0));
+            }
+        }
+
+//        System.out.println("table records:");
+//        System.out.println(table.getAttributeValues());
+//        System.out.println("tokens:");
+//        System.out.println(tokens);
+        index++;
+        System.out.println("token "+tokens.get(index));
+        if(Objects.equals(tokens.get(index), "(")) { //multiple conditions
+            DBTable filteredTable = this.multipleConditions(tokens, index, table);
+            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+            return "[OK]\n"+str;
+        }
+        else{ //single condition
+            index--;
+            DBTable filteredTable = conditions(tokens, index, table);
+            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+            return "[OK]\n"+str;
+        }
+
+//        System.out.println("filtered records:");
+//        System.out.println(filteredTable.getAttributeValues());
+//        System.out.println("Namevalue "+nameValuePair);
+
+//        String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+//        return "[OK]\n"+str;
+    }
 
     //select <wildattributelist> from table (where condition)
     public String parseSelect() throws IOException { //SELECT
@@ -120,16 +182,17 @@ public class Parser {
 
     public DBTable multipleConditions(ArrayList<String> tokens, int index, DBTable currentTable){
         // ((cond1) AND (cond2)) AND ((cond3) OR (cond4))
+        System.out.println("called method");
         Stack filteredTables = new Stack(10);
         Stack operator = new Stack(10);
         DBTable filteredtable = null;
 
         for(int i=0; i< tokens.size(); i++){
             if(Objects.equals(tokens.get(i), "(") && !Objects.equals(tokens.get(i+1), "(")){
-//                System.out.println("fetch and push");
-//                System.out.println(tokens.get(i + 1));
+                System.out.println("fetch and push");
+                System.out.println(tokens.get(i + 1));
                 filteredtable = conditions(tokens, i, currentTable);
-//                System.out.println(filteredtable.getAttributeValues());
+                System.out.println(filteredtable.getAttributeValues());
                 filteredTables.push(filteredtable);
             }
 //            if(Objects.equals(tokens.get(i), ")")){
@@ -143,15 +206,15 @@ public class Parser {
             if(Objects.equals(tokens.get(i), ")")&& (Objects.equals(tokens.get(i+1), ")") ||
                     Objects.equals(tokens.get(i+1), ";"))) {
                 //TODO nested conditions
-//                System.out.println("pop and pop");
-//                System.out.println(tokens.get(i + 1));
+                System.out.println("pop and pop");
+                System.out.println(tokens.get(i + 1));
                 String op = operator.popOp();
                 DBTable temp = filteredTables.pop();
                 DBTable temp2 = filteredTables.pop();
-//                System.out.println("temp records");
-//                System.out.println(temp.getAttributeValues());
-//                System.out.println("temp 2 records");
-//                System.out.println(temp2.getAttributeValues());
+                System.out.println("temp records");
+                System.out.println(temp.getAttributeValues());
+                System.out.println("temp 2 records");
+                System.out.println(temp2.getAttributeValues());
                 ArrayList<HashMap<String, String>> rows1 = temp.getAttributeValues();
                 ArrayList<HashMap<String, String>> rows2 = temp2.getAttributeValues();
                 ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
