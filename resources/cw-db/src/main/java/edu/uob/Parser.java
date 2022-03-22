@@ -2,10 +2,7 @@ package edu.uob;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 
 public class Parser {
@@ -91,7 +88,7 @@ public class Parser {
         tableFile = tokens.get(index)+".tab";
         tableName = tokens.get(index);
         File file = new File(currentDirectory, tableFile);
-        System.out.println("file "+file);
+//        System.out.println("file "+file);
         ReadInFile readInFile = new ReadInFile(file);
         if(!file.exists()){
             return "[ERROR] Table does not exist";
@@ -105,20 +102,88 @@ public class Parser {
             String str = writeToFile.displayTableToClient(table, attributeList);
             return "[OK]\n"+str;
         }
-        DBTable filteredTable = conditions(tokens, index,table);
+        index++;
+        if(Objects.equals(tokens.get(index), "(")){
+            //TODO: check multiple conditions
+            DBTable filteredTable = multipleConditions(tokens, index,table);
+            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+            return "[OK]\n"+str;
+        }
+        else {
+            index--;
+            DBTable filteredTable = conditions(tokens, index, table);
+            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
+            return "[OK]\n"+str;
+        }
+//        return "[OK]\n"+str;
+    }
 
+    public DBTable multipleConditions(ArrayList<String> tokens, int index, DBTable currentTable){
+        // ((cond1) AND (cond2)) AND ((cond3) OR (cond4))
+        Stack filteredTables = new Stack(10);
+        Stack operator = new Stack(10);
+        DBTable filteredtable = null;
 
-        String str = writeToFile.displayTableToClient(filteredTable, attributeList);
-        //TODO where conditions
-        return "[OK]\n"+str;
+//        System.out.println("HERE "+tokens.get(index));
+        for(int i=0; i< tokens.size(); i++){
+            if(Objects.equals(tokens.get(i), "(") && !Objects.equals(tokens.get(i+1), "(")){
+                filteredtable = conditions(tokens, i, currentTable);
+            }
+            if(Objects.equals(tokens.get(i), ")") && !Objects.equals(tokens.get(i+1), ")")){
+//                System.out.println("pushing to stack");
+//                System.out.println(tokens.get(i + 1));
+                filteredTables.push(filteredtable);
+//                System.out.println("HERE "+filteredTables.peek().getAttributeValues());
+            }
+            if(Objects.equals(tokens.get(i).toLowerCase(), "and") ||
+                    Objects.equals(tokens.get(i).toLowerCase(), "or")) {
+                operator.pushOp(tokens.get(i).toLowerCase());
+            }
+            if(Objects.equals(tokens.get(i), ")") && (Objects.equals(tokens.get(i+1), ")") ||
+                    Objects.equals(tokens.get(i+1), ";"))) {
+                //TODO nested conditions
+                String op = operator.popOp();
+                DBTable temp = filteredTables.pop();
+                DBTable temp2 = filteredTables.pop();
+                ArrayList<HashMap<String, String>> rows1 = temp.getAttributeValues();
+                ArrayList<HashMap<String, String>> rows2 = temp2.getAttributeValues();
+                ArrayList<HashMap<String, String>> filteredRecords = null;//= new ArrayList<>();
+
+                HashSet<HashMap<String, String>> hs1 = new HashSet<>(rows1);
+                HashSet<HashMap<String, String>> hs2 = new HashSet<>(rows2);
+
+                if(op.toLowerCase().equals("and")) {
+                    filteredRecords = new ArrayList<>();
+                    for (HashMap map : rows1) { //AND
+                        if (hs2.contains(map)) {
+                            filteredRecords.add(map);
+                        }
+                    }
+                }
+                else if(op.toLowerCase().equals("or")){
+                    rows1.addAll(rows2);
+                    HashSet<HashMap<String, String>> toClear = new HashSet<>(rows1);
+                    filteredRecords = new ArrayList<>(toClear);
+                }
+
+                filteredtable = new DBTable(attributeList, filteredRecords);
+            }
+        }
+//        System.out.println(filteredtable.getAttributeValues());
+//        DBTable temp = filteredTables.pop();
+//        DBTable temp2 = filteredTables.pop();
+//        System.out.println("temp "+temp.getAttributeValues());
+//        System.out.println("temp 2"+temp2.getAttributeValues());
+
+        return filteredtable;
     }
 
     public DBTable conditions(ArrayList<String> tokens, int index, DBTable currentTable) {
 //        Stack filteredTables = new Stack(10);
+//        Stack operator = new Stack(10);
         DBTable filteredtable = null;
         attributeValues = new ArrayList<>();
         index++;
-        //        Stack operator = new Stack(10);
         String attributeName = tokens.get(index);
         if(attributeName.matches("[A-Za-z0-9]+")) { //attribName, op, value
             index++;
@@ -327,7 +392,7 @@ public class Parser {
             table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
             table.addAttributeValues(attributeValues,readInFile.getAttributeList());
             writeToFile.writeAttribListToFile(DBName,tableName,table);
-            System.out.println(table.getAttributeValues());
+//            System.out.println(table.getAttributeValues());
         }
         return "[OK]";
     }
@@ -343,7 +408,7 @@ public class Parser {
 //            stringLiteral = stringLiteral.concat(" ").concat(tokens.get(index));
         }
         this.index = index;
-        System.out.println(sl);
+//        System.out.println(sl);
         sl = sl.substring(1, sl.length()-1);
         return sl;
     }

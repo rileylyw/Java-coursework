@@ -114,6 +114,18 @@ final class DBTests{
 
     @Test
     void testServer8() throws IOException {
+        server.handleCommand("CREATE DATABASE markbook;");
+        server.handleCommand("USE markbook;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
+        server.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
+    }
+
+    @Test
+    void testServer9() throws IOException {
         server.handleCommand("use db1    ;");
         server.handleCommand("ALTER TABLE x add test;");
 //        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
