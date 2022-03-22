@@ -15,6 +15,7 @@ public class WriteToFile {
         str.append("\n");
         ArrayList<HashMap<String, String>> rows = table.getAttributeValues();
             for (HashMap map : rows) {
+                System.out.println(map);
                 for(String col: attributeList) {
                     if (map.containsKey(col)){
                         str.append(map.get(col));

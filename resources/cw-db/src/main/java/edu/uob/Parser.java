@@ -3,6 +3,8 @@ package edu.uob;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Objects;
 
 
@@ -28,7 +30,7 @@ public class Parser {
     }
 
     public String parse() throws IOException {
-        String nextCommand = tokenizer.nextCommand(index).toLowerCase();
+        String nextCommand = tokens.get(index).toLowerCase();
         if(index+1 >= tokens.size() || !Objects.equals(tokens.get(tokens.size()-1), ";")){
             return "[ERROR] Invalid query | Missing ;";
         }
@@ -65,16 +67,16 @@ public class Parser {
     //select <wildattributelist> from table (where condition)
     public String parseSelect() throws IOException { //SELECT
         index++; //e.g. select * from marks;
-        if(Objects.equals(tokenizer.nextCommand(index), "*")){
+        if(Objects.equals(tokens.get(index), "*")){
             index++;
         }
         else{
             attributeList = new ArrayList<>();
-            while (!(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "from"))) {
-                if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
-                    attributeList.add(tokenizer.nextCommand(index));
+            while (!(Objects.equals(tokens.get(index).toLowerCase(), "from"))) {
+                if (tokens.get(index).matches("[A-Za-z0-9]+")) {
+                    attributeList.add(tokens.get(index));
                     index++;
-                    if (Objects.equals(tokenizer.nextCommand(index), ",")) {
+                    if (Objects.equals(tokens.get(index), ",")) {
                         index++;
                     }
                 } else {
@@ -82,12 +84,12 @@ public class Parser {
                 }
             }
         }
-        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "from")){
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "from")){
             return "[ERROR]";
         }
         index++;
-        tableFile = tokenizer.nextCommand(index)+".tab";
-        tableName = tokenizer.nextCommand(index);
+        tableFile = tokens.get(index)+".tab";
+        tableName = tokens.get(index);
         File file = new File(currentDirectory, tableFile);
         System.out.println("file "+file);
         ReadInFile readInFile = new ReadInFile(file);
@@ -98,74 +100,152 @@ public class Parser {
             attributeList = readInFile.getAttributeList();
         }
         table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
-        System.out.println("TEST "+attributeList);
-        String str = writeToFile.displayTableToClient(table, attributeList);
+        index++; //WHERE
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "where")){
+            String str = writeToFile.displayTableToClient(table, attributeList);
+            return "[OK]\n"+str;
+        }
+        DBTable filteredTable = conditions(tokens, index,table);
+
+
+        String str = writeToFile.displayTableToClient(filteredTable, attributeList);
         //TODO where conditions
-//        return "[OK]";
         return "[OK]\n"+str;
     }
 
+    public DBTable conditions(ArrayList<String> tokens, int index, DBTable currentTable) {
+        Stack filteredTables = new Stack(10);
+        DBTable filteredtable = null;
+        attributeValues = new ArrayList<>();
+        index++;
+        //        Stack operator = new Stack(10);
+        String attributeName = tokens.get(index);
+        if(attributeName.matches("[A-Za-z0-9]+")) { //attribName, op, value
+            index++;
+            switch(tokens.get(index)){
+                case "=":
+                    index++;
+                    if(Objects.equals(tokens.get(index), "=")){
+                        index++;
+                        isValue(tokens, index, attributeValues); //TODO: if not
+                        ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                        ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                        for(HashMap map: rows){
+                            if(map.containsKey(attributeName)){
+                                if (attributeValues.contains(map.get(attributeName))) {
+                                    filteredRecords.add(map);
+                                }
+                            }
+                        }
+                        filteredtable = new DBTable(attributeList, filteredRecords);
+                    }
+                case "!":
+                    index++;
+                    if(Objects.equals(tokens.get(index), "=")){
+                        index++;
+                        isValue(tokens, index, attributeValues); //TODO: if not
+                        ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                        ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                        for(HashMap map: rows){
+                            if(map.containsKey(attributeName)){
+                                if (!attributeValues.contains(map.get(attributeName))) {
+                                    filteredRecords.add(map);
+                                }
+                            }
+                        }
+                        filteredtable = new DBTable(attributeList, filteredRecords);
+                    }
+                case ">":
+                    index++;
+                    isValue(tokens, index, attributeValues); //TODO: if not
+                    int value = Integer.valueOf(attributeValues.get(0));
+                    ArrayList<HashMap<String, String>> rows = currentTable.getAttributeValues();
+                    ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
+                    for(HashMap map: rows){
+                        if(map.containsKey(attributeName)){
+                            if(Integer.valueOf((String)map.get(attributeName))>value){
+                                filteredRecords.add(map);
+                            }
+                        }
+                    }
+                    filteredtable = new DBTable(attributeList, filteredRecords);
+            }
+        }
+        this.index = index;
+        return filteredtable;
+    }
+
+    public boolean isValue(ArrayList<String> tokens, int index, ArrayList<String> attributeValues){
+//        ArrayList<String> values = new ArrayList<>();
+        if(Objects.equals(tokens.get(index), "'")){
+            index++;
+            String sl = "";
+            while(!Objects.equals(tokens.get(index), "'")&&
+                    index< tokens.size()-1){
+                sl = sl.concat(tokens.get(index));
+                index++;
+            }
+            index++;
+            attributeValues.add(sl);
+            if(Objects.equals(tokens.get(index), ",")){
+                index++;
+            }
+        }
+        else if(tokens.get(index).charAt(0)=='\''){ //check if is value
+            String sl = stringLiteral(tokens, index);
+            attributeValues.add(sl);
+            index++;
+            if(Objects.equals(tokens.get(index), ",")){
+                index++;
+            }
+        }
+        else if(tokens.get(index).matches("^[+-]?\\d+[.]?{1}\\d+")){
+            attributeValues.add(tokens.get(index));
+            index++;
+            if(Objects.equals(tokens.get(index), ",")){
+                index++;
+            }
+        }
+        else if(Objects.equals(tokens.get(index), "TRUE")||
+                Objects.equals(tokens.get(index), "FALSE")||
+                Objects.equals(tokens.get(index), "NULL")){
+            attributeValues.add(tokens.get(index).toUpperCase());
+            index++;
+            if(Objects.equals(tokens.get(index), ",")){
+                index++;
+            }
+        }
+        else{
+            return false;
+        }
+        this.index = index;
+        return true;
+    }
+
+
     public String parseInsertInto() throws IOException {
         index++;
-        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "into")){
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "into")){
             return "[ERROR] Invalid query: try INSERT INTO";
         }
         index++;
-        tableFile = tokenizer.nextCommand(index)+".tab";
-        tableName = tokenizer.nextCommand(index);
+        tableFile = tokens.get(index)+".tab";
+        tableName = tokens.get(index);
         File file = new File(currentDirectory, tableFile);
         if(!file.exists()){
             return "[ERROR] Table does not exist";
         }
         index++;
-        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "values")){
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "values")){
             return "[ERROR] Invalid query: try INSERT INTO <Table Name> VALUES (<Value List>);";
         }
         index++;
 
-        if(Objects.equals(tokenizer.nextCommand(index), "(")) {
+        if(Objects.equals(tokens.get(index), "(")) {
             attributeValues = new ArrayList<>();
             index++;
-            while (!(Objects.equals(tokenizer.nextCommand(index), ")"))) {
-                if(Objects.equals(tokenizer.nextCommand(index), "'")){
-                    index++;
-                    String stringLiteral = "";
-                    while(!Objects.equals(tokenizer.nextCommand(index), "'")&&
-                    index< tokens.size()-1){
-                        stringLiteral = stringLiteral.concat(tokenizer.nextCommand(index));
-                        index++;
-                    }
-                    index++;
-                    attributeValues.add(stringLiteral);
-                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
-                        index++;
-                    }
-                }
-                else if(tokenizer.nextCommand(index).charAt(0)=='\''){ //check if is value
-                    String stringLiteral = stringLiteral(tokens, index);
-                    attributeValues.add(stringLiteral);
-                    index++;
-                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
-                        index++;
-                    }
-                }
-                else if(tokenizer.nextCommand(index).matches("^[+-]?\\d+[.]?{1}\\d+")){
-                    attributeValues.add(tokenizer.nextCommand(index));
-                    index++;
-                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
-                        index++;
-                    }
-                }
-                else if(Objects.equals(tokenizer.nextCommand(index), "TRUE")||
-                        Objects.equals(tokenizer.nextCommand(index), "FALSE")||
-                        Objects.equals(tokenizer.nextCommand(index), "NULL")){
-                    attributeValues.add(tokenizer.nextCommand(index).toUpperCase());
-                    index++;
-                    if(Objects.equals(tokenizer.nextCommand(index), ",")){
-                        index++;
-                    }
-                }
-                else {
+            while (!(Objects.equals(tokens.get(index), ")"))) {
+                if(!isValue(tokens, index, attributeValues)){
                     return "[ERROR] Invalid attribute name(s) | Invalid query";
                 }
             }
@@ -177,7 +257,7 @@ public class Parser {
             table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
             table.addAttributeValues(attributeValues,readInFile.getAttributeList());
             writeToFile.writeAttribListToFile(DBName,tableName,table);
-//            System.out.println(table.getAttributeValues());
+            System.out.println(table.getAttributeValues());
         }
         return "[OK]";
     }
@@ -185,27 +265,27 @@ public class Parser {
 
 
     public String stringLiteral(ArrayList<String> tokens, int index) {
-        String stringLiteral = tokens.get(index);
-        while(stringLiteral.charAt(stringLiteral.length()-1)!='\''
+        String sl = tokens.get(index);
+        while(sl.charAt(sl.length()-1)!='\''
                 && index<tokens.size()-1){
             index++;
-            stringLiteral = stringLiteral.concat(tokens.get(index));
+            sl = sl.concat(tokens.get(index));
 //            stringLiteral = stringLiteral.concat(" ").concat(tokens.get(index));
         }
         this.index = index;
-        System.out.println(stringLiteral);
-        stringLiteral = stringLiteral.substring(1, stringLiteral.length()-1);
-        return stringLiteral;
+        System.out.println(sl);
+        sl = sl.substring(1, sl.length()-1);
+        return sl;
     }
 
     public String parseAlterTable() throws IOException {
         index++;
-        if(!Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")){
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "table")){
             return "[ERROR] Invalid query: try ALTER TABLE";
         }
         index++;
-        tableFile = tokenizer.nextCommand(index)+".tab";
-        tableName = tokenizer.nextCommand(index);
+        tableFile = tokens.get(index)+".tab";
+        tableName = tokens.get(index);
         File file = new File(currentDirectory, tableFile);
         if(!file.exists()){
             return "[ERROR] Table "+tableFile+" does not exist";
@@ -214,9 +294,9 @@ public class Parser {
         this.table = new DBTable(readInFile.getAttributeList(),
                 readInFile.getAttributeValues());
         index++;
-        if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "add")){
+        if(Objects.equals(tokens.get(index).toLowerCase(), "add")){
             index++;
-            String attributeName = tokenizer.nextCommand(index);
+            String attributeName = tokens.get(index);
             if(attributeName.matches("[A-Za-z0-9]+")) {
                 table.addColumn(attributeName);
                 writeToFile.writeAttribListToFile(DBName, tableName, table);
@@ -225,9 +305,9 @@ public class Parser {
                 return "[ERROR] Invalid column name";
             }
         }
-        else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "drop")){
+        else if(Objects.equals(tokens.get(index).toLowerCase(), "drop")){
             index++;
-            String attributeName = tokenizer.nextCommand(index);
+            String attributeName = tokens.get(index);
             if(table.dropColumn(attributeName)){
                 writeToFile.writeAttribListToFile(DBName, tableName, table);
                 return attributeName+" dropped";
@@ -244,11 +324,11 @@ public class Parser {
 
     public String parseDrop(){
         index++;
-        if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")){
+        if(Objects.equals(tokens.get(index).toLowerCase(), "table")){
             index++;
             return parseDropTable();
         }
-        else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "database")){
+        else if(Objects.equals(tokens.get(index).toLowerCase(), "database")){
             index++;
             return parseDropDatabase();
         }
@@ -258,7 +338,7 @@ public class Parser {
     }
 
     public String parseDropTable(){
-        tableFile = tokenizer.nextCommand(index)+".tab";
+        tableFile = tokens.get(index)+".tab";
         File file = new File(currentDirectory, tableFile);
         if(file.exists()){
             file.delete();
@@ -271,7 +351,7 @@ public class Parser {
     }
 
     public String parseDropDatabase(){
-        File file = new File("../"+tokenizer.nextCommand(index));
+        File file = new File("../"+tokens.get(index));
         if(file.exists() && file.isDirectory()){
             String[] files = file.list();
             for(String s: files){
@@ -291,13 +371,13 @@ public class Parser {
 
     public String parseUse(){ //USE DBName;
         index++;
-        if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){ //dbname
-            String path = "../" + tokenizer.nextCommand(index);
+        if(tokens.get(index).matches("[A-Za-z0-9]+")){ //dbname
+            String path = "../" + tokens.get(index);
             File databaseDirectory = new File(path);
             if(databaseDirectory.exists()){
                 currentDirectory = databaseDirectory;
-                this.DBName = tokenizer.nextCommand(index);
-                return "Current directory: "+tokenizer.nextCommand(index);
+                this.DBName = tokens.get(index);
+                return "Current directory: "+tokens.get(index);
             }
             else{
                 return "Database doesn't exist, please create";
@@ -314,10 +394,10 @@ public class Parser {
 
     public String parseCreate() throws IOException {
         index++;
-        if (Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "table")) {
+        if (Objects.equals(tokens.get(index).toLowerCase(), "table")) {
             return parseCreateTable();
         }
-        else if(Objects.equals(tokenizer.nextCommand(index).toLowerCase(), "database")) {
+        else if(Objects.equals(tokens.get(index).toLowerCase(), "database")) {
             return parseCreateDatabase();
         }
         else{
@@ -327,8 +407,8 @@ public class Parser {
 
     public String parseCreateDatabase() { //CREATE
         index++; //dbname;
-        if(tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")){
-            this.DBName = tokenizer.nextCommand(index);
+        if(tokens.get(index).matches("[A-Za-z0-9]+")){
+            this.DBName = tokens.get(index);
             index++;
             String path = "../" + DBName;
             File databaseDirectory = new File(path);
@@ -345,9 +425,9 @@ public class Parser {
 
     public String parseCreateTable() throws IOException { //CREATE
         index++; //create table tablename (attributelist);
-        if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
-            this.tableFile = tokenizer.nextCommand(index) + ".tab";
-            this.tableName = tokenizer.nextCommand(index);
+        if (tokens.get(index).matches("[A-Za-z0-9]+")) {
+            this.tableFile = tokens.get(index) + ".tab";
+            this.tableName = tokens.get(index);
             index++;
         }
         else{
@@ -356,14 +436,14 @@ public class Parser {
         if(index >= tokens.size()){
             return "[ERROR] Missing ;";
         }
-        else if(Objects.equals(tokenizer.nextCommand(index), "(")) {
+        else if(Objects.equals(tokens.get(index), "(")) {
             attributeList = new ArrayList<>();
             index++;
-            while (!(Objects.equals(tokenizer.nextCommand(index), ")"))) {
-                if (tokenizer.nextCommand(index).matches("[A-Za-z0-9]+")) {
-                    attributeList.add(tokenizer.nextCommand(index));
+            while (!(Objects.equals(tokens.get(index), ")"))) {
+                if (tokens.get(index).matches("[A-Za-z0-9]+")) {
+                    attributeList.add(tokens.get(index));
                     index++;
-                    if (Objects.equals(tokenizer.nextCommand(index), ",")) {
+                    if (Objects.equals(tokens.get(index), ",")) {
                         index++;
                     }
                 } else {
@@ -381,7 +461,7 @@ public class Parser {
         if(currentDirectory == null){
             return "[ERROR] No database, please create";
         }
-        if(Objects.equals(tokenizer.nextCommand(index), ";")) {
+        if(Objects.equals(tokens.get(index), ";")) {
             File file = new File(currentDirectory, tableFile);
             if (!file.exists()) {
                 file.createNewFile();

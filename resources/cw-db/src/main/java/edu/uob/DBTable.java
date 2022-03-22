@@ -36,6 +36,13 @@ public class DBTable {
         rows.addAttributeValues(attributeValuesToAdd, attributeList);
     }
 
+    public void setAttributeValuesWithoutID(ArrayList<HashMap<String, String>> attributeValues) {
+        rows.setAttributeValuesWithoutID(attributeValues);
+    }
+
+    public void setAttributeListWithoutID(ArrayList<String> columnNames) {
+        columns.setAttributeListWithoutID(columnNames);
+    }
 
 
 }

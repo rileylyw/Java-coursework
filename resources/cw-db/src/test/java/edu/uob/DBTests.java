@@ -107,9 +107,9 @@ final class DBTests{
         server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
         server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
         server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
-//        server.handleCommand("alter table x add Sex;");
+        server.handleCommand("SELECT * FROM marks WHERE name != 'Dave';");
 //        server.handleCommand("insert into x values('Tom', 55.55, 'TOM@gmail.com','M');");
-//        assertEquals("[OK]", server.handleCommand("alter table x drop Email;"));
+//        assertEquals("[OK]", server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE, asd);"));
     }
 
     @Test

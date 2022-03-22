@@ -24,6 +24,15 @@ public class DBColumn {
         this.attributeList.addAll(columnNames);
     }
 
+    public void setAttributeListWithoutID(ArrayList<String> columnNames) {
+        attributeList = new ArrayList<>();
+//        if(!columnNames.get(0).equals("id")) {
+//            this.attributeList.add("id");
+//        }
+        this.attributeList.addAll(columnNames);
+    }
+
+
     public void addColumn(String columnToAdd){
         attributeList.add(columnToAdd);
     }

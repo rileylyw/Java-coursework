@@ -21,6 +21,13 @@ public class DBRow {
         }
     }
 
+    public void setAttributeValuesWithoutID(ArrayList<HashMap<String, String>> attributeValues) {
+        if(attributeValues!=null) {
+            this.attributeValues = attributeValues;
+//            this.id = attributeValues.size();
+        }
+    }
+
     public String setId() {
         this.id++;
         return Integer.toString(this.id);
