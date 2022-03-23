@@ -131,6 +131,13 @@ final class DBTests{
 //        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
     }
 
+    @Test
+    void testServer10() throws IOException {
+        server.handleCommand("use markbook    ;");
+        server.handleCommand("UPDATE marks SET mark = 38, pass=TRUE WHERE name == 'Clive';");
+        assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 100, pass=false WHERE name == 'Clive';"));
+    }
+
 
     @Test
     void testTokenizer1(){

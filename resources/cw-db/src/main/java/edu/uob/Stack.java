@@ -1,3 +1,5 @@
+/*** referenced from Techie Delight (https://www.techiedelight.com/stack-implementation-in-java/) ***/
+
 package edu.uob;
 import java.io.*;
 import java.util.*;

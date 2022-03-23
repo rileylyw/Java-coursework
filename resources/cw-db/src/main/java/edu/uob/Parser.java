@@ -85,39 +85,43 @@ public class Parser {
         HashMap<String, String> nameValuePair = new HashMap<>();
         while (!(Objects.equals(tokens.get(index).toLowerCase(), "where"))) {
             String attributeName = tokens.get(index);
+            System.out.println("attri name "+attributeName);
             attributeValues = new ArrayList<>();
-            if (attributeName.matches("[A-Za-z0-9]+")) { //attribute value
-                index++;
-                if(!Objects.equals(tokens.get(index), "=")){
-                    return "[ERROR]";
-                }
-                index++;
-                isValue(tokens,index,attributeValues);
-                nameValuePair.put(attributeName, attributeValues.get(0));
+            if (!attributeName.matches("[A-Za-z0-9]+")) { //attribute value
+                return "[ERROR]";
+            }
+            index++;
+            System.out.println("index "+tokens.get(index));
+
+            if(!Objects.equals(tokens.get(index), "=")){
+                return "[ERROR] Missing '='";
+            }
+            index++;
+            isValue(tokens,index,attributeValues);
+            if(!attributeValues.isEmpty()) {
+                int pos = attributeValues.size() - 1;
+                nameValuePair.put(attributeName, attributeValues.get(pos));
             }
         }
 
-//        System.out.println("table records:");
-//        System.out.println(table.getAttributeValues());
-//        System.out.println("tokens:");
-//        System.out.println(tokens);
+        System.out.println("table records:");
+        System.out.println(table.getAttributeValues());
+        System.out.println("tokens:");
+        System.out.println(tokens);
         index++;
-        System.out.println("token "+tokens.get(index));
         DBTable filteredTable;
         if(Objects.equals(tokens.get(index), "(")) { //multiple conditions
             filteredTable = multipleConditions(tokens, index, table);
-//            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
-//            return "[OK]\n"+str;
         }
         else{ //single condition
             index--;
             filteredTable = conditions(tokens, index, table);
-//            String str = writeToFile.displayTableToClient(filteredTable, attributeList);
-//            return "[OK]\n"+str;
         }
         ArrayList<HashMap<String, String>> rows = table.getAttributeValues();//original
         ArrayList<HashMap<String, String>> filteredRecords = filteredTable.getAttributeValues();
         HashSet<HashMap<String, String>> hs = new HashSet<>(filteredRecords);
+
+        System.out.println("Namevalue "+nameValuePair);
 
         for(HashMap map: rows){
             if(hs.contains(map)){
@@ -126,9 +130,14 @@ public class Parser {
                 }
             }
         }
-        System.out.printf("table values\n");
-        System.out.println(table.getAttributeValues());
-
+        writeToFile.writeAttribListToFile(DBName,tableName,table);
+//        rows.clear();
+//        filteredRecords.clear();
+//        hs.clear();
+//        System.out.println("values "+attributeValues);
+//        attributeValues.clear();
+//        System.out.printf("table values\n");
+//        System.out.println(table.getAttributeValues());
 
 //        System.out.println("filtered records:");
 //        System.out.println(filteredTable.getAttributeValues());
@@ -136,7 +145,7 @@ public class Parser {
 
 //        String str = writeToFile.displayTableToClient(filteredTable, attributeList);
 //        return "[OK]\n"+str;
-        return "[OK]";
+        return "[OK] Data updated";
     }
 
     //select <wildattributelist> from table (where condition)
@@ -421,16 +430,17 @@ public class Parser {
                 index++;
             }
         }
-        else if(tokens.get(index).matches("^[+-]?\\d+[.]?{1}\\d+")){
+        else if(tokens.get(index).matches("^[+-]?\\d+[.]?{1}\\d?+")){
+            System.out.println("isvalue "+tokens.get(index));
             attributeValues.add(tokens.get(index));
             index++;
             if(Objects.equals(tokens.get(index), ",")){
                 index++;
             }
         }
-        else if(Objects.equals(tokens.get(index), "TRUE")||
-                Objects.equals(tokens.get(index), "FALSE")||
-                Objects.equals(tokens.get(index), "NULL")){
+        else if(Objects.equals(tokens.get(index).toUpperCase(), "TRUE")||
+                Objects.equals(tokens.get(index).toUpperCase(), "FALSE")||
+                Objects.equals(tokens.get(index).toUpperCase(), "NULL")){
             attributeValues.add(tokens.get(index).toUpperCase());
             index++;
             if(Objects.equals(tokens.get(index), ",")){
