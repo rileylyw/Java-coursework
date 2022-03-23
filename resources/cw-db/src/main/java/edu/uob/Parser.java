@@ -117,38 +117,22 @@ public class Parser {
         combinedColumns.remove("id");
         combinedColumns.remove(attributeName);
         combinedColumns.remove(attributeName2);
-
+        int id = 1;
         for(HashMap map: rows){
             for(HashMap map2: rows2){
                 if (map.get(attributeName).equals(map2.get(attributeName2))) {
                     HashMap<String, String> combinedRows = new HashMap<>();
                     combinedRows.putAll(map);
                     combinedRows.putAll(map2);
+                    combinedRows.replace("id", String.valueOf(id));
+                    id++;
                     tempRows.add(combinedRows);
-                    //TODO last
-//                    map.remove("id");
-//                    map2.remove("id");
-//                    if(map.get(attributeName)!=null) {
-//                        map.remove(attributeName);
-//                    }
-//                    if(map2.get(attributeName2)!=null) {
-//                        map2.remove(attributeName2);
-//                    }
                 }
             }
         }
-//        for(HashMap update: tempRows){
-//            update.remove("id");
-//            update.remove(attributeName);
-//            update.remove(attributeName2);
-//        }
-//        System.out.println(tempRows);
         temp = new DBTable(combinedColumns, tempRows);
         System.out.println(temp.getAttributeList());
         String str = writeToFile.displayTableToClient(temp,temp.getAttributeList());
-//        if(attributeList==null){
-//            attributeList = readInFile.getAttributeList();
-//        }
         return "[OK]\n"+str;
     }
 

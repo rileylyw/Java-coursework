@@ -33,6 +33,8 @@ public class DBRow {
         return Integer.toString(this.id);
     }
 
+
+
     public int getId() {
         return id;
     }
