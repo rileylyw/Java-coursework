@@ -305,9 +305,12 @@ public class Parser {
         }
         table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
         index++; //WHERE
-        if(!Objects.equals(tokens.get(index).toLowerCase(), "where")){
+        if(Objects.equals(tokens.get(index).toLowerCase(), ";")){
             String str = writeToFile.displayTableToClient(table, attributeList);
             return "[OK]\n"+str;
+        }
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "where")){
+            return "[ERROR]: Invalid query";
         }
         index++;
         if(Objects.equals(tokens.get(index), "(")){
