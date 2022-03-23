@@ -138,6 +138,13 @@ final class DBTests{
         assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 100, pass=false WHERE name == 'Clive';"));
     }
 
+    @Test
+    void testServer11() throws IOException {
+        server.handleCommand("use markbook    ;");
+        server.handleCommand("DELETE FROM marks WHERE name == 'Dave';");
+//        assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 100, pass=false WHERE name == 'Clive';"));
+    }
+
 
     @Test
     void testTokenizer1(){

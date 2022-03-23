@@ -56,10 +56,47 @@ public class Parser {
                 System.out.println("insert");
                 return parseInsertInto();
             }
-            case "update" -> { //insert into
+            case "update" -> {
                 System.out.println("update");
                 return parseUpdate();
             }
+            case "delete" -> { //delete from
+                System.out.println("delete");
+                return parseDeleteFrom();
+            }
+        }
+        return "[OK]";
+    }
+
+    public String parseDeleteFrom() throws IOException {
+        index++;
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "from")){
+            return "[ERROR]";
+        }
+        index++;
+        tableFile = tokens.get(index)+".tab";
+        tableName = tokens.get(index);
+        File file = new File(currentDirectory, tableFile);
+        ReadInFile readInFile = new ReadInFile(file);
+        if(!file.exists()){
+            return "[ERROR] Table does not exist";
+        }
+        if(attributeList==null){
+            attributeList = readInFile.getAttributeList();
+        }
+        index++;
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "where")){
+            return "[ERROR]";
+        }
+        index++; //name
+        table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
+        DBTable filteredTable;
+        if(Objects.equals(tokens.get(index), "(")) { //multiple conditions
+            filteredTable = multipleConditions(tokens, index, table);
+        }
+        else{ //single condition
+            index--;
+            filteredTable = conditions(tokens, index, table);
         }
         return "[OK]";
     }
@@ -104,10 +141,10 @@ public class Parser {
             }
         }
 
-        System.out.println("table records:");
-        System.out.println(table.getAttributeValues());
-        System.out.println("tokens:");
-        System.out.println(tokens);
+//        System.out.println("table records:");
+//        System.out.println(table.getAttributeValues());
+//        System.out.println("tokens:");
+//        System.out.println(tokens);
         index++;
         DBTable filteredTable;
         if(Objects.equals(tokens.get(index), "(")) { //multiple conditions
@@ -231,15 +268,15 @@ public class Parser {
             if(Objects.equals(tokens.get(i), ")")&& (Objects.equals(tokens.get(i+1), ")") ||
                     Objects.equals(tokens.get(i+1), ";"))) {
                 //TODO nested conditions
-                System.out.println("pop and pop");
-                System.out.println(tokens.get(i + 1));
+//                System.out.println("pop and pop");
+//                System.out.println(tokens.get(i + 1));
                 String op = operator.popOp();
                 DBTable temp = filteredTables.pop();
                 DBTable temp2 = filteredTables.pop();
-                System.out.println("temp records");
-                System.out.println(temp.getAttributeValues());
-                System.out.println("temp 2 records");
-                System.out.println(temp2.getAttributeValues());
+//                System.out.println("temp records");
+//                System.out.println(temp.getAttributeValues());
+//                System.out.println("temp 2 records");
+//                System.out.println(temp2.getAttributeValues());
                 ArrayList<HashMap<String, String>> rows1 = temp.getAttributeValues();
                 ArrayList<HashMap<String, String>> rows2 = temp2.getAttributeValues();
                 ArrayList<HashMap<String, String>> filteredRecords = new ArrayList<>();
