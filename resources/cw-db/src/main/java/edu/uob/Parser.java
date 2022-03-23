@@ -12,10 +12,13 @@ public class Parser {
     private static File currentDirectory;
     private static String DBName;
     private String tableName;
+    private String tableName2;
     private String tableFile;
+    private String tableFile2;
     private ArrayList<String> attributeList;
     private ArrayList<String> attributeValues;
     private DBTable table;
+    private DBTable table2;
     private WriteToFile writeToFile = new WriteToFile();
 
 
@@ -64,8 +67,89 @@ public class Parser {
                 System.out.println("delete");
                 return parseDeleteFrom();
             }
+            case "join" -> {
+                System.out.println("join");
+                return parseJoin();
+            }
         }
         return "[OK]";
+    }
+
+    public String parseJoin() throws IOException {
+        index++;
+        tableFile = tokens.get(index)+".tab";
+        tableName = tokens.get(index);
+        index++;
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "and")){
+            return "[ERROR]";
+        }
+        index++;
+        tableFile2 = tokens.get(index)+".tab";
+        tableName2 = tokens.get(index);
+        File file = new File(currentDirectory, tableFile);
+        File file2 = new File(currentDirectory, tableFile2);
+        if(!file.exists() || !file2.exists()){
+            return "[ERROR] Table does not exist";
+        }
+        ReadInFile readInFile = new ReadInFile(file);
+        ReadInFile readInFile2 = new ReadInFile(file2);
+        table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
+        table2 = new DBTable(readInFile2.getAttributeList(), readInFile2.getAttributeValues());
+        index++;
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "on")){
+            return "[ERROR]";
+        }
+        index++;
+        String attributeName = tokens.get(index);
+        index++;
+        if(!Objects.equals(tokens.get(index).toLowerCase(), "and")){
+            return "[ERROR]";
+        }
+        index++;
+        String attributeName2 = tokens.get(index);
+        ArrayList<HashMap<String, String>> rows = table.getAttributeValues();
+        ArrayList<HashMap<String, String>> rows2 = table2.getAttributeValues();
+
+        DBTable temp; //store new values
+        ArrayList<HashMap<String, String>> tempRows = new ArrayList<>();
+        ArrayList<String> combinedColumns = table.getAttributeList();
+        combinedColumns.addAll(table2.getAttributeList());
+        combinedColumns.remove("id");
+        combinedColumns.remove(attributeName);
+        combinedColumns.remove(attributeName2);
+
+        for(HashMap map: rows){
+            for(HashMap map2: rows2){
+                if (map.get(attributeName).equals(map2.get(attributeName2))) {
+                    HashMap<String, String> combinedRows = new HashMap<>();
+                    combinedRows.putAll(map);
+                    combinedRows.putAll(map2);
+                    tempRows.add(combinedRows);
+                    //TODO last
+//                    map.remove("id");
+//                    map2.remove("id");
+//                    if(map.get(attributeName)!=null) {
+//                        map.remove(attributeName);
+//                    }
+//                    if(map2.get(attributeName2)!=null) {
+//                        map2.remove(attributeName2);
+//                    }
+                }
+            }
+        }
+//        for(HashMap update: tempRows){
+//            update.remove("id");
+//            update.remove(attributeName);
+//            update.remove(attributeName2);
+//        }
+//        System.out.println(tempRows);
+        temp = new DBTable(combinedColumns, tempRows);
+        System.out.println(temp.getAttributeList());
+        String str = writeToFile.displayTableToClient(temp,temp.getAttributeList());
+//        if(attributeList==null){
+//            attributeList = readInFile.getAttributeList();
+//        }
+        return "[OK]\n"+str;
     }
 
     public String parseDeleteFrom() throws IOException {
@@ -78,6 +162,7 @@ public class Parser {
         tableName = tokens.get(index);
         File file = new File(currentDirectory, tableFile);
         ReadInFile readInFile = new ReadInFile(file);
+        table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
         if(!file.exists()){
             return "[ERROR] Table does not exist";
         }
@@ -89,7 +174,6 @@ public class Parser {
             return "[ERROR]";
         }
         index++; //name
-        table = new DBTable(readInFile.getAttributeList(), readInFile.getAttributeValues());
         DBTable filteredTable;
         if(Objects.equals(tokens.get(index), "(")) { //multiple conditions
             filteredTable = multipleConditions(tokens, index, table);
@@ -98,7 +182,22 @@ public class Parser {
             index--;
             filteredTable = conditions(tokens, index, table);
         }
-        return "[OK]";
+        if(filteredTable.getAttributeValues().isEmpty()){
+            return "[ERROR] Item does not exist";
+        }
+        ArrayList<HashMap<String, String>> rows = table.getAttributeValues();//original
+        ArrayList<HashMap<String, String>> filteredRecords = filteredTable.getAttributeValues();
+        HashSet<HashMap<String, String>> hs = new HashSet<>(filteredRecords);
+        ArrayList<HashMap<String, String>> updatedRows = new ArrayList<>();
+
+        for(HashMap map: rows){
+            if(!hs.contains(map)){
+                updatedRows.add(map);
+            }
+        } //TODO: if not exist
+        table.setAttributeValuesWithoutID(updatedRows);
+        writeToFile.writeAttribListToFile(DBName,tableName,table);
+        return "[OK] Item(s) deleted";
     }
 
     public String parseUpdate() throws IOException {
