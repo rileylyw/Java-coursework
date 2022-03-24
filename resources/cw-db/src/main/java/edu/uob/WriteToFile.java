@@ -1,6 +1,7 @@
 package edu.uob;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -15,7 +16,6 @@ public class WriteToFile {
         str.append("\n");
         ArrayList<HashMap<String, String>> rows = table.getAttributeValues();
             for (HashMap map : rows) {
-                System.out.println(map);
                 for(String col: attributeList) {
                     if (map.containsKey(col)){
                         str.append(map.get(col));
@@ -30,8 +30,8 @@ public class WriteToFile {
 
     public void writeAttribListToFile(String DBName, String tableName, DBTable table)
             throws IOException {
-        File file = new File("../" +DBName+"/"+tableName+".tab");
-        System.out.println(file);
+        String path = Paths.get(".").toAbsolutePath()+File.separator+DBName+File.separator+tableName+".tab";
+        File file = new File(path);
         if(!file.exists()) {
             file.createNewFile();
         }

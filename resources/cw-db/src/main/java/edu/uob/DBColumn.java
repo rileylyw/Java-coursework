@@ -7,10 +7,8 @@ import java.util.Objects;
 public class DBColumn {
     private ArrayList<String> attributeList;
 
-//    public DBColumn(String tableName, ArrayList<String> columnNames){
-    public DBColumn(){
-//        this.columnNames = columnNames;
-    }
+//    public DBColumn(){
+//    }
 
     public ArrayList<String> getAttributeList() {
         return attributeList;
@@ -23,15 +21,6 @@ public class DBColumn {
         }
         this.attributeList.addAll(columnNames);
     }
-
-    public void setAttributeListWithoutID(ArrayList<String> columnNames) {
-        attributeList = new ArrayList<>();
-//        if(!columnNames.get(0).equals("id")) {
-//            this.attributeList.add("id");
-//        }
-        this.attributeList.addAll(columnNames);
-    }
-
 
     public void addColumn(String columnToAdd){
         attributeList.add(columnToAdd);

@@ -7,8 +7,8 @@ public class DBRow {
     private int id;
     private ArrayList<HashMap<String, String>> attributeValues; //list of hashmap
 
-    public DBRow(){
-    }
+//    public DBRow(){
+//    }
 
     public ArrayList<HashMap<String, String>> getAttributeValues() {
         return attributeValues;
@@ -33,12 +33,6 @@ public class DBRow {
         return Integer.toString(this.id);
     }
 
-
-
-    public int getId() {
-        return id;
-    }
-
     public void addAttributeValues(ArrayList<String> attributeValuesToAdd,
                                    ArrayList<String> attributeList){
         HashMap<String, String> pair = new HashMap<>();
@@ -48,5 +42,4 @@ public class DBRow {
         }
         attributeValues.add(pair);
     }
-
 }

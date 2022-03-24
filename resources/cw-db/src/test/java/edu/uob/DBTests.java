@@ -49,115 +49,170 @@ final class DBTests{
 ////        assertTrue(server.handleCommand("foo").startsWith("[ERROR]"));
 //    }
 
+    /* Test create and use */
     @Test
     void testServer1() throws IOException {
-        server.handleCommand("create  database test ;");
-        server.handleCommand("use test;");
-        server.handleCommand("Create table test1 (Name, Age, Email);");
-        assertEquals("[ERROR] Invalid query", server.handleCommand("drop x;"));
+        server.handleCommand("create  database test1 ;");
+        assertEquals("[OK]: Current directory: test1", server.handleCommand("use test1;"));
     }
 
     @Test
     void testServer2() throws IOException {
-        server.handleCommand("create  database test1 ;");
-        server.handleCommand("use test1;");
-        server.handleCommand("Create table test1 (Name, Age, Email);");
-        server.handleCommand("DROP DATABASE test1;");
-        assertEquals("[ERROR] No database, please create", server.handleCommand("create table x;"));
+        assertEquals("[ERROR]: Database test1 already exists", server.handleCommand("create database test1;"));
     }
 
     @Test
     void testServer3() throws IOException {
-        assertEquals("[ERROR] Invalid query | Missing ;", server.handleCommand("create database x "));
+        assertEquals("[ERROR] Invalid query | Missing ;", server.handleCommand("create database test2 "));
     }
 
     @Test
     void testServer4() throws IOException {
-        server.handleCommand("create  database test1 ;");
-        server.handleCommand("use test1;");
-        server.handleCommand("Create table test1;");
-        server.handleCommand("DROP table test1;");
-        assertEquals("[OK]", server.handleCommand("Create table test2;"));
+        assertEquals("[OK]: Database test2 created", server.handleCommand("Create database test2;"));
     }
 
     @Test
     void testServer5() throws IOException {
-        server.handleCommand("create  database test1 ;");
         server.handleCommand("use test1;");
-        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
+        assertEquals("[OK]: Table test1 created", server.handleCommand("CREATE table test1;"));
     }
 
     @Test
     void testServer6() throws IOException {
-        server.handleCommand("create dATABASE test;");
-        server.handleCommand("use test;");
-        server.handleCommand("create tablE Test    (NAME,AGE,HEIGHT,SYMBOL);");
-        server.handleCommand("Insert Into Test VALUES('Amy',21,123.1,'=');");
-//        server.handleCommand("alter table x add Sex;");
-//        server.handleCommand("insert into x values('Tom', 55.55, 'TOM@gmail.com','M');");
-//        assertEquals("[OK]", server.handleCommand("alter table x drop Email;"));
+        server.handleCommand("use test1    ;");
+        assertEquals("[OK]: Table test2 created", server.handleCommand("create tablE test2    (NAME,AGE,HEIGHT,SYMBOL);"));
     }
 
     @Test
     void testServer7() throws IOException {
-        server.handleCommand("CREATE DATABASE markbook;");
-        server.handleCommand("USE markbook;");
-        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
-        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
-        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
-        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
-        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
-        server.handleCommand("SELECT * FROM marks WHERE name != 'Dave';");
-//        server.handleCommand("insert into x values('Tom', 55.55, 'TOM@gmail.com','M');");
-//        assertEquals("[OK]", server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE, asd);"));
+        server.handleCommand("CREATE DATABASE test3;");
+        server.handleCommand("USE test3     ;");
+        server.handleCommand("CREATE TABLE test (name, mark, pass);");
+        assertEquals("[OK]: Table deleted", server.handleCommand("drop table test;"));
     }
 
     @Test
     void testServer8() throws IOException {
-        server.handleCommand("CREATE DATABASE markbook;");
-        server.handleCommand("USE markbook;");
+        server.handleCommand("CREATE DATABASE test4;");
+        server.handleCommand("USE test4     ;");
+        assertEquals("[ERROR]: Table doesn't exist", server.handleCommand("drop table test;"));
+
+    }
+
+    @Test
+    void testServer9() throws IOException {
+        server.handleCommand("Create database test5   ;");
+        server.handleCommand("USE test5 ;");
+        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test5;"));
+    }
+
+    @Test
+    void testServer10() throws IOException {
+        server.handleCommand("create dataBASE test6;");
+        server.handleCommand("use test6;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        assertEquals("[OK]: Column testCol added", server.handleCommand("alter table marks add testCol;"));
+    }
+
+    @Test
+    void testServer11() throws IOException {
+        server.handleCommand("create dataBASE test7;");
+        server.handleCommand("use test7;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        assertEquals("[OK]: Column mark dropped", server.handleCommand("alter table marks drop mark;"));
+    }
+
+    @Test
+    void testServer12() throws IOException {
+        server.handleCommand("create dataBASE test8;");
+        server.handleCommand("use test8;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        assertEquals("[OK]: values inserted", server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);"));
+    }
+
+    @Test
+    void testServer13() throws IOException {
+        server.handleCommand("create dataBASE test9;");
+        server.handleCommand("use test9;");
         server.handleCommand("CREATE TABLE marks (name, mark, pass);");
         server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
         server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
         server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
         server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
-        server.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);");
+        assertEquals("[OK]\n" +
+                "name\tid\t\n" +
+                "Steve\t1\t\n" +
+                "Bob\t3\t\n" +
+                "Clive\t4\t\n", server.handleCommand("SELECT name, id FROM marks WHERE name != 'Dave';"));
     }
 
     @Test
-    void testServer9() throws IOException {
-        server.handleCommand("use db1    ;");
-        server.handleCommand("ALTER TABLE x add test;");
-//        assertEquals("[OK] Database deleted", server.handleCommand("DROP database test1;"));
+    void testServer14() throws IOException {
+        server.handleCommand("create dataBASE test10;");
+        server.handleCommand("use test10;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
+        assertEquals("[OK]\n" +
+                "id\tname\tmark\tpass\t\n", server.handleCommand("SELECT * FROM marks WHERE (pass == FALSE) AND (mark > 35);"));
     }
 
     @Test
-    void testServer10() throws IOException {
-        server.handleCommand("use markbook    ;");
-        server.handleCommand("UPDATE marks SET mark = 38, pass=TRUE WHERE name == 'Clive';");
-        assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 100, pass=false WHERE name == 'Clive';"));
+    void testServer15() throws IOException {
+        server.handleCommand("create dataBASE test11;");
+        server.handleCommand("use test11;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
+        assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 0 WHERE name == 'Clive';"));
     }
 
     @Test
-    void testServer11() throws IOException {
-        server.handleCommand("use markbook    ;");
-        server.handleCommand("DELETE FROM marks WHERE name == 'Dave';");
-//        assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 100, pass=false WHERE name == 'Clive';"));
+    void testServer16() throws IOException {
+        server.handleCommand("create dataBASE test12;");
+        server.handleCommand("use test12;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
+        assertEquals("[OK] Item(s) deleted", server.handleCommand("DELETE FROM marks WHERE name == 'Dave';"));
     }
 
     @Test
-    void testServer12() throws IOException {
-        server.handleCommand("use markbook    ;");
-        server.handleCommand("JOIN coursework AND marks ON grade AND id;");
-//        assertEquals("[OK] Data updated", server.handleCommand("UPDATE marks SET mark = 100, pass=false WHERE name == 'Clive';"));
-    }
+    void testServer17() throws IOException {
+        server.handleCommand("create dataBASE test13;");
+        server.handleCommand("use test13;");
+        server.handleCommand("CREATE TABLE marks (name, mark, pass);");
+        server.handleCommand("INSERT INTO marks VALUES ('Steve', 65, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Dave', 55, TRUE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Bob', 35, FALSE);");
+        server.handleCommand("INSERT INTO marks VALUES ('Clive', 20, FALSE);");
+        server.handleCommand("CREATE TABLE coursework (task, grade);");
+        server.handleCommand("INSERT INTO coursework VALUES ('OXO', 3);");
+        server.handleCommand("INSERT INTO coursework VALUES ('DB', 1);");
+        server.handleCommand("INSERT INTO coursework VALUES ('OXO', 4);");
+        server.handleCommand("INSERT INTO coursework VALUES ('STAG', 2);");
 
+        assertEquals("[OK]\n" +
+                "id\ttask\tname\tmark\tpass\t\n" +
+                "1\tOXO\tBob\t35\tFALSE\t\n" +
+                "2\tDB\tSteve\t65\tTRUE\t\n" +
+                "3\tOXO\tClive\t20\tFALSE\t\n" +
+                "4\tSTAG\tDave\t55\tTRUE\t\n", server.handleCommand("JOIN coursework AND marks ON grade AND id;"));
+    }
 
     @Test
     void testTokenizer1(){
         Tokenizer tokenizer = new Tokenizer();
         ArrayList<String> methodOutputs = tokenizer.splitCommand("SELECT * FROM   123");
-        String[] expectedOutputs = {"select", "*", "from", "123"};
+        String[] expectedOutputs = {"SELECT", "*", "FROM", "123"};
         Assertions.assertArrayEquals(expectedOutputs, methodOutputs.toArray());
     }
 
@@ -169,54 +224,54 @@ final class DBTests{
         Assertions.assertArrayEquals(expectedOutputs, methodOutputs.toArray());
     }
 
-    @Test
-    void testParseUse1() throws IOException{
-        Parser p = new Parser("Use db1;");
-        assertEquals("Current directory: db1", p.parse());
-    }
-
-    @Test
-    void testParseCreateTable1() throws IOException{
-        Parser p = new Parser("CREATE TABLE marks (name, mark, pass);");
-        assertEquals("OK", p.parse());
-    }
-
-    @Test
-    void testParseCreateTable2() throws IOException{
-        Parser p = new Parser("Create table x ();");
-        assertEquals("Missing attribute names", p.parse());
-    }
-
-    @Test
-    void testParseCreateTable3() throws IOException{
-        Parser p = new Parser("Create table ! ();");
-        assertEquals("Invalid table name", p.parse());
-    }
-
-    @Test
-    void testParseCreateTable4() throws IOException{
-        Parser p = new Parser("Create table x ;");
-        assertEquals("OK", p.parse());
-    }
-
-    @Test
-    void testParseCreateDB1() throws IOException{
-        Parser p = new Parser("Create database db1 ;");
-        assertEquals("OK", p.parse());
-    }
-
-    @Test
-    void testParseCreateDB2() throws IOException{
-        Parser p = new Parser("Create database db1");
-        assertEquals("Missing ;", p.parse());
-    }
-
-    @Test
-    void testParseCreateDB3() throws IOException{
-        Parser p = new Parser("Create database !;");
-        assertEquals("Invalid / missing database name", p.parse());
-    }
-
+//    @Test
+//    void testParseUse1() throws IOException{
+//        Parser p = new Parser("Use db1;");
+//        assertEquals("Current directory: db1", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateTable1() throws IOException{
+//        Parser p = new Parser("CREATE TABLE marks (name, mark, pass);");
+//        assertEquals("OK", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateTable2() throws IOException{
+//        Parser p = new Parser("Create table x ();");
+//        assertEquals("Missing attribute names", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateTable3() throws IOException{
+//        Parser p = new Parser("Create table ! ();");
+//        assertEquals("Invalid table name", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateTable4() throws IOException{
+//        Parser p = new Parser("Create table x ;");
+//        assertEquals("OK", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateDB1() throws IOException{
+//        Parser p = new Parser("Create database db1 ;");
+//        assertEquals("OK", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateDB2() throws IOException{
+//        Parser p = new Parser("Create database db1");
+//        assertEquals("Missing ;", p.parse());
+//    }
+//
+//    @Test
+//    void testParseCreateDB3() throws IOException{
+//        Parser p = new Parser("Create database !;");
+//        assertEquals("Invalid / missing database name", p.parse());
+//    }
+//
 
 
     // Add more unit tests or integration tests here.

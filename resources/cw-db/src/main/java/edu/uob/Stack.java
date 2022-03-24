@@ -1,9 +1,6 @@
 /*** referenced from Techie Delight (https://www.techiedelight.com/stack-implementation-in-java/) ***/
 
 package edu.uob;
-import java.io.*;
-import java.util.*;
-
 
 public class Stack
 {
@@ -58,51 +55,24 @@ public class Stack
             System.out.println("Underflow\nProgram Terminated");
             System.exit(-1);
         }
-
-//        System.out.println("Removing " + peek());
-
         // decrease stack size by 1 and (optionally) return the popped element
         return arr[top--];
     }
 
     public String popOp()
     {
-        // check for stack underflow
-//        if (isEmpty())
-//        {
-//            System.out.println("Underflow\nProgram Terminated");
-//            System.exit(-1);
-//        }
-
-//        System.out.println("Removing " + peek());
-
-        // decrease stack size by 1 and (optionally) return the popped element
         return arr2[top2--];
     }
 
 //    // Utility function to return the top element of the stack
     public DBTable peek()
     {
-//        if (!isEmpty()) {
-            return arr[top];
-//        }
-//        else {
-//            System.exit(-1);
-//        }
-//
-//        return -1;
+        return arr[top];
     }
 
     public String peekOp()
     {
-//        if (!isEmpty()) {
         return arr2[top2];
-//        }
-//        else {
-//            System.exit(-1);
-//        }
-//
-//        return -1;
     }
 
     // Utility function to return the size of the stack

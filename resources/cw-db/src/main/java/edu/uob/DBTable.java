@@ -1,11 +1,8 @@
 package edu.uob;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DBTable {
-//    private String tableName;
     private DBRow rows = new DBRow();
     private DBColumn columns = new DBColumn();
 
@@ -39,10 +36,4 @@ public class DBTable {
     public void setAttributeValuesWithoutID(ArrayList<HashMap<String, String>> attributeValues) {
         rows.setAttributeValuesWithoutID(attributeValues);
     }
-
-    public void setAttributeListWithoutID(ArrayList<String> columnNames) {
-        columns.setAttributeListWithoutID(columnNames);
-    }
-
-
 }

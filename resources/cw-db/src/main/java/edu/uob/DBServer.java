@@ -5,31 +5,15 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /** This class implements the DB server. */
 public final class DBServer {
 
     private static final char END_OF_TRANSMISSION = 4;
-    private File currentDirectory;
-    public static DB database;
 
     public static void main(String[] args) throws IOException {
-//        database = new DB("db1");
-//        DBTable tableToAdd = createNewTable();
-//        database.addTable(tableToAdd);
         new DBServer(Paths.get(".").toAbsolutePath().toFile()).blockingListenOn(8888);
     }
-
-//    public static DBTable createNewTable() throws IOException{
-//        DBTable table1 = new DBTable("TBC");
-//        table1.storeFileToTable("people", "people");
-//
-//        WriteToFile writeToFile = new WriteToFile();
-//        writeToFile.writeToFile(table1);
-//        return table1;
-//    }
 
     /**
      * KEEP this signature (i.e. {@code edu.uob.DBServer(File)}) otherwise we won't be able to mark
@@ -44,13 +28,6 @@ public final class DBServer {
      *     server instance.
      */
     public DBServer(File databaseDirectory) { //para is for testing
-        // TODO implement your server logic here
-//        handleCommand("USE db1;");
-//        String dir = databaseDirectory.getPath();
-//        System.out.println(dir);
-//        if(dir.endsWith(".")){
-//            //
-//        }
     }
 
     /**
@@ -63,27 +40,6 @@ public final class DBServer {
         // TODO implement your server logic here
         Parser parser = new Parser(command);
         return parser.parse();
-//        this.currentDirectory = parser.getCurrentDirectory();
-//        if(!parser.parse()){
-//            return "[ERROR]";
-//        };
-//        if(parser.parseUse()){
-//            return "OK";
-//        }
-
-//        DBCommands dbCommands = new DBCommands();
-//        if(dbCommands.query(DBServer s))
-        /*TODO
-        if command.query(dbserver s)
-        manipulate data
-        return [error]
-        */
-
-//        return "[OK] Thanks for your message: " + command;
-    }
-
-    public static DB getDatabase() {
-        return database;
     }
 
     //  === Methods below are there to facilitate server related operations. ===
@@ -133,22 +89,6 @@ public final class DBServer {
                 System.out.println("Received message: " + incomingCommand);
                 String result = handleCommand(incomingCommand);
                 writer.write(result);
-
-//                /* printing out table on client's side */
-//                writer.write("\n"); //TODO: print all tables
-//                for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) { //cols
-//                    writer.write(database.getTable("people").getAttributeList().get(i));
-//                    writer.write(" ");
-//                }
-//                writer.write("\n");
-//                for(HashMap value: database.getTable("people").getAttributeValues()){ //rows
-//                    for (int i = 0; i < database.getTable("people").getAttributeList().size(); i++) {
-//                        writer.write((String) value.get(database.getTable("people").getAttributeList().get(i)));
-//                        writer.write(" ");
-//                    }
-//                    writer.write("\n");
-//                }
-
                 writer.write("\n" + END_OF_TRANSMISSION + "\n");
                 writer.flush();
             }

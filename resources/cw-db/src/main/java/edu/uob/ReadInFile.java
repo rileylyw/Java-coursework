@@ -20,7 +20,6 @@ public class ReadInFile {
                     if (line.trim().length() > 0) {
                         String[] tokens2 = line.split("\\s+"); //row values
                         HashMap<String, String> pair = new HashMap<String, String>();
-//                        for (int i = 0; i < attributeList.size(); i++) {
                         for (int i = 0; i < tokens2.length; i++) {
                             pair.put(attributeList.get(i), tokens2[i]);
                         }
