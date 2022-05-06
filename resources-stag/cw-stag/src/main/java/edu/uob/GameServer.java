@@ -1,14 +1,16 @@
 package edu.uob;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import com.alexmerz.graphviz.ParseException;
+import com.alexmerz.graphviz.Parser;
+import com.alexmerz.graphviz.objects.Edge;
+import com.alexmerz.graphviz.objects.Graph;
+import com.alexmerz.graphviz.objects.Node;
+
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /** This class implements the STAG server. */
 public final class GameServer {
@@ -16,8 +18,8 @@ public final class GameServer {
     private static final char END_OF_TRANSMISSION = 4;
 
     public static void main(String[] args) throws IOException {
-        File entitiesFile = Paths.get("basic-entities.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("basic-actions.xml").toAbsolutePath().toFile();
+        File entitiesFile = Paths.get("config/basic-entities.dot").toAbsolutePath().toFile();
+        File actionsFile = Paths.get("config/basic-actions.xml").toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
         server.blockingListenOn(8888);
     }
@@ -36,6 +38,37 @@ public final class GameServer {
         System.out.println("entities file " + entitiesFile);
         System.out.println("actions file " + actionsFile);
         // TODO implement your server logic here
+
+        try { //parse the dot files
+            Parser parser = new Parser();
+            FileReader reader = new FileReader(entitiesFile);
+            parser.parse(reader);
+            Graph wholeDocument = parser.getGraphs().get(0);
+            ArrayList<Graph> sections = wholeDocument.getSubgraphs();
+
+            // The locations will always be in the first subgraph
+            ArrayList<Graph> locations = sections.get(0).getSubgraphs();
+            Graph firstLocation = locations.get(0);
+            Node locationDetails = firstLocation.getNodes(false).get(0);
+            // Yes, you do need to get the ID twice !
+            String locationName = locationDetails.getId().getId();
+
+            // The paths will always be in the second subgraph
+            ArrayList<Edge> paths = sections.get(1).getEdges();
+            Edge firstPath = paths.get(0);
+            Node fromLocation = firstPath.getSource().getNode();
+            String fromName = fromLocation.getId().getId();
+            Node toLocation = firstPath.getTarget().getNode();
+            String toName = toLocation.getId().getId();
+
+            System.out.println(sections.get(0).getSubgraphs().get(0)
+                    .getSubgraphs().get(1).getNodes(false).get(0).getId().getId());
+
+            //TODO: store entities, subclass that inheret GameEntity class (task 5)
+
+        } catch (FileNotFoundException | ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
