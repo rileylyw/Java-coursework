@@ -11,17 +11,23 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.TreeMap;
 
 /** This class implements the STAG server. */
 public final class GameServer {
 
     private static final char END_OF_TRANSMISSION = 4;
+//    private HashMap<String, HashSet<Location>> locations = new HashMap<>();
+//    private TreeMap<String, HashSet<GameAction>> actions = new TreeMap<>();
+    private GameState currentGame = new GameState();
 
     public static void main(String[] args) throws IOException {
         File entitiesFile = Paths.get("config/basic-entities.dot").toAbsolutePath().toFile();
         File actionsFile = Paths.get("config/basic-actions.xml").toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
-        server.blockingListenOn(8888);
+        server.blockingListenOn(8880); //TODO change back to 8888
     }
 
     /**
@@ -35,9 +41,6 @@ public final class GameServer {
     *
     */
     public GameServer(File entitiesFile, File actionsFile) {
-        System.out.println("entities file " + entitiesFile);
-        System.out.println("actions file " + actionsFile);
-        // TODO implement your server logic here
 
         try { //parse the dot files
             Parser parser = new Parser();
@@ -45,26 +48,41 @@ public final class GameServer {
             parser.parse(reader);
             Graph wholeDocument = parser.getGraphs().get(0);
             ArrayList<Graph> sections = wholeDocument.getSubgraphs();
-
-            // The locations will always be in the first subgraph
             ArrayList<Graph> locations = sections.get(0).getSubgraphs();
-            Graph firstLocation = locations.get(0);
-            Node locationDetails = firstLocation.getNodes(false).get(0);
-            // Yes, you do need to get the ID twice !
-            String locationName = locationDetails.getId().getId();
+            for(Graph location: locations){
+                String locationName = location.getNodes(false).get(0).getId().getId();
+                String locationDesc = location.getNodes(false).get(0).getAttribute("description");
+                Location locationToAdd = new Location(locationName, locationDesc);
+                currentGame.addLocation(locationName, locationToAdd);
+
+                ArrayList<Graph> items = location.getSubgraphs();
+                for(Graph item: items){
+                    String itemType = item.getId().getId();
+                    if(item.getNodes(false).size()>0){
+                        String itemName = item.getNodes(false).get(0).getId().getId();
+                        System.out.println(locationName);
+                        System.out.println(itemType);
+                        System.out.println(itemName);
+                        System.out.println("---");
+                    }
+
+                    //TODO: store entities to location
+                }
+            }
+
+
+//            Graph firstLocation = locations.get(0);
+//            Node locationDetails = firstLocation.getNodes(false).get(0);
+//            String locationName = locationDetails.getId().getId();
 
             // The paths will always be in the second subgraph
             ArrayList<Edge> paths = sections.get(1).getEdges();
-            Edge firstPath = paths.get(0);
-            Node fromLocation = firstPath.getSource().getNode();
-            String fromName = fromLocation.getId().getId();
-            Node toLocation = firstPath.getTarget().getNode();
-            String toName = toLocation.getId().getId();
+//            Edge firstPath = paths.get(0);
+//            Node fromLocation = firstPath.getSource().getNode();
+//            String fromName = fromLocation.getId().getId();
+//            Node toLocation = firstPath.getTarget().getNode();
+//            String toName = toLocation.getId().getId();
 
-            System.out.println(sections.get(0).getSubgraphs().get(0)
-                    .getSubgraphs().get(1).getNodes(false).get(0).getId().getId());
-
-            //TODO: store entities, subclass that inheret GameEntity class (task 5)
 
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();
