@@ -29,6 +29,7 @@ public class GameState {
         return paths;
     }
 
+
     public void readInEntities(GameState currentGame, ArrayList<Graph> locations) {
         for (Graph location : locations) {
             String locationName = location.getNodes(false).get(0).getId().getId();

@@ -5,7 +5,14 @@ import com.alexmerz.graphviz.Parser;
 import com.alexmerz.graphviz.objects.Edge;
 import com.alexmerz.graphviz.objects.Graph;
 import com.alexmerz.graphviz.objects.Node;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -41,6 +48,7 @@ public final class GameServer {
     public GameServer(File entitiesFile, File actionsFile) {
 
         try {
+            // .dot file (entities)
             Parser parser = new Parser();
             FileReader reader = new FileReader(entitiesFile);
             parser.parse(reader);
@@ -51,8 +59,33 @@ public final class GameServer {
             ArrayList<Edge> paths = sections.get(1).getEdges();
             currentGame.readInPaths(currentGame, paths);
 
-            
-        } catch (FileNotFoundException | ParseException e) {
+
+            // .xml file (actions)
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = builder.parse(actionsFile);
+            Element root = document.getDocumentElement();
+            NodeList actions = root.getChildNodes();
+            for(int i=1; i<actions.getLength(); i+=2){
+                Element action = (Element) actions.item(i);
+                Element triggers = (Element) action.getElementsByTagName("triggers").item(0);
+                for(int j=0; j<triggers.getElementsByTagName("keyword").getLength(); j++) { //action
+                    String phrase = triggers.getElementsByTagName("keyword").item(j).getTextContent();
+                    System.out.println(phrase); //key
+                    
+                    //TODO: others add to game action
+                }
+                System.out.println("---");
+
+            }
+            // Get the first action (only the odd items are actually actions - 1, 3, 5 etc.)
+            Element firstAction = (Element)actions.item(1);
+            Element triggers = (Element)firstAction.getElementsByTagName("triggers").item(0);
+            // Get the first trigger phrase
+            String firstTriggerPhrase = triggers.getElementsByTagName("keyword").item(0).getTextContent();
+
+
+
+        } catch (ParseException | ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
     }
