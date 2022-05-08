@@ -19,8 +19,6 @@ import java.util.TreeMap;
 public final class GameServer {
 
     private static final char END_OF_TRANSMISSION = 4;
-//    private HashMap<String, HashSet<Location>> locations = new HashMap<>();
-//    private TreeMap<String, HashSet<GameAction>> actions = new TreeMap<>();
     private GameState currentGame = new GameState();
 
     public static void main(String[] args) throws IOException {
@@ -42,59 +40,18 @@ public final class GameServer {
     */
     public GameServer(File entitiesFile, File actionsFile) {
 
-        try { //parse the dot files
+        try {
             Parser parser = new Parser();
             FileReader reader = new FileReader(entitiesFile);
             parser.parse(reader);
             Graph wholeDocument = parser.getGraphs().get(0);
             ArrayList<Graph> sections = wholeDocument.getSubgraphs();
             ArrayList<Graph> locations = sections.get(0).getSubgraphs();
-            for(Graph location: locations){
-                String locationName = location.getNodes(false).get(0).getId().getId();
-                String locationDesc = location.getNodes(false).get(0).getAttribute("description");
-                Location locationToAdd = new Location(locationName, locationDesc);
-                currentGame.addLocation(locationName, locationToAdd);
-
-                ArrayList<Graph> items = location.getSubgraphs();
-                for(Graph item: items){
-                    String itemType = item.getId().getId();
-                    if(item.getNodes(false).size()>0){
-                        String itemName = item.getNodes(false).get(0).getId().getId();
-                        String itemDesc = item.getNodes(false).get(0).getAttribute("description");
-                        switch(itemType){
-                            case "artefacts":
-                                Artefact artefactToAdd = new Artefact(itemName, itemDesc);
-                                currentGame.getLocation(locationName).addEntity(artefactToAdd);
-                                break;
-                            case "furniture":
-                                Furniture furnitureToAdd = new Furniture(itemName, itemDesc);
-                                currentGame.getLocation(locationName).addEntity(furnitureToAdd);
-                                break;
-                            case "characters":
-                                Character characterToAdd = new Character(itemName, itemDesc);
-                                currentGame.getLocation(locationName).addEntity(characterToAdd);
-                                break;
-                        }
-                    }
-
-                    //TODO: store entities to location
-                }
-            }
-
-
-//            Graph firstLocation = locations.get(0);
-//            Node locationDetails = firstLocation.getNodes(false).get(0);
-//            String locationName = locationDetails.getId().getId();
-
-            // The paths will always be in the second subgraph
+            currentGame.readInEntities(currentGame, locations);
             ArrayList<Edge> paths = sections.get(1).getEdges();
-//            Edge firstPath = paths.get(0);
-//            Node fromLocation = firstPath.getSource().getNode();
-//            String fromName = fromLocation.getId().getId();
-//            Node toLocation = firstPath.getTarget().getNode();
-//            String toName = toLocation.getId().getId();
+            currentGame.readInPaths(currentGame, paths);
 
-
+            
         } catch (FileNotFoundException | ParseException e) {
             e.printStackTrace();
         }
