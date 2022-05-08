@@ -60,10 +60,21 @@ public final class GameServer {
                     String itemType = item.getId().getId();
                     if(item.getNodes(false).size()>0){
                         String itemName = item.getNodes(false).get(0).getId().getId();
-                        System.out.println(locationName);
-                        System.out.println(itemType);
-                        System.out.println(itemName);
-                        System.out.println("---");
+                        String itemDesc = item.getNodes(false).get(0).getAttribute("description");
+                        switch(itemType){
+                            case "artefacts":
+                                Artefact artefactToAdd = new Artefact(itemName, itemDesc);
+                                currentGame.getLocation(locationName).addEntity(artefactToAdd);
+                                break;
+                            case "furniture":
+                                Furniture furnitureToAdd = new Furniture(itemName, itemDesc);
+                                currentGame.getLocation(locationName).addEntity(furnitureToAdd);
+                                break;
+                            case "characters":
+                                Character characterToAdd = new Character(itemName, itemDesc);
+                                currentGame.getLocation(locationName).addEntity(characterToAdd);
+                                break;
+                        }
                     }
 
                     //TODO: store entities to location

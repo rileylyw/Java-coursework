@@ -12,5 +12,7 @@ public class GameState {
         this.locations.put(locationName, locationToAdd);
     }
 
-
+    public Location getLocation(String locationName) {
+        return locations.get(locationName);
+    }
 }
