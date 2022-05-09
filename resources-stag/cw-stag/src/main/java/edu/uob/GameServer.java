@@ -32,7 +32,7 @@ public final class GameServer {
         File entitiesFile = Paths.get("config/basic-entities.dot").toAbsolutePath().toFile();
         File actionsFile = Paths.get("config/basic-actions.xml").toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
-        server.blockingListenOn(8880); //TODO change back to 8888
+        server.blockingListenOn(8888); //TODO change back to 8888
     }
 
     /**
@@ -67,6 +67,16 @@ public final class GameServer {
             for(int i=1; i<actions.getLength(); i+=2){
                 currentGame.readInActions(actions, i, currentGame);
             }
+
+
+//            Location loc = currentGame.getLocation("cabin");
+//            System.out.println(loc.getEntities().get(0).getClass().getSimpleName());
+//            if(loc.getEntities().get(0) instanceof Artefact){
+//                System.out.println("HI");
+//            }
+//            System.out.println(loc.getEntities().get(1).getName());
+//            System.out.println(loc.getEntities().get(1).getDescription());
+//            System.out.println(currentGame.getCurrentLocation());
 //            System.out.println(currentGame.getActions().get("cutdown").iterator().next().getProduced());
         } catch (ParseException | ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
@@ -81,10 +91,36 @@ public final class GameServer {
     */
     public String handleCommand(String command) {
         // TODO implement your server logic here
+        GameController controller = new GameController(currentGame);
+        controller.handleCommand(command);
+        currentGame = controller.getCurrentGame();
+
         return "Thanks for your message: " + command;
     }
 
     //  === Methods below are there to facilitate server related operations. ===
+
+//    public String look(String command) {
+//        Location loc = currentGame.getLocation(currentGame.getCurrentLocation());
+//        ArrayList<GameEntity> entities = loc.getEntities();
+//        for(GameEntity entity: entities){
+//            if(entity instanceof Artefact){
+//                System.out.println(entity.getName());
+//            }
+//            else if(entity instanceof Furniture){
+//                System.out.println("FURNITURE");
+//            }
+//            else if(entity instanceof Character){
+//                System.out.println("CHARACTER");
+//            }
+//        }
+////        Location loc = currentGame.getLocation("cabin");
+////        System.out.println(loc.getEntities().get(0).getClass().getSimpleName());
+////        if(loc.getEntities().get(0) instanceof Artefact){
+////            System.out.println("HI");
+////        }
+//    }
+
 
     /**
     * Starts a *blocking* socket server listening for new connections. This method blocks until the

@@ -14,6 +14,30 @@ public class GameState {
     private HashMap<String, Location> locations = new HashMap<>();
     private HashMap<String, String> paths = new HashMap<>();
     private TreeMap<String, HashSet<GameAction>> actions = new TreeMap<>();
+    private Player currentPlayer;
+    private String currentLocation;
+
+    public void setCurrentLocation(String currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public void setCurrentPlayer(String playerName) {
+        if(currentPlayer == null) {
+            currentPlayer = new Player(playerName);
+            this.currentPlayer = currentPlayer;
+        }
+        else{
+            currentPlayer.setPlayerName(playerName);
+        }
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public String getCurrentLocation() {
+        return currentLocation;
+    }
 
     public void addLocation(String locationName, Location locationToAdd) {
         this.locations.put(locationName, locationToAdd);
@@ -42,6 +66,7 @@ public class GameState {
     public void readInEntities(GameState currentGame, ArrayList<Graph> locations) {
         for (Graph location : locations) {
             String locationName = location.getNodes(false).get(0).getId().getId();
+            if(this.currentLocation == null){setCurrentLocation(locationName);}
             String locationDesc = location.getNodes(false).get(0).getAttribute("description");
             Location locationToAdd = new Location(locationName, locationDesc);
             currentGame.addLocation(locationName, locationToAdd);
