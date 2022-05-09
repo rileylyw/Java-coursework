@@ -2,6 +2,8 @@ package edu.uob;
 
 import com.alexmerz.graphviz.objects.Edge;
 import com.alexmerz.graphviz.objects.Graph;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +31,13 @@ public class GameState {
         return paths;
     }
 
+    public void setActions(String keyword, HashSet<GameAction> actionSet) {
+        actions.put(keyword, actionSet);
+    }
+
+    public TreeMap<String, HashSet<GameAction>> getActions() {
+        return actions;
+    }
 
     public void readInEntities(GameState currentGame, ArrayList<Graph> locations) {
         for (Graph location : locations) {
@@ -72,5 +81,33 @@ public class GameState {
             currentGame.addPath(fromName, toName);
         }
     }
+
+    public void readInActions(NodeList actions, int i, GameState currentGame){
+        HashSet<GameAction> actionSet = new HashSet<>();
+        GameAction actionToAdd = new GameAction();
+        Element action = (Element) actions.item(i);
+        Element triggers = (Element) action.getElementsByTagName("triggers").item(0);
+        Element subjects = (Element) action.getElementsByTagName("subjects").item(0);
+        Element consumed = (Element) action.getElementsByTagName("consumed").item(0);
+        Element produced = (Element) action.getElementsByTagName("produced").item(0);
+        for(int j=0; j<subjects.getElementsByTagName("entity").getLength(); j++) {
+            String subjectEntity = subjects.getElementsByTagName("entity").item(j).getTextContent();
+            actionToAdd.addSubject(subjectEntity);
+        }
+        for(int j=0; j<consumed.getElementsByTagName("entity").getLength(); j++) {
+            String consumedEntity = consumed.getElementsByTagName("entity").item(j).getTextContent();
+            actionToAdd.addConsumed(consumedEntity);
+        }
+        for(int j=0; j<produced.getElementsByTagName("entity").getLength(); j++) {
+            String producedEntity = produced.getElementsByTagName("entity").item(j).getTextContent();
+            actionToAdd.addProduced(producedEntity);
+        }
+        actionSet.add(actionToAdd);
+        for(int j=0; j<triggers.getElementsByTagName("keyword").getLength(); j++) {
+            String keyword = triggers.getElementsByTagName("keyword").item(j).getTextContent();
+            currentGame.setActions(keyword, actionSet);
+        }
+    }
+
 
 }

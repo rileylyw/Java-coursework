@@ -59,32 +59,15 @@ public final class GameServer {
             ArrayList<Edge> paths = sections.get(1).getEdges();
             currentGame.readInPaths(currentGame, paths);
 
-
             // .xml file (actions)
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             Document document = builder.parse(actionsFile);
             Element root = document.getDocumentElement();
             NodeList actions = root.getChildNodes();
             for(int i=1; i<actions.getLength(); i+=2){
-                Element action = (Element) actions.item(i);
-                Element triggers = (Element) action.getElementsByTagName("triggers").item(0);
-                for(int j=0; j<triggers.getElementsByTagName("keyword").getLength(); j++) { //action
-                    String phrase = triggers.getElementsByTagName("keyword").item(j).getTextContent();
-                    System.out.println(phrase); //key
-                    
-                    //TODO: others add to game action
-                }
-                System.out.println("---");
-
+                currentGame.readInActions(actions, i, currentGame);
             }
-            // Get the first action (only the odd items are actually actions - 1, 3, 5 etc.)
-            Element firstAction = (Element)actions.item(1);
-            Element triggers = (Element)firstAction.getElementsByTagName("triggers").item(0);
-            // Get the first trigger phrase
-            String firstTriggerPhrase = triggers.getElementsByTagName("keyword").item(0).getTextContent();
-
-
-
+//            System.out.println(currentGame.getActions().get("cutdown").iterator().next().getProduced());
         } catch (ParseException | ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
