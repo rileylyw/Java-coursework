@@ -7,6 +7,7 @@ import java.util.Objects;
 public class GameController {
     private GameState currentGame;
     private ArrayList<String> tokens = new ArrayList<>();
+    private StringBuilder str = new StringBuilder();
     private int index = 0;
 
     public GameController(GameState currentGame){
@@ -26,32 +27,58 @@ public class GameController {
         String playerName = tokens.get(0).substring(0, tokens.get(0).length()-1);
         currentGame.setCurrentPlayer(playerName);
         index++;
-        //TODO: stringbuilder, return for look command
-        if(Objects.equals(tokens.get(index), "look")){
-            return look();
+        //TODO: switch for actions (look, goto...)
+        switch (tokens.get(index)){
+            case "look":
+                return look();
+            case "goto":
+                return goTo();
         }
-        return "OK";
+
+        return "That's not a verb I recognize.";
+    }
+
+    public String goTo() {
+        index++;
+        if(tokens.size()<=(index)){
+            return "Missing location";
+        }
+        else {
+            String nextLocation = tokens.get(index);
+            if(currentGame.locationExists(nextLocation)){
+                currentGame.setCurrentLocation(nextLocation);
+                return look();
+            }
+            else{
+                return "Location does not exist.";
+            }
+
+        }
     }
 
     public String look() {
-        Location loc = currentGame.getLocation(currentGame.getCurrentLocation());
+        String currentLocation = currentGame.getCurrentLocation();
+        Location loc = currentGame.getLocation(currentLocation);
+        str.append("You are in " +
+                loc.getDescription() + ". " +
+                "You can see: \n");
         ArrayList<GameEntity> entities = loc.getEntities();
         for(GameEntity entity: entities){
             if(entity instanceof Artefact){
-                System.out.println(entity.getName());
+                str.append("A " + entity.getDescription() + "\n");
             }
             else if(entity instanceof Furniture){
-                System.out.println("FURNITURE");
+                str.append("A " + entity.getDescription() + "\n");
             }
             else if(entity instanceof Character){
-                System.out.println("CHARACTER");
+                str.append("A " + entity.getDescription() + "\n");
             }
         }
-//        Location loc = currentGame.getLocation("cabin");
-//        System.out.println(loc.getEntities().get(0).getClass().getSimpleName());
-//        if(loc.getEntities().get(0) instanceof Artefact){
-//            System.out.println("HI");
-//        }
-        return "OK";
+        str.append("You can access from here: \n");
+        ArrayList<String> validLocations = currentGame.getToLocations(currentLocation);
+        for(String validLocation: validLocations){
+            str.append(validLocation + "\n");
+        }
+        return str.toString();
     }
 }

@@ -12,10 +12,26 @@ import java.util.TreeMap;
 
 public class GameState {
     private HashMap<String, Location> locations = new HashMap<>();
-    private HashMap<String, String> paths = new HashMap<>();
+    private HashMap<String, ArrayList<String>> paths = new HashMap<>();
     private TreeMap<String, HashSet<GameAction>> actions = new TreeMap<>();
     private Player currentPlayer;
     private String currentLocation;
+
+
+
+    public ArrayList<String> getToLocations(String fromLocation){
+        return paths.get(fromLocation);
+    }
+
+    public boolean locationExists(String location){
+        if(locations.containsKey(location)){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 
     public void setCurrentLocation(String currentLocation) {
         this.currentLocation = currentLocation;
@@ -48,12 +64,22 @@ public class GameState {
     }
 
     public void addPath(String fromName, String toName) {
-        paths.put(fromName, toName);
+        if(paths.containsKey(fromName)){
+            ArrayList<String> toLocations = paths.get(fromName);
+            toLocations.add(toName);
+            paths.replace(fromName, toLocations);
+        }
+        else {
+            ArrayList<String> toLocations = new ArrayList<>();
+            toLocations.add(toName);
+            paths.put(fromName, toLocations);
+        }
     }
 
-    public HashMap<String, String> getPaths() {
-        return paths;
-    }
+//    public HashMap<String, String> getPaths() {
+//        return paths;
+//    }
+
 
     public void setActions(String keyword, HashSet<GameAction> actionSet) {
         actions.put(keyword, actionSet);

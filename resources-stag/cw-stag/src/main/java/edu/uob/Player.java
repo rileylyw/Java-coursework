@@ -14,4 +14,6 @@ public class Player {
     public String getPlayerName() {
         return playerName;
     }
+
+    //TODO: inventory list
 }
