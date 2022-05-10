@@ -21,16 +21,15 @@ public class Location extends GameEntity{
 //        }
     }
 
-    public boolean entityExists(GameEntity entity){
+
+    public boolean entityExists(String entity){
+        boolean exist = false;
         for(GameEntity x: entities){
-            if(Objects.equals(x.getName(), entity.getName())){
-                return true;
-            }
-            else{
-                return false;
+            if(Objects.equals(x.getName(), entity)){
+                exist = true;
             }
         }
-        return false;
+        return exist;
     }
 
     public ArrayList<GameEntity> getEntities() {
@@ -39,5 +38,19 @@ public class Location extends GameEntity{
 
     public void removeEntity(GameEntity entityToRemove){
         entities.remove(entityToRemove);
+    }
+
+    public void removeEntityByName(String entityToRemove){
+        entities.removeIf(x -> Objects.equals(x.getName(), entityToRemove));
+    }
+
+    public void addEntityFromStoreroom(String entityToAdd, GameState currentGame){
+        ArrayList<GameEntity> x = currentGame.getLocation("storeroom").getEntities();
+        for(GameEntity item: x){
+            if(Objects.equals(entityToAdd, item.getName())){
+                Artefact newEntity = new Artefact(entityToAdd, item.getDescription());
+                entities.add(newEntity);
+            }
+        }
     }
 }

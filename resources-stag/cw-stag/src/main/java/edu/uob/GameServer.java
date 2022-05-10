@@ -17,6 +17,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /** This class implements the STAG server. */
 public final class GameServer {
@@ -25,8 +26,8 @@ public final class GameServer {
     private GameState currentGame = new GameState();
 
     public static void main(String[] args) throws IOException {
-        File entitiesFile = Paths.get("config/basic-entities.dot").toAbsolutePath().toFile();
-        File actionsFile = Paths.get("config/basic-actions.xml").toAbsolutePath().toFile();
+        File entitiesFile = Paths.get("config/extended-entities.dot").toAbsolutePath().toFile();
+        File actionsFile = Paths.get("config/extended-actions.xml").toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
         server.blockingListenOn(8888);
     }
@@ -79,7 +80,12 @@ public final class GameServer {
         GameController controller = new GameController(currentGame);
         String result = controller.handleCommand(command);
         currentGame = controller.getCurrentGame();
-//        ArrayList<GameEntity> x = currentGame.getLocation("storeroom").getEntities();
+//        HashMap<String, Location> loc = currentGame.getLocations();
+//        for(String x: loc.keySet()){
+//            System.out.println(x);
+//        }
+
+//        ArrayList<GameEntity> x = currentGame.getLocation("cabin").getEntities();
 //        for(GameEntity y: x){
 //            System.out.println("OK");
 //            System.out.println(y.getName());

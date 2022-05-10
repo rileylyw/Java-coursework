@@ -8,6 +8,11 @@ public class GameAction {
     private ArrayList<String> consumed = new ArrayList<>();
     private ArrayList<String> produced = new ArrayList<>();
 
+
+    public void removeSubject(String toRemove){
+        subjects.remove(toRemove);
+    }
+
     public void addConsumed(String consumed) {
         this.consumed.add(consumed);
     }

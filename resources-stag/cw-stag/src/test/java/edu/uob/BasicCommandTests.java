@@ -27,10 +27,21 @@ final class BasicCommandTests {
   // Test to spawn a new server and send a simple "look" command
   @Test
   void testLookingAroundStartLocation() {
-    String response = server.handleCommand("look").toLowerCase();
+    String response = server.handleCommand("player 1: look").toLowerCase();
     assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
     assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
-    assertTrue(response.contains("wooden door"), "Did not see description of furniture in response to look");
+    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
+  @Test
+  void test1() {
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: get key").toLowerCase();
+    server.handleCommand("Name: goto cabin").toLowerCase();
+    String response = server.handleCommand("Name: open trapdoor").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
   }
 
   // Add more unit tests or integration tests here.

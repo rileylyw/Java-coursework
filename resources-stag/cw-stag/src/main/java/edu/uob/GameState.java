@@ -15,6 +15,10 @@ public class GameState {
     private String currentLocation;
 
 
+    public void addEntityFromStoreroom(String loc, String entityToAdd, GameState currentGame){
+        locations.get(loc).addEntityFromStoreroom(entityToAdd, currentGame);
+    }
+
     public HashMap<String, ArrayList<String>> getPaths() {
         return paths;
     }
@@ -106,21 +110,23 @@ public class GameState {
     }
 
     public void addToEntities(Graph item, String itemType, GameState currentGame, String locationName){
-        String itemName = item.getNodes(false).get(0).getId().getId();
-        String itemDesc = item.getNodes(false).get(0).getAttribute("description");
-        switch (itemType) {
-            case "artefacts":
-                Artefact artefactToAdd = new Artefact(itemName, itemDesc);
-                currentGame.getLocation(locationName).addEntity(artefactToAdd);
-                break;
-            case "furniture":
-                Furniture furnitureToAdd = new Furniture(itemName, itemDesc);
-                currentGame.getLocation(locationName).addEntity(furnitureToAdd);
-                break;
-            case "characters":
-                Character characterToAdd = new Character(itemName, itemDesc);
-                currentGame.getLocation(locationName).addEntity(characterToAdd);
-                break;
+        for(int i=0; i<item.getNodes(false).size(); i++){
+            String itemName = item.getNodes(false).get(i).getId().getId();
+            String itemDesc = item.getNodes(false).get(i).getAttribute("description");
+            switch (itemType) {
+                case "artefacts":
+                    Artefact artefactToAdd = new Artefact(itemName, itemDesc);
+                    currentGame.getLocation(locationName).addEntity(artefactToAdd);
+                    break;
+                case "furniture":
+                    Furniture furnitureToAdd = new Furniture(itemName, itemDesc);
+                    currentGame.getLocation(locationName).addEntity(furnitureToAdd);
+                    break;
+                case "characters":
+                    Character characterToAdd = new Character(itemName, itemDesc);
+                    currentGame.getLocation(locationName).addEntity(characterToAdd);
+                    break;
+            }
         }
     }
 
