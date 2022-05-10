@@ -23,6 +23,10 @@ public class Player {
         this.artefacts.put(artefactName, artefactDesc);
     }
 
+    public void dropArtefact(String artefactToDrop){
+        this.artefacts.remove(artefactToDrop);
+    }
+
     public HashMap<String, String> getArtefacts() {
         return artefacts;
     }

@@ -13,6 +13,9 @@ public class Location extends GameEntity{
 
     public void addEntity(GameEntity itemType) {
         entities.add(itemType);
+//        for(GameEntity x: entities){
+//            System.out.println(x.getName());
+//        }
     }
 
     public ArrayList<GameEntity> getEntities() {
