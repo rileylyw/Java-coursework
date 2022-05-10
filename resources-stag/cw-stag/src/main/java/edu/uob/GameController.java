@@ -3,13 +3,11 @@ package edu.uob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class GameController {
     private final GameState currentGame;
     private final ArrayList<String> tokens = new ArrayList<>();
     private final StringBuilder str = new StringBuilder();
-    private int index = 0;
 
     public GameController(GameState currentGame){
         this.currentGame = currentGame;
@@ -27,13 +25,13 @@ public class GameController {
         tokenize(command);
         String playerName = tokens.get(0).substring(0, tokens.get(0).length()-1);
         currentGame.setCurrentPlayer(playerName);
-        index++;
-        //TODO: switch for actions (look, goto...)
-        return switch (tokens.get(index).toLowerCase()) {
+        return switch (tokens.get(1).toLowerCase()) {
             case "look" -> look();
             case "goto" -> goTo();
-            case "get", "drop" -> manipulateArtefacts();
+            case "get" -> get();
+            case "drop" -> drop();
             case "inv", "inventory" -> inventory();
+            //TODO: other actions --> gamestate, treemap of actions
             default -> "That's not a verb I recognize.";
         };
 
@@ -42,8 +40,6 @@ public class GameController {
     public String inventory(){
         Player currentPlayer = currentGame.getCurrentPlayer();
         String playerName = currentPlayer.getPlayerName();
-        String currentLocation = currentGame.getCurrentLocation();
-        Location loc = currentGame.getLocation(currentLocation);
         str.append(playerName + " is currently carrying: \n");
         HashMap<String, String> artefacts = currentPlayer.getArtefacts();
         for(String item: artefacts.keySet()){
@@ -52,39 +48,35 @@ public class GameController {
         return str.toString();
     }
 
-    public String manipulateArtefacts(){
-        index++;
-        if(tokens.size()<=(index)){
-            return "Missing artefact name";
-        }
-        String artefactToMove = tokens.get(index);
+    public String drop(){
         Player currentPlayer = currentGame.getCurrentPlayer();
         String currentLocation = currentGame.getCurrentLocation();
         Location loc = currentGame.getLocation(currentLocation);
-        if(Objects.equals(tokens.get(index - 1), "drop")) {
-            return drop(currentPlayer, artefactToMove, loc);
-        }
-        else if(Objects.equals(tokens.get(index - 1), "get")){
-            return get(currentPlayer, artefactToMove, loc);
-        }
-        return "OK";
-    }
-
-    public String drop(Player currentPlayer, String artefactToMove, Location loc){
         HashMap<String, String> artefacts =  currentPlayer.getArtefacts();
-        if(artefacts.containsKey(artefactToMove)){
-            Artefact droppedArtefact = new Artefact(artefactToMove, artefacts.get(artefactToMove));
-            loc.addEntity(droppedArtefact);
-            currentPlayer.dropArtefact(artefactToMove);
-            str.append("You dropped " + artefactToMove + ".");
+        if(currentPlayer.getArtefacts().isEmpty()){
+            return "Your inventory is empty, nothing can be dropped.";
+        }
+        for(String artefact: artefacts.keySet()){
+            if(tokens.contains(artefact)){
+                Artefact droppedArtefact = new Artefact(artefact, artefacts.get(artefact));
+                loc.addEntity(droppedArtefact);
+                currentPlayer.dropArtefact(artefact);
+                str.append("You dropped the " + artefact + ".");
+            }
+            else{
+                str.replace(0, str.length(), "Artefact does not exist in your inventory.");
+            }
         }
         return str.toString();
     }
 
-    public String get(Player currentPlayer, String artefactToMove, Location loc){
+    public String get(){
+        Player currentPlayer = currentGame.getCurrentPlayer();
+        String currentLocation = currentGame.getCurrentLocation();
+        Location loc = currentGame.getLocation(currentLocation);
         ArrayList<GameEntity> entities = loc.getEntities();
-        for(GameEntity entity: entities) {
-            if(Objects.equals(entity.getName(), artefactToMove)){
+        for(GameEntity entity: entities){
+            if(tokens.contains(entity.getName())){
                 if (entity instanceof Artefact) {
                     currentPlayer.addArtefact(entity.getName(), entity.getDescription());
                     str.append("You picked up a " + entity.getName() + "\n");
@@ -92,29 +84,28 @@ public class GameController {
                     return str.toString();
                 }
                 else {
-                    str.replace(0, str.length(),"You cannot pick "+ entity.getName() +" up.");
+                    return str.replace(0, str.length(),"You cannot pick "+ entity.getName() +" up.").toString();
                 }
             }
-            else{
-                str.replace(0, str.length(), "Invalid artefact name");
-            }
+            str.replace(0, str.length(), "Missing artefact.");
         }
         return str.toString();
     }
 
     public String goTo() {
-        index++;
-        if(tokens.size()<=(index)){
-            return "Missing location";
+        HashMap<String, ArrayList<String>> paths = currentGame.getPaths();
+        String fromPath = currentGame.getCurrentLocation();
+        ArrayList<String> possibleLoc = paths.get(fromPath);
+        for(String loc: possibleLoc){
+            if(tokens.contains(loc)){
+                currentGame.setCurrentLocation(loc);
+                return look();
+            }
+            else{
+                str.replace(0, str.length(),"Location does not exist. / Cannot access.");
+            }
         }
-        String nextLocation = tokens.get(index);
-        if(currentGame.locationExists(nextLocation)){
-            currentGame.setCurrentLocation(nextLocation);
-            return look();
-        }
-        else{
-            return "Location does not exist.";
-        }
+        return str.toString();
     }
 
     public String look() {

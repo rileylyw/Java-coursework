@@ -5,10 +5,7 @@ import com.alexmerz.graphviz.objects.Graph;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TreeMap;
+import java.util.*;
 
 public class GameState {
     private HashMap<String, Location> locations = new HashMap<>();
@@ -18,6 +15,13 @@ public class GameState {
     private String currentLocation;
 
 
+    public HashMap<String, ArrayList<String>> getPaths() {
+        return paths;
+    }
+
+    public HashMap<String, Location> getLocations() {
+        return locations;
+    }
 
     public ArrayList<String> getToLocations(String fromLocation){
         return paths.get(fromLocation);

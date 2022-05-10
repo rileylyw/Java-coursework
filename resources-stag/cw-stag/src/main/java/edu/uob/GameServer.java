@@ -4,7 +4,6 @@ import com.alexmerz.graphviz.ParseException;
 import com.alexmerz.graphviz.Parser;
 import com.alexmerz.graphviz.objects.Edge;
 import com.alexmerz.graphviz.objects.Graph;
-import com.alexmerz.graphviz.objects.Node;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -18,9 +17,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TreeMap;
 
 /** This class implements the STAG server. */
 public final class GameServer {
@@ -32,7 +28,7 @@ public final class GameServer {
         File entitiesFile = Paths.get("config/basic-entities.dot").toAbsolutePath().toFile();
         File actionsFile = Paths.get("config/basic-actions.xml").toAbsolutePath().toFile();
         GameServer server = new GameServer(entitiesFile, actionsFile);
-        server.blockingListenOn(8888); //TODO change back to 8888
+        server.blockingListenOn(8888);
     }
 
     /**
@@ -83,6 +79,11 @@ public final class GameServer {
         GameController controller = new GameController(currentGame);
         String result = controller.handleCommand(command);
         currentGame = controller.getCurrentGame();
+//        ArrayList<GameEntity> x = currentGame.getLocation("storeroom").getEntities();
+//        for(GameEntity y: x){
+//            System.out.println("OK");
+//            System.out.println(y.getName());
+//        }
         return "Thanks for your message: " + command + "\n" + result;
     }
 
