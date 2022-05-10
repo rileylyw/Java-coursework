@@ -76,11 +76,6 @@ public class GameState {
         }
     }
 
-//    public HashMap<String, String> getPaths() {
-//        return paths;
-//    }
-
-
     public void setActions(String keyword, HashSet<GameAction> actionSet) {
         actions.put(keyword, actionSet);
     }

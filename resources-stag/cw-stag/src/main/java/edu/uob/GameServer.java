@@ -83,7 +83,6 @@ public final class GameServer {
         GameController controller = new GameController(currentGame);
         String result = controller.handleCommand(command);
         currentGame = controller.getCurrentGame();
-
         return "Thanks for your message: " + command + "\n" + result;
     }
 

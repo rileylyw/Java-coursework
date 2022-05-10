@@ -18,4 +18,8 @@ public class Location extends GameEntity{
     public ArrayList<GameEntity> getEntities() {
         return entities;
     }
+
+    public void removeEntity(GameEntity entityToRemove){
+        entities.remove(entityToRemove);
+    }
 }

@@ -28,14 +28,46 @@ public class GameController {
         currentGame.setCurrentPlayer(playerName);
         index++;
         //TODO: switch for actions (look, goto...)
-        switch (tokens.get(index)){
+        switch (tokens.get(index).toLowerCase()){
             case "look":
                 return look();
             case "goto":
                 return goTo();
+            case "get":
+                return get();
+
         }
 
         return "That's not a verb I recognize.";
+    }
+
+    public String get(){
+        index++;
+        if(tokens.size()<=(index)){
+            return "Missing artefact name";
+        }
+        String artefactToPick = tokens.get(index);
+        Player currentPlayer = currentGame.getCurrentPlayer();
+        String currentLocation = currentGame.getCurrentLocation();
+        Location loc = currentGame.getLocation(currentLocation);
+        ArrayList<GameEntity> entities = loc.getEntities();
+        for(GameEntity entity: entities) {
+            if(Objects.equals(entity.getName(), artefactToPick)){
+                if (entity instanceof Artefact) {
+                    currentPlayer.addArtefact(entity.getName(), entity.getDescription());
+                    str.append("You picked up a " + entity.getName() + "\n");
+                    loc.removeEntity(entity);
+                    return str.toString();
+                }
+                else {
+                    str.replace(0, str.length(),"You cannot pick "+ entity.getName() +" up.");
+                }
+            }
+            else{
+                str.replace(0, str.length(), "Invalid artefact name");
+            }
+        }
+        return str.toString();
     }
 
     public String goTo() {
@@ -43,16 +75,13 @@ public class GameController {
         if(tokens.size()<=(index)){
             return "Missing location";
         }
-        else {
-            String nextLocation = tokens.get(index);
-            if(currentGame.locationExists(nextLocation)){
-                currentGame.setCurrentLocation(nextLocation);
-                return look();
-            }
-            else{
-                return "Location does not exist.";
-            }
-
+        String nextLocation = tokens.get(index);
+        if(currentGame.locationExists(nextLocation)){
+            currentGame.setCurrentLocation(nextLocation);
+            return look();
+        }
+        else{
+            return "Location does not exist.";
         }
     }
 
