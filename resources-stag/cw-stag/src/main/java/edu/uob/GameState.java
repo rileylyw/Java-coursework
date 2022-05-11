@@ -2,6 +2,7 @@ package edu.uob;
 
 import com.alexmerz.graphviz.objects.Edge;
 import com.alexmerz.graphviz.objects.Graph;
+import com.alexmerz.graphviz.objects.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -13,6 +14,7 @@ public class GameState {
     private TreeMap<String, HashSet<GameAction>> actions = new TreeMap<>();
     private Player currentPlayer;
     private String currentLocation;
+    private String beginningLocation;
 
 
     public void addEntityFromStoreroom(String loc, String entityToAdd, GameState currentGame){
@@ -92,7 +94,15 @@ public class GameState {
         return actions;
     }
 
+    public String getBeginningLocation() {
+        return beginningLocation;
+    }
+
     public void readInEntities(GameState currentGame, ArrayList<Graph> locations) {
+        Graph firstLocation = locations.get(0);
+        Node locationDetails = firstLocation.getNodes(false).get(0);
+        this.beginningLocation = locationDetails.getId().getId();
+
         for (Graph location : locations) {
             String locationName = location.getNodes(false).get(0).getId().getId();
             if(this.currentLocation == null){setCurrentLocation(locationName);}
@@ -146,6 +156,8 @@ public class GameState {
         Element subjects = (Element) action.getElementsByTagName("subjects").item(0);
         Element consumed = (Element) action.getElementsByTagName("consumed").item(0);
         Element produced = (Element) action.getElementsByTagName("produced").item(0);
+        Element narration = (Element) action.getElementsByTagName("narration").item(0);
+        actionToAdd.setNarration(narration.getTextContent());
         for(int j=0; j<subjects.getElementsByTagName("entity").getLength(); j++) {
             String subjectEntity = subjects.getElementsByTagName("entity").item(j).getTextContent();
             actionToAdd.addSubject(subjectEntity);

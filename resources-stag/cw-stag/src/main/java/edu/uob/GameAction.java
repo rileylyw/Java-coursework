@@ -7,7 +7,15 @@ public class GameAction {
     private ArrayList<String> subjects = new ArrayList<>();
     private ArrayList<String> consumed = new ArrayList<>();
     private ArrayList<String> produced = new ArrayList<>();
+    private String narration;
 
+    public void setNarration(String narration) {
+        this.narration = narration;
+    }
+
+    public String getNarration() {
+        return narration;
+    }
 
     public void removeSubject(String toRemove){
         subjects.remove(toRemove);

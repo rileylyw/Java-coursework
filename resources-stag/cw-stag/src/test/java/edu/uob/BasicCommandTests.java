@@ -19,8 +19,8 @@ final class BasicCommandTests {
   // Make a new server for every @Test (i.e. this method runs before every @Test test case)
   @BeforeEach
   void setup() {
-      File entitiesFile = Paths.get("config/basic-entities.dot").toAbsolutePath().toFile();
-      File actionsFile = Paths.get("config/basic-actions.xml").toAbsolutePath().toFile();
+      File entitiesFile = Paths.get("config/extended-entities.dot").toAbsolutePath().toFile();
+      File actionsFile = Paths.get("config/extended-actions.xml").toAbsolutePath().toFile();
       server = new GameServer(entitiesFile, actionsFile);
   }
 
@@ -39,6 +39,50 @@ final class BasicCommandTests {
     server.handleCommand("Name: get key").toLowerCase();
     server.handleCommand("Name: goto cabin").toLowerCase();
     String response = server.handleCommand("Name: open trapdoor").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+}
+
+  @Test
+  void test2() {
+    server.handleCommand("Name: get axe").toLowerCase();
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: cut tree").toLowerCase();
+//    String response = server.handleCommand("Name: open trapdoor").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
+  @Test
+  void test3() {
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: get key").toLowerCase();
+    server.handleCommand("Name: goto cabin").toLowerCase();
+    server.handleCommand("Name: open trapdoor").toLowerCase();
+    server.handleCommand("Name: goto cellar").toLowerCase();
+    server.handleCommand("Name: attack elf").toLowerCase();
+    server.handleCommand("Name: attack elf").toLowerCase();
+//    String response = server.handleCommand("Name: open trapdoor").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
+  @Test
+  void test4() {
+    server.handleCommand("Name: get potion").toLowerCase();
+    server.handleCommand("Name: get axe").toLowerCase();
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: get key").toLowerCase();
+    server.handleCommand("Name: goto cabin").toLowerCase();
+    server.handleCommand("Name: open trapdoor").toLowerCase();
+    server.handleCommand("Name: goto cellar").toLowerCase();
+    server.handleCommand("Name: attack elf").toLowerCase();
+    server.handleCommand("Name: attack elf").toLowerCase();
+    server.handleCommand("Name: attack elf").toLowerCase();
+//    String response = server.handleCommand("Name: open trapdoor").toLowerCase();
 //    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
 //    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
 //    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
