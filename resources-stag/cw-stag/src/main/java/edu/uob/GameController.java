@@ -66,74 +66,20 @@ public class GameController {
         else{
             return "That's not a verb I recognize.";
         }
-        checkAction(corrActions, artefacts, currentPlayer, currentLocation, loc);
+//        System.out.println("health "+ currentPlayer.getHealth());
+        checkAction(corrActions, artefacts, currentPlayer, loc);
         return str.toString();
     }
 
     public boolean checkAction(HashSet<GameAction> corrActions, HashMap<String, String> artefacts,
-                            Player currentPlayer, Location currentLocation, HashMap<String, Location> loc){
+                            Player currentPlayer, HashMap<String, Location> loc){
         for(GameAction action: corrActions){
             ArrayList<String> subjects = action.getSubjects();
-            ArrayList<String> consumed = action.getConsumed();
-            ArrayList<String> produced = action.getProduced();
-
-            for(String token: tokens){ //cut the tree
-                if(subjects.contains(token)){ //tree
-                    if(requiresArtefact(action,artefacts, currentPlayer, loc)){
-                        return true;
-                    }
-                    if(interactWithSubjects(action, artefacts, currentGame, token)){
-                        return true;
-                    }
-//                    if(artefacts.containsKey(consumed.get(0))) { //open trapdoor
-//                        if(!produced.isEmpty() && loc.containsKey(produced.get(0))){ //is location
-//                            currentPlayer.dropArtefact(consumed.get(0));
-//                            currentGame.addPath(currentGame.getCurrentLocation(), produced.get(0));
-//                            str.append(action.getNarration());
-//                        } //TODO if no have artefact to open
-//                        else if(Objects.equals(produced.get(0), "health")){
-//                            if(currentPlayer.getHealth() < 3) {
-//                                currentPlayer.dropArtefact(consumed.get(0));
-////                                subjects.remove(consumed.get(0));
-//                                currentPlayer.increaseHealth();
-//                                str.append(action.getNarration());
-//                            }
-//                            else{
-//                                str.append("Health is already full.");
-//                            }
-//                        }
-//                    }
-//                    else if(currentLocation.entityExists(token)){//if loc has subject
-//                        ArrayList<String> tempSubjects = subjects; //cut tree
-//                        tempSubjects.retainAll(artefacts.keySet()); //if player has subject needed
-//                        if(!tempSubjects.isEmpty()) {
-//                            currentPlayer.dropArtefact(tempSubjects.get(0));
-//                            currentLocation.removeEntityByName(token);
-//                            currentLocation.addEntityFromStoreroom(produced.get(0), currentGame);
-//                            str.append(action.getNarration());
-//                        }
-//                        else if(Objects.equals(consumed.get(0), "health")){
-//                            System.out.println("HERE");
-//                            System.out.println("===");
-//                            System.out.println("SUB "+subjects);
-//                            System.out.println("consumed "+consumed);
-//                            System.out.println("producred "+produced);
-//                            System.out.println("artefact "+artefacts);
-//                            System.out.println("===");
-//                            if(currentPlayer.getHealth() > 1) {
-//                                currentPlayer.decreaseHealth();
-//                                str.append(action.getNarration());
-//                            }
-//                            else if(currentPlayer.getHealth() == 1){
-//                                for(String artefact: artefacts.keySet()){
-//                                    currentPlayer.dropArtefact(artefact);
-//                                }
-//                                currentGame.setCurrentLocation(currentGame.getBeginningLocation());
-//                                //TODO
-//                                str.append("You died and lost all of your items, you must return to the start of the game");
-//                            }
-//                        }
-//                    }
+            for(String token: tokens){ //attack elf
+                if(subjects.contains(token)){ //elf
+                    requiresArtefact(action,artefacts, currentPlayer, loc, token);
+                    interactWithSubjects(action, artefacts, currentGame, token);
+                    System.out.println("here health "+ currentPlayer.getHealth());
 
                 }
             }
@@ -143,48 +89,26 @@ public class GameController {
 
     public boolean requiresArtefact(GameAction action, HashMap<String, String> artefacts,
                                     Player currentPlayer,
-                                    HashMap<String, Location> loc){
-        ArrayList<String> subjects = action.getSubjects();
+                                    HashMap<String, Location> loc, String entity){
         ArrayList<String> consumed = action.getConsumed();
-        ArrayList<String> produced = action.getProduced();
         Location currentLocation = currentGame.getLocation(currentGame.getCurrentLocation());
+        ArrayList<String> tempSubjects = action.getSubjects(); //cut tree
+        tempSubjects.removeAll(consumed); //if player has subject needed
         if(artefacts.containsKey(consumed.get(0))) { //open trapdoor with key
-            if(!produced.isEmpty() && loc.containsKey(produced.get(0))){ //is location
-                currentPlayer.dropArtefact(consumed.get(0));
-                String currentLoc = currentGame.getCurrentLocation();
-                currentGame.addPath(currentLoc, produced.get(0));
-                str.append(action.getNarration());
+            if(isLocation(action, loc, currentPlayer)) {
                 return true;
             }
-            else if(Objects.equals(produced.get(0), "health")){ //TODO potion drink once??
-                if(currentPlayer.getHealth() < 3) {
-                    currentPlayer.dropArtefact(consumed.get(0));
-//                                subjects.remove(consumed.get(0));
-                    currentPlayer.increaseHealth();
-                    str.append(action.getNarration());
-                }
-                else{
-                    str.append("Health is already full.");
-                }
+            else if(isHealth(action, currentPlayer)){
+                return true;
+            }
+            else if(willProduce(action, currentPlayer, currentLocation, entity)){
                 return true;
             }
         }
-        else if (Objects.equals(consumed.get(0), "health")){
-            if(currentPlayer.getHealth() > 1) {
-                currentPlayer.decreaseHealth();
-                str.append(action.getNarration());
-            }
-            else if(currentPlayer.getHealth() == 1){
-                HashMap<String, String> temp = (HashMap<String, String>) artefacts.clone();
-                for(String artefact: temp.keySet()){
-                    System.out.println(artefacts.keySet());
-                    currentPlayer.dropArtefactToCurrLoc(artefact, artefacts.get(artefact), currentLocation);
-                }
-                currentGame.setCurrentLocation(currentGame.getBeginningLocation());
-                //TODO
-                currentPlayer.resetHealth();
-                str.append("You died and lost all of your items, you must return to the start of the game");
-            }
+//        else if(willConsumeHealth(action, currentPlayer, currentLocation, artefacts)){
+//            return true;
+//        }
+        else if(willExchangeItems(action, currentPlayer, currentLocation, entity)){
             return true;
         }
         else{
@@ -194,45 +118,160 @@ public class GameController {
         return false;
     }
 
-    public boolean interactWithSubjects(GameAction action, HashMap<String, String> artefacts,
-                                        GameState currentGame, String entity){
-        ArrayList<String> subjects = action.getSubjects();
+    public boolean isLocation(GameAction action, HashMap<String, Location> loc,
+                              Player currentPlayer){
         ArrayList<String> consumed = action.getConsumed();
         ArrayList<String> produced = action.getProduced();
+        if(!produced.isEmpty() && loc.containsKey(produced.get(0))){ //is location
+            currentPlayer.dropArtefact(consumed.get(0));
+            String currentLoc = currentGame.getCurrentLocation();
+            currentGame.addPath(currentLoc, produced.get(0));
+            str.append(action.getNarration());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isHealth(GameAction action, Player currentPlayer){
+        ArrayList<String> consumed = action.getConsumed();
+        ArrayList<String> produced = action.getProduced();
+        if(Objects.equals(produced.get(0), "health")){ //TODO potion drink once??
+            if(currentPlayer.getHealth() < 3) {
+                currentPlayer.dropArtefact(consumed.get(0));
+                currentPlayer.increaseHealth();
+                str.append(action.getNarration());
+            }
+            else{
+                str.append("Health is already full.");
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public boolean willProduce(GameAction action, Player currentPlayer,
+                               Location currentLocation, String entity){
+        ArrayList<String> consumed = action.getConsumed();
+        ArrayList<String> produced = action.getProduced();
+        if(currentLocation.entityExists(entity)){
+            currentPlayer.dropArtefact(consumed.get(0));
+            currentLocation.addEntityFromStoreroom(produced.get(0), currentGame);
+            str.append(action.getNarration());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean willConsumeHealth(GameAction action, Player currentPlayer,
+                                     Location currentLocation, HashMap<String, String> artefacts){
+        ArrayList<String> consumed = action.getConsumed();
+//        if (Objects.equals(consumed.get(0), "health")){
+//            if(currentPlayer.getHealth() > 1) {
+//                currentPlayer.decreaseHealth();
+//                str.append(action.getNarration());
+//            }
+//            else if(currentPlayer.getHealth() == 1){
+//                HashMap<String, String> temp = (HashMap<String, String>) artefacts.clone();
+//                for(String artefact: temp.keySet()){
+//                    System.out.println(artefacts.keySet());
+//                    currentPlayer.dropArtefactToCurrLoc(artefact, artefacts.get(artefact), currentLocation);
+//                }
+//                currentGame.setCurrentLocation(currentGame.getBeginningLocation());
+//                currentPlayer.resetHealth();
+//                str.append("You died and lost all of your items, you must return to the start of the game");
+//            }
+//            return true;
+//        }
+        return false;
+    }
+
+    public boolean willExchangeItems(GameAction action, Player currentPlayer,
+                                     Location currentLocation, String entity){
+        ArrayList<String> consumed = action.getConsumed();
+        ArrayList<String> produced = action.getProduced();
+        if(currentLocation.entityExists(consumed.get(0))){
+            if(!currentPlayer.hasArtefact(entity)){
+                str.append("You don't have "+entity);
+                return true;
+            }
+            System.out.println(consumed.get(0));
+            currentLocation.removeEntityByName(consumed.get(0));
+            for(String x: produced){
+                currentLocation.addEntityFromStoreroom(x, currentGame);
+            }
+            str.append(action.getNarration());
+            return true;
+        }
+        return false;
+    }
+
+
+    public boolean interactWithSubjects(GameAction action, HashMap<String, String> artefacts,
+                                        GameState currentGame, String entity){
         Location currentLocation = currentGame.getLocation(currentGame.getCurrentLocation());
         Player currentPlayer = currentGame.getCurrentPlayer();
         if(currentLocation.entityExists(entity)){//if loc has subject
-            ArrayList<String> tempSubjects = subjects; //cut tree
-            tempSubjects.retainAll(artefacts.keySet()); //if player has subject needed
-            if(!tempSubjects.isEmpty()) {
-                currentPlayer.dropArtefact(tempSubjects.get(0));
-                currentLocation.removeEntityByName(entity);
-                currentLocation.addEntityFromStoreroom(produced.get(0), currentGame);
+            if(deductHealth(action, artefacts, currentPlayer, currentLocation)){
+                return true;
+            }
+            if(hasSubjectNeeded(action, artefacts, currentPlayer, currentLocation, entity)){
+                return true;
+            }
+
+//            else if(Objects.equals(consumed.get(0), "health")){
+//                if(currentPlayer.getHealth() > 1) {
+//                    currentPlayer.decreaseHealth();
+//                    str.append(action.getNarration());
+//                    return true;
+//                }
+//                else if(currentPlayer.getHealth() == 1){
+//                    for(String artefact: artefacts.keySet()){
+//                        currentPlayer.dropArtefact(artefact);
+//                    }
+//                    currentGame.setCurrentLocation(currentGame.getBeginningLocation());
+//                    str.append("You died and lost all of your items, you must return to the start of the game");
+//                    return true;
+//                }
+//            }
+        }
+        return false;
+    }
+
+    public boolean hasSubjectNeeded(GameAction action, HashMap<String, String> artefacts,
+                                    Player currentPlayer, Location currentLocation,
+                                    String entity){
+        ArrayList<String> subjects = action.getSubjects();
+        ArrayList<String> produced = action.getProduced();
+        ArrayList<String> tempSubjects = subjects; //cut tree
+        tempSubjects.retainAll(artefacts.keySet()); //if player has subject needed
+        if(!tempSubjects.isEmpty()) {
+            currentPlayer.dropArtefact(tempSubjects.get(0));
+            currentLocation.removeEntityByName(entity);
+            currentLocation.addEntityFromStoreroom(produced.get(0), currentGame);
+            str.append(action.getNarration());
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deductHealth(GameAction action, HashMap<String, String> artefacts,
+                                Player currentPlayer, Location currentLocation){
+        ArrayList<String> consumed = action.getConsumed();
+        if(Objects.equals(consumed.get(0), "health")){
+            if(currentPlayer.getHealth() > 1) {
+                currentPlayer.decreaseHealth();
                 str.append(action.getNarration());
                 return true;
             }
-            else if(Objects.equals(consumed.get(0), "health")){
-                System.out.println("HERE");
-                System.out.println("===");
-                System.out.println("SUB "+subjects);
-                System.out.println("consumed "+consumed);
-                System.out.println("producred "+produced);
-                System.out.println("artefact "+artefacts);
-                System.out.println("===");
-                if(currentPlayer.getHealth() > 1) {
-                    currentPlayer.decreaseHealth();
-                    str.append(action.getNarration());
-                    return true;
+            else if(currentPlayer.getHealth() == 1){
+                HashMap<String, String> temp = (HashMap<String, String>) artefacts.clone();
+                for(String artefact: temp.keySet()){
+                    currentPlayer.dropArtefactToCurrLoc(artefact, artefacts.get(artefact), currentLocation);
                 }
-                else if(currentPlayer.getHealth() == 1){
-                    for(String artefact: artefacts.keySet()){
-                        currentPlayer.dropArtefact(artefact);
-                    }
-                    currentGame.setCurrentLocation(currentGame.getBeginningLocation());
-                    //TODO
-                    str.append("You died and lost all of your items, you must return to the start of the game");
-                    return true;
-                }
+                currentGame.setCurrentLocation(currentGame.getBeginningLocation());
+                currentPlayer.resetHealth();
+                str.append("You died and lost all of your items, you must return to the start of the game");
+                return true;
             }
         }
         return false;

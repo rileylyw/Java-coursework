@@ -81,8 +81,65 @@ final class BasicCommandTests {
     server.handleCommand("Name: goto cellar").toLowerCase();
     server.handleCommand("Name: attack elf").toLowerCase();
     server.handleCommand("Name: attack elf").toLowerCase();
-    server.handleCommand("Name: attack elf").toLowerCase();
+    String response = server.handleCommand("Name: attack elf").toLowerCase();
+    System.out.printf(response);
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
+  @Test
+  void test5() {
+    server.handleCommand("Name: get potion").toLowerCase();
+    server.handleCommand("Name: get axe").toLowerCase();
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: chop tree").toLowerCase();
+    server.handleCommand("Name: get log").toLowerCase();
+    server.handleCommand("Name: goto riverbank").toLowerCase();
+    server.handleCommand("Name: bridge river").toLowerCase();
+    server.handleCommand("Name: goto clearing").toLowerCase();
+    server.handleCommand("Name: dig ground").toLowerCase();
 //    String response = server.handleCommand("Name: open trapdoor").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
+  @Test
+  void test6() {
+    server.handleCommand("Name: get coin").toLowerCase();
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: get key").toLowerCase();
+    server.handleCommand("Name: goto cabin").toLowerCase();
+    server.handleCommand("Name: open trapdoor").toLowerCase();
+    server.handleCommand("Name: goto cellar").toLowerCase();
+    server.handleCommand("Name: pay elf").toLowerCase();
+//    String response = server.handleCommand("Name: open trapdoor").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
+  @Test
+  void test7() {
+    server.handleCommand("Name: get coin").toLowerCase();
+    server.handleCommand("Name: get axe").toLowerCase();
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: get key").toLowerCase();
+    server.handleCommand("Name: chop tree").toLowerCase();
+    server.handleCommand("Name: get log").toLowerCase();
+    server.handleCommand("Name: goto cabin").toLowerCase();
+    server.handleCommand("Name: open trapdoor").toLowerCase();
+    server.handleCommand("Name: goto cellar").toLowerCase();
+    server.handleCommand("Name: pay elf").toLowerCase();
+    server.handleCommand("Name: get shovel").toLowerCase();
+    server.handleCommand("Name: goto cabin").toLowerCase();
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: goto riverbank").toLowerCase();
+    server.handleCommand("Name: bridge river").toLowerCase();
+    server.handleCommand("Name: goto clearing").toLowerCase();
+    String response = server.handleCommand("Name: dig ground").toLowerCase();
+    System.out.println(response);
 //    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
 //    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
 //    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");

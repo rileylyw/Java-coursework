@@ -21,7 +21,6 @@ public class Location extends GameEntity{
 //        }
     }
 
-
     public boolean entityExists(String entity){
         boolean exist = false;
         for(GameEntity x: entities){

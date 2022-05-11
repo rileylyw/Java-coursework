@@ -52,5 +52,12 @@ public class Player {
         return artefacts;
     }
 
+    public boolean hasArtefact(String artefact){
+        if(artefacts.containsKey(artefact)){
+            return true;
+        }
+        return false;
+    }
+
     //TODO: inventory list
 }
