@@ -58,7 +58,6 @@ public class GameController {
         TreeMap<String, HashSet<GameAction>> actions =  currentGame.getActions();
         HashSet<GameAction> corrActions;
         Player currentPlayer = currentGame.getCurrentPlayer();
-        Location currentLocation = currentGame.getLocation(currentGame.getCurrentLocation());
         HashMap<String, String> artefacts = currentPlayer.getArtefacts();
         HashMap<String, Location> loc = currentGame.getLocations();
         if(actions.containsKey(token)){
@@ -67,8 +66,9 @@ public class GameController {
         else{
             return "That's not a verb I recognize.";
         }
-//        System.out.println("health "+ currentPlayer.getHealth());
-        checkAction(corrActions, artefacts, currentPlayer, loc);
+        if(!checkAction(corrActions, artefacts, currentPlayer, loc)){
+            return "Invalid command";
+        };
         return str.toString();
     }
 
@@ -79,10 +79,16 @@ public class GameController {
             for(String token: tokens){ //attack elf
                 if(subjects.contains(token)){ //elf
                     if(action.getConsumed().isEmpty()){
-                        str.append(action.getNarration());
+                        if(currentPlayer.hasArtefact(subjects.get(0))) {
+                            str.append(action.getNarration());
+                        }
+                        else{
+                            str.append("You don't have "+subjects.get(0));
+                        }
+                        return true;
                     }
-                    if(!requiresArtefact(action,artefacts, currentPlayer, loc, token)){
-                        return false;
+                    if(requiresArtefact(action,artefacts, currentPlayer, loc, token)){
+                        return true;
                     }
                     interactWithSubjects(action, artefacts, currentGame, token);
                 }
@@ -116,10 +122,11 @@ public class GameController {
         else if(willExchangeItems(action, currentPlayer, currentLocation, entity)){
             return true;
         }
-        else{
-            str.append("You don't have "+consumed.get(0));
-            return true;
-        }
+//        else{
+//            System.out.println("HERE");
+//            str.append("You don't have "+consumed.get(0));
+//            return true;
+//        }
         return false;
     }
 
@@ -344,7 +351,9 @@ public class GameController {
                     return str.replace(0, str.length(),"You cannot pick "+ entity.getName() +" up.").toString();
                 }
             }
-//            str.replace(0, str.length(), "Missing artefact.");
+        }
+        if(str.isEmpty()){
+            str.append("Missing artefact");
         }
         return str.toString();
     }
