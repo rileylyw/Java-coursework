@@ -7,6 +7,7 @@ public class GameController {
     private final ArrayList<String> tokens = new ArrayList<>();
     private final StringBuilder str = new StringBuilder();
     private ArrayList<String> verbs = new ArrayList<>();
+    
 
     public GameController(GameState currentGame){
         this.currentGame = currentGame;
@@ -26,8 +27,14 @@ public class GameController {
     public String handleCommand(String command){
         tokenize(command); //TODO player name with spaces hyphens etc
         //TODO: multiplayer
-        String playerName = tokens.get(0).substring(0, tokens.get(0).length()-1);
+//        String playerName = tokens.get(0).substring(0, tokens.get(0).length()-1);
+        String[] temp = command.split(":");
+        String playerName = temp[0];
+        if(!currentGame.playerExists(playerName)){
+            currentGame.addPlayer(playerName);
+        }
         currentGame.setCurrentPlayer(playerName);
+        System.out.println("here "+currentGame.getCurrentPlayer().playerName);
         for(String token: tokens){ // use axe to chop tree
             if(verbs.contains(token)){
                 return checkVerb(token);
@@ -128,8 +135,15 @@ public class GameController {
 //        else if(willConsumeHealth(action, currentPlayer, currentLocation, artefacts)){
 //            return true;
 //        }
-        else if(willExchangeItems(action, currentPlayer, currentLocation, entity, tempSubjects.get(0))){
-            return true;
+        else if(!tempSubjects.isEmpty()){
+            if(willExchangeItems(action, currentPlayer, currentLocation, entity, tempSubjects.get(0))){
+                return true;
+            }
+        }
+        else if(tempSubjects.isEmpty()){
+             if(willExchangeItems(action, currentPlayer, currentLocation, entity, "empty")) {
+                 return true;
+             }
         }
 //        else{
 //            System.out.println("HERE");
@@ -417,6 +431,13 @@ public class GameController {
         for(String validLocation: validLocations){
             str.append(validLocation + "\n");
         }
+        for(Player player: currentGame.getPlayers()){
+            if(!Objects.equals(player.getPlayerName(), currentGame.getCurrentPlayer().getPlayerName())){
+
+                str.append("Other player(s): \n"+player.getPlayerName());
+            }
+        }
+
         return str.toString();
     }
 }

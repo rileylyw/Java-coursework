@@ -13,9 +13,28 @@ public class GameState {
     private HashMap<String, ArrayList<String>> paths = new HashMap<>();
     private TreeMap<String, HashSet<GameAction>> actions = new TreeMap<>();
     private Player currentPlayer;
+    private ArrayList<Player> players = new ArrayList<>();
     private String currentLocation;
     private String beginningLocation;
 
+
+    public void addPlayer(String player) {
+        Player newPlayer = new Player(player);
+        players.add(newPlayer);
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public boolean playerExists(String playerName){
+        for(Player player: players){
+            if(Objects.equals(player.getPlayerName(), playerName)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void addEntityFromStoreroom(String loc, String entityToAdd, GameState currentGame){
         locations.get(loc).addEntityFromStoreroom(entityToAdd, currentGame);
@@ -49,8 +68,11 @@ public class GameState {
 
     public void setCurrentPlayer(String playerName) {
         if(currentPlayer == null) {
-            currentPlayer = new Player(playerName);
-            this.currentPlayer = currentPlayer;
+//            addPlayer(playerName);
+            this.currentPlayer = players.get(0);
+//            currentPlayer.setPlayerName(playerName);
+//            currentPlayer = new Player(playerName);
+//            this.currentPlayer = currentPlayer;
         }
         else{
             currentPlayer.setPlayerName(playerName);

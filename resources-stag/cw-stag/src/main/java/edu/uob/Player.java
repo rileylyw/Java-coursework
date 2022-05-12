@@ -4,8 +4,13 @@ import java.util.HashMap;
 
 public class Player {
     String playerName;
+    GameState playerState = new GameState();
     HashMap<String, String> artefacts = new HashMap<>();
     private int health = 3;
+
+    public GameState getPlayerState() {
+        return playerState;
+    }
 
     public int getHealth() {
         return health;
@@ -53,10 +58,7 @@ public class Player {
     }
 
     public boolean hasArtefact(String artefact){
-        if(artefacts.containsKey(artefact)){
-            return true;
-        }
-        return false;
+        return artefacts.containsKey(artefact);
     }
 
     //TODO: inventory list

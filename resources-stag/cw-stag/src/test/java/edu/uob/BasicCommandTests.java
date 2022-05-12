@@ -176,9 +176,9 @@ final class BasicCommandTests {
 
   @Test
   void test10() {
-    server.handleCommand("Name: drink potion").toLowerCase();
+    server.handleCommand("Name a: goto forest").toLowerCase();
 
-    String response = server.handleCommand("Name: drink potion").toLowerCase();
+    String response = server.handleCommand("Name b: look").toLowerCase();
     System.out.println(response);
 //    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
 //    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
