@@ -79,7 +79,6 @@ public class GameController {
                             Player currentPlayer, HashMap<String, Location> loc){
         for(GameAction action: corrActions){
             ArrayList<String> subjects = action.getSubjects();
-            System.out.println(subjects);
             for(String token: tokens){ //attack elf
                 if(subjects.contains(token)){ //elf
                     if(action.getConsumed().isEmpty()){
@@ -94,7 +93,9 @@ public class GameController {
                     if(requiresArtefact(action,artefacts, currentPlayer, loc, token)){
                         return true;
                     }
-                    interactWithSubjects(action, artefacts, currentGame, token);
+                    if(interactWithSubjects(action, artefacts, currentGame, token)){
+                        return true;
+                    };
                 }
             }
         }
@@ -111,8 +112,8 @@ public class GameController {
         ArrayList<String> tempSubjects = new ArrayList<>();
         tempSubjects.addAll(subjects);
         tempSubjects.removeAll(consumed); //if player has subject needed
-        System.out.println("temp "+tempSubjects);
-        System.out.println("subjetc "+subjects);
+//        System.out.println("temp "+tempSubjects);
+//        System.out.println("subjetc "+subjects);
         if(artefacts.containsKey(consumed.get(0))) { //open trapdoor with key
             if(isLocation(action, loc, currentPlayer)) {
                 return true;
@@ -292,7 +293,11 @@ public class GameController {
                 return true;
             }
             else if(currentPlayer.getHealth() == 1){
-                HashMap<String, String> temp = (HashMap<String, String>) artefacts.clone();
+                HashMap<String, String> temp = new HashMap<>();
+                for(String x: artefacts.keySet()){
+                    temp.put(x, artefacts.get(x));
+                }
+//                HashMap<String, String> temp = (HashMap<String, String>) artefacts.clone();
                 for(String artefact: temp.keySet()){
                     currentPlayer.dropArtefactToCurrLoc(artefact, artefacts.get(artefact), currentLocation);
                 }
