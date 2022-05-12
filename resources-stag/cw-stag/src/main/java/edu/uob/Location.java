@@ -43,6 +43,16 @@ public class Location extends GameEntity{
         entities.removeIf(x -> Objects.equals(x.getName(), entityToRemove));
     }
 
+    public GameEntity getEntityByName(String entityName){
+        GameEntity target = null;
+        for(GameEntity x: entities){
+            if(Objects.equals(x.getName(), entityName)){
+                target = x;
+            }
+        }
+        return target;
+    }
+
     public void addArtefactToCurrLoc(String artefactToAdd, String artefactDesc){
         Artefact newEntity = new Artefact(artefactToAdd, artefactDesc);
         entities.add(newEntity);

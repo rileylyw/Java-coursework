@@ -33,7 +33,7 @@ public class GameController {
                 return checkVerb(token);
             }
         }
-        return "TEST";
+        return "No valid verb recognized";
     }
 
     public String checkVerb(String token){
@@ -62,13 +62,16 @@ public class GameController {
         HashMap<String, Location> loc = currentGame.getLocations();
         if(actions.containsKey(token)){
             corrActions = actions.get(token);
+//            for(GameAction x: actions.get(token)){
+//                System.out.println("t "+x.getSubjects().get(0));
+//            }
         }
         else{
             return "That's not a verb I recognize.";
         }
         if(!checkAction(corrActions, artefacts, currentPlayer, loc)){
             return "Invalid command";
-        };
+        }
         return str.toString();
     }
 
@@ -76,6 +79,7 @@ public class GameController {
                             Player currentPlayer, HashMap<String, Location> loc){
         for(GameAction action: corrActions){
             ArrayList<String> subjects = action.getSubjects();
+            System.out.println(subjects);
             for(String token: tokens){ //attack elf
                 if(subjects.contains(token)){ //elf
                     if(action.getConsumed().isEmpty()){
@@ -101,10 +105,14 @@ public class GameController {
                                     Player currentPlayer,
                                     HashMap<String, Location> loc, String entity){
         ArrayList<String> consumed = action.getConsumed();
+        ArrayList<String> subjects = action.getSubjects();
         if(consumed.isEmpty()){return false;}
         Location currentLocation = currentGame.getLocation(currentGame.getCurrentLocation());
-        ArrayList<String> tempSubjects = action.getSubjects(); //cut tree
+        ArrayList<String> tempSubjects = new ArrayList<>();
+        tempSubjects.addAll(subjects);
         tempSubjects.removeAll(consumed); //if player has subject needed
+        System.out.println("temp "+tempSubjects);
+        System.out.println("subjetc "+subjects);
         if(artefacts.containsKey(consumed.get(0))) { //open trapdoor with key
             if(isLocation(action, loc, currentPlayer)) {
                 return true;
@@ -119,7 +127,7 @@ public class GameController {
 //        else if(willConsumeHealth(action, currentPlayer, currentLocation, artefacts)){
 //            return true;
 //        }
-        else if(willExchangeItems(action, currentPlayer, currentLocation, entity)){
+        else if(willExchangeItems(action, currentPlayer, currentLocation, entity, tempSubjects.get(0))){
             return true;
         }
 //        else{
@@ -198,15 +206,21 @@ public class GameController {
     }
 
     public boolean willExchangeItems(GameAction action, Player currentPlayer,
-                                     Location currentLocation, String entity){
+                                     Location currentLocation, String entity,
+                                    String artefactNeeded){
         ArrayList<String> consumed = action.getConsumed();
         ArrayList<String> produced = action.getProduced();
+        GameEntity e = currentLocation.getEntityByName(entity);
+        System.out.println("entity "+entity);
         if(currentLocation.entityExists(consumed.get(0))){
-            if(!currentPlayer.hasArtefact(entity)){
+            if(!currentPlayer.hasArtefact(entity) && (e instanceof Artefact)){
                 str.append("You don't have "+entity);
                 return true;
             }
-            System.out.println(consumed.get(0));
+            else if((!currentPlayer.hasArtefact(artefactNeeded) && (e instanceof Furniture))){ //chop tree
+                str.append("You don't have "+artefactNeeded);
+                return true;
+            }
             currentLocation.removeEntityByName(consumed.get(0));
             for(String x: produced){
                 currentLocation.addEntityFromStoreroom(x, currentGame);
@@ -216,6 +230,7 @@ public class GameController {
         }
         return false;
     }
+
 
 
     public boolean interactWithSubjects(GameAction action, HashMap<String, String> artefacts,
