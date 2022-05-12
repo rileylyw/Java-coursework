@@ -24,7 +24,8 @@ public class GameController {
     }
 
     public String handleCommand(String command){
-        tokenize(command);
+        tokenize(command); //TODO player name with spaces hyphens etc
+        //TODO: multiplayer
         String playerName = tokens.get(0).substring(0, tokens.get(0).length()-1);
         currentGame.setCurrentPlayer(playerName);
         for(String token: tokens){ // use axe to chop tree
@@ -77,10 +78,13 @@ public class GameController {
             ArrayList<String> subjects = action.getSubjects();
             for(String token: tokens){ //attack elf
                 if(subjects.contains(token)){ //elf
-                    requiresArtefact(action,artefacts, currentPlayer, loc, token);
+                    if(action.getConsumed().isEmpty()){
+                        str.append(action.getNarration());
+                    }
+                    if(!requiresArtefact(action,artefacts, currentPlayer, loc, token)){
+                        return false;
+                    }
                     interactWithSubjects(action, artefacts, currentGame, token);
-                    System.out.println("here health "+ currentPlayer.getHealth());
-
                 }
             }
         }
@@ -91,6 +95,7 @@ public class GameController {
                                     Player currentPlayer,
                                     HashMap<String, Location> loc, String entity){
         ArrayList<String> consumed = action.getConsumed();
+        if(consumed.isEmpty()){return false;}
         Location currentLocation = currentGame.getLocation(currentGame.getCurrentLocation());
         ArrayList<String> tempSubjects = action.getSubjects(); //cut tree
         tempSubjects.removeAll(consumed); //if player has subject needed
@@ -214,9 +219,10 @@ public class GameController {
             if(deductHealth(action, artefacts, currentPlayer, currentLocation)){
                 return true;
             }
-            if(hasSubjectNeeded(action, artefacts, currentPlayer, currentLocation, entity)){
+            else if(hasSubjectNeeded(action, artefacts, currentPlayer, currentLocation, entity)){
                 return true;
             }
+
 
 //            else if(Objects.equals(consumed.get(0), "health")){
 //                if(currentPlayer.getHealth() > 1) {

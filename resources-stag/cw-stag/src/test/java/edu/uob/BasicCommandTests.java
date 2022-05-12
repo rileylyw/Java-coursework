@@ -145,6 +145,19 @@ final class BasicCommandTests {
 //    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
   }
 
+  @Test
+  void test8() {
+    server.handleCommand("Name: goto forest").toLowerCase();
+    server.handleCommand("Name: goto riverbank").toLowerCase();
+    server.handleCommand("Name: get horn").toLowerCase();
+
+    String response = server.handleCommand("Name: blow horn").toLowerCase();
+    System.out.println(response);
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+  }
+
   // Add more unit tests or integration tests here.
 
 }
