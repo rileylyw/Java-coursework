@@ -8,10 +8,10 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 /**
-* This is the sample client for you to connect to your game server.
-*
-* <p>Input are taken from stdin and output goes to stdout.
-*/
+ * This is the sample client for you to connect to your game server.
+ *
+ * <p>Input are taken from stdin and output goes to stdout.
+ */
 public final class GameClient {
 
     private static final char END_OF_TRANSMISSION = 4;
@@ -26,8 +26,8 @@ public final class GameClient {
         BufferedReader commandLine = new BufferedReader(new InputStreamReader(System.in));
         String command = commandLine.readLine();
         try (var socket = new Socket("localhost", 8888);
-        var socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        var socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+             var socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             var socketWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
             socketWriter.write(username + ": " + command + "\n");
             socketWriter.flush();
             String incomingMessage = socketReader.readLine();

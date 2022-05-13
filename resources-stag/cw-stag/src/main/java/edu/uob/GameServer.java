@@ -33,15 +33,15 @@ public final class GameServer {
     }
 
     /**
-    * KEEP this signature (i.e. {@code edu.uob.GameServer(File, File)}) otherwise we won't be able to mark
-    * your submission correctly.
-    *
-    * <p>You MUST use the supplied {@code entitiesFile} and {@code actionsFile}
-    *
-    * @param entitiesFile The game configuration file containing all game entities to use in your game
-    * @param actionsFile The game configuration file containing all game actions to use in your game
-    *
-    */
+     * KEEP this signature (i.e. {@code edu.uob.GameServer(File, File)}) otherwise we won't be able to mark
+     * your submission correctly.
+     *
+     * <p>You MUST use the supplied {@code entitiesFile} and {@code actionsFile}
+     *
+     * @param entitiesFile The game configuration file containing all game entities to use in your game
+     * @param actionsFile The game configuration file containing all game actions to use in your game
+     *
+     */
     public GameServer(File entitiesFile, File actionsFile) {
 
         try {
@@ -70,11 +70,11 @@ public final class GameServer {
     }
 
     /**
-    * KEEP this signature (i.e. {@code edu.uob.GameServer.handleCommand(String)}) otherwise we won't be
-    * able to mark your submission correctly.
-    *
-    * <p>This method handles all incoming game commands and carries out the corresponding actions.
-    */
+     * KEEP this signature (i.e. {@code edu.uob.GameServer.handleCommand(String)}) otherwise we won't be
+     * able to mark your submission correctly.
+     *
+     * <p>This method handles all incoming game commands and carries out the corresponding actions.
+     */
     public String handleCommand(String command) {
         // TODO implement your server logic here
         GameController controller = new GameController(currentGame);
@@ -97,15 +97,15 @@ public final class GameServer {
 
 
     /**
-    * Starts a *blocking* socket server listening for new connections. This method blocks until the
-    * current thread is interrupted.
-    *
-    * <p>This method isn't used for marking. You shouldn't have to modify this method, but you can if
-    * you want to.
-    *
-    * @param portNumber The port to listen on.
-    * @throws IOException If any IO related operation fails.
-    */
+     * Starts a *blocking* socket server listening for new connections. This method blocks until the
+     * current thread is interrupted.
+     *
+     * <p>This method isn't used for marking. You shouldn't have to modify this method, but you can if
+     * you want to.
+     *
+     * @param portNumber The port to listen on.
+     * @throws IOException If any IO related operation fails.
+     */
     public void blockingListenOn(int portNumber) throws IOException {
         try (ServerSocket s = new ServerSocket(portNumber)) {
             System.out.println("Server listening on port " + portNumber);
@@ -120,18 +120,18 @@ public final class GameServer {
     }
 
     /**
-    * Handles an incoming connection from the socket server.
-    *
-    * <p>This method isn't used for marking. You shouldn't have to modify this method, but you can if
-    * * you want to.
-    *
-    * @param serverSocket The client socket to read/write from.
-    * @throws IOException If any IO related operation fails.
-    */
+     * Handles an incoming connection from the socket server.
+     *
+     * <p>This method isn't used for marking. You shouldn't have to modify this method, but you can if
+     * * you want to.
+     *
+     * @param serverSocket The client socket to read/write from.
+     * @throws IOException If any IO related operation fails.
+     */
     private void blockingHandleConnection(ServerSocket serverSocket) throws IOException {
         try (Socket s = serverSocket.accept();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))) {
+             BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()))) {
             System.out.println("Connection established");
             String incomingCommand = reader.readLine();
             if(incomingCommand != null) {

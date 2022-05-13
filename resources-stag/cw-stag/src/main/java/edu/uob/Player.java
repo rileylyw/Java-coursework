@@ -60,6 +60,4 @@ public class Player {
     public boolean hasArtefact(String artefact){
         return artefacts.containsKey(artefact);
     }
-
-    //TODO: inventory list
 }

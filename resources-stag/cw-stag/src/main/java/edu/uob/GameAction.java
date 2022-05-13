@@ -3,7 +3,6 @@ package edu.uob;
 import java.util.ArrayList;
 
 public class GameAction {
-//    private ArrayList<String> triggers;
     private ArrayList<String> subjects = new ArrayList<>();
     private ArrayList<String> consumed = new ArrayList<>();
     private ArrayList<String> produced = new ArrayList<>();
@@ -45,7 +44,4 @@ public class GameAction {
         return subjects;
     }
 
-    //    public void addTrigger(String trigger) {
-//        this.triggers.add(trigger);
-//    }
 }

@@ -24,14 +24,14 @@ final class BasicCommandTests {
       server = new GameServer(entitiesFile, actionsFile);
   }
 
-  // Test to spawn a new server and send a simple "look" command
-  @Test
-  void testLookingAroundStartLocation() {
-    String response = server.handleCommand("player 1: look").toLowerCase();
-    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
-    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
-    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
-  }
+//  // Test to spawn a new server and send a simple "look" command
+//  @Test
+//  void testLookingAroundStartLocation() {
+//    String response = server.handleCommand("player 1: look").toLowerCase();
+//    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
+//    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
+//    assertTrue(response.contains("wooden trapdoor"), "Did not see description of furniture in response to look");
+//  }
 
   @Test
   void test1() {
@@ -150,8 +150,9 @@ final class BasicCommandTests {
     server.handleCommand("Name: goto forest").toLowerCase();
     server.handleCommand("Name: goto riverbank").toLowerCase();
     server.handleCommand("Name: get horn").toLowerCase();
+    server.handleCommand("Name: blow horn").toLowerCase();
 
-    String response = server.handleCommand("Name: blow horn").toLowerCase();
+    String response = server.handleCommand("Name: look").toLowerCase();
     System.out.println(response);
 //    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
 //    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");
@@ -176,9 +177,11 @@ final class BasicCommandTests {
 
   @Test
   void test10() {
-    server.handleCommand("Name a: goto forest").toLowerCase();
+    server.handleCommand("Amy: goto forest").toLowerCase();
+    server.handleCommand("Bob: get axe").toLowerCase();
+    server.handleCommand("Bob: look").toLowerCase();
 
-    String response = server.handleCommand("Name b: look").toLowerCase();
+    String response = server.handleCommand("Amy: look").toLowerCase();
     System.out.println(response);
 //    assertTrue(response.contains("empty room"), "Did not see description of room in response to look");
 //    assertTrue(response.contains("magic potion"), "Did not see description of artifacts in response to look");

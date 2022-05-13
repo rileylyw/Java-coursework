@@ -36,10 +36,6 @@ public class GameState {
         return false;
     }
 
-    public void addEntityFromStoreroom(String loc, String entityToAdd, GameState currentGame){
-        locations.get(loc).addEntityFromStoreroom(entityToAdd, currentGame);
-    }
-
     public HashMap<String, ArrayList<String>> getPaths() {
         return paths;
     }

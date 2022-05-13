@@ -1,7 +1,6 @@
 package edu.uob;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class Location extends GameEntity{
@@ -13,13 +12,9 @@ public class Location extends GameEntity{
     }
 
     public void addEntity(GameEntity itemType) {
-//        if (!entityExists(itemType)) {
         entities.add(itemType);
-//        }
-//        for(GameEntity x: entities){
-//            System.out.println(x.getName());
-//        }
     }
+
 
     public boolean entityExists(String entity){
         boolean exist = false;
@@ -58,12 +53,21 @@ public class Location extends GameEntity{
         entities.add(newEntity);
     }
 
-    public void addEntityFromStoreroom(String entityToAdd, GameState currentGame){
-        ArrayList<GameEntity> x = currentGame.getLocation("storeroom").getEntities();
-        for(GameEntity item: x){
-            if(Objects.equals(entityToAdd, item.getName())){
-                Artefact newEntity = new Artefact(entityToAdd, item.getDescription());
-                entities.add(newEntity);
+    public void addEntityFromLocation(String entityToAdd, GameState currentGame, String loc) {
+        ArrayList<GameEntity> x = currentGame.getLocation(loc).getEntities();
+        ArrayList<GameEntity> temp = (ArrayList<GameEntity>) x.clone();
+        for (GameEntity item : temp) {
+            if (Objects.equals(entityToAdd, item.getName())) {
+                if (item instanceof Artefact) {
+                    Artefact newEntity = new Artefact(entityToAdd, item.getDescription());
+                    entities.add(newEntity);
+                } else if (item instanceof Furniture) {
+                    Furniture newEntity = new Furniture(entityToAdd, item.getDescription());
+                    entities.add(newEntity);
+                } else if (item instanceof Character) {
+                    Character newEntity = new Character(entityToAdd, item.getDescription());
+                    entities.add(newEntity);
+                }
             }
         }
     }
